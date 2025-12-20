@@ -32,12 +32,12 @@ sudo cp -r media /var/www/coreofkeen.com/
 sudo chown -R www-data:www-data /var/www/coreofkeen.com
 ```
 
-## 4. Настройте nginx на хосте
+## 4. Настройте nginx на хосте (без SSL сначала)
 
-Скопируйте конфигурацию nginx:
+Используйте временную конфигурацию без SSL:
 
 ```bash
-sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
+sudo cp nginx/coreofkeen.com.temp.conf /etc/nginx/sites-available/coreofkeen.com
 sudo ln -s /etc/nginx/sites-available/coreofkeen.com /etc/nginx/sites-enabled/
 ```
 
@@ -55,13 +55,20 @@ sudo systemctl reload nginx
 
 ## 5. Настройте SSL (HTTPS)
 
-Раскомментируйте строки 23-24 в `/etc/nginx/sites-available/coreofkeen.com` и запустите certbot:
+Получите SSL сертификат через certbot:
 
 ```bash
-# Сначала закомментируйте строки 23-24 (ssl_certificate)
 sudo certbot --nginx -d coreofkeen.com -d www.coreofkeen.com
+```
 
-# Certbot автоматически добавит пути к сертификатам
+Certbot автоматически обновит конфигурацию nginx и добавит HTTPS.
+
+**ИЛИ** обновите на финальную конфигурацию вручную:
+
+```bash
+sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
 ## 6. Обновление кода на сервере
