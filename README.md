@@ -1,256 +1,212 @@
 # Django Docker Project
 
-Django проект с Docker и docker-compose для легкого развертывания на Ubuntu сервере.
+Production-ready Django 5.0 application template with Docker, PostgreSQL, Gunicorn, and Nginx.
 
-## Стек технологий
+## Features
 
-- Django 5.0
-- PostgreSQL 15
-- Gunicorn
-- Nginx
-- Docker & Docker Compose
+- **Django 5.0** - Modern Python web framework
+- **PostgreSQL 15** - Reliable ACID-compliant database
+- **Docker** - Containerized deployment
+- **Gunicorn** - Production WSGI server
+- **Nginx** - Reverse proxy and static file serving
+- **Security-first** - HTTPS, secure headers, CSRF protection
+- **12-factor app** - Environment-based configuration
 
-## Быстрый старт (локальная разработка)
+## Quick Start (5 minutes)
 
-### 1. Инициализация Django проекта
+### Prerequisites
 
-Если Django проект еще не создан, выполните:
+- Docker 20.10+
+- Docker Compose 2.0+
 
-```bash
-# Создайте временный контейнер для инициализации проекта
-docker run --rm -v $(pwd):/app -w /app python:3.11-slim sh -c "pip install Django==5.0.1 && django-admin startproject config ."
-```
-
-### 2. Настройка окружения
-
-Создайте файл `.env` на основе `.env.example`:
+### Setup
 
 ```bash
+# 1. Clone repository
+git clone <your-repo-url>
+cd cokdjango
+
+# 2. Create environment file
 cp .env.example .env
+# Default values work for development
+
+# 3. Start application
+make setup
+
+# Or manually:
+# docker-compose up --build -d
+# docker-compose exec web python manage.py migrate
+# docker-compose exec web python manage.py createsuperuser
 ```
 
-Отредактируйте `.env` и установите свои значения, особенно:
-- `SECRET_KEY` - сгенерируйте новый секретный ключ
-- `DB_PASSWORD` - установите надежный пароль
-- `ALLOWED_HOSTS` - добавьте ваш домен
+### Access
 
-### 3. Настройка Django settings
+- **Application**: http://localhost:8000
+- **Admin**: http://localhost:8000/admin
 
-После создания проекта, отредактируйте `config/settings.py`:
-
-```python
-from decouple import config
-
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-    }
-}
-
-# Static files
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# Whitenoise для обслуживания статики
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Добавьте эту строку
-    # ... остальные middleware
-]
-```
-
-### 4. Запуск проекта
+### Common Commands
 
 ```bash
-# Сборка и запуск контейнеров
-docker-compose up --build -d
-
-# Просмотр логов
-docker-compose logs -f
-
-# Создание суперпользователя
-docker-compose exec web python manage.py createsuperuser
+make up              # Start containers
+make down            # Stop containers
+make logs            # View logs
+make shell           # Access container shell
+make migrate         # Run database migrations
+make test            # Run tests (when implemented)
 ```
 
-Приложение будет доступно по адресу `http://localhost`
+See `Makefile` for all available commands.
 
-## Развертывание на Ubuntu сервере
+---
 
-### Требования
+## Documentation
 
-- Ubuntu 20.04+ сервер
-- Docker и Docker Compose установлены
-- Домен, направленный на IP сервера (опционально)
+**📚 Complete documentation available in [`docs/`](./docs/README.md)**
 
-### Шаги развертывания
+### Quick Links
 
-#### 1. Установка Docker (если не установлен)
+- **[Project Overview](./docs/overview.md)** - Purpose, goals, and technology stack
+- **[Local Setup Guide](./docs/guides/setup.md)** - Detailed development setup
+- **[Deployment Guide](./docs/guides/deployment.md)** - Production deployment on Ubuntu
+- **[Architecture](./docs/architecture/system.md)** - System architecture and components
+- **[Configuration](./docs/config/environment.md)** - Environment variables reference
+- **[Security](./docs/security/overview.md)** - Security model and best practices
 
-```bash
-# Обновление пакетов
-sudo apt update && sudo apt upgrade -y
+---
 
-# Установка Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Добавление пользователя в группу docker
-sudo usermod -aG docker $USER
-
-# Установка Docker Compose
-sudo apt install docker-compose-plugin -y
-```
-
-Выйдите и войдите снова для применения изменений группы.
-
-#### 2. Клонирование проекта
-
-```bash
-# Создайте директорию для проекта
-mkdir -p ~/apps/django-app
-cd ~/apps/django-app
-
-# Склонируйте ваш репозиторий или скопируйте файлы
-# git clone <your-repo-url> .
-```
-
-#### 3. Настройка окружения
-
-```bash
-# Создайте .env файл
-cp .env.example .env
-nano .env
-```
-
-Установите production настройки:
-- `SECRET_KEY` - сгенерируйте новый ключ
-- `DEBUG=False`
-- `ALLOWED_HOSTS` - ваш домен и IP сервера
-- `DB_PASSWORD` - надежный пароль
-
-#### 4. Запуск приложения
-
-```bash
-# Сборка и запуск
-docker-compose up -d --build
-
-# Проверка статуса
-docker-compose ps
-
-# Создание суперпользователя
-docker-compose exec web python manage.py createsuperuser
-```
-
-#### 5. Настройка SSL (опционально, но рекомендуется)
-
-Для production рекомендуется использовать SSL. Можно использовать Certbot:
-
-```bash
-# Установка Certbot
-sudo apt install certbot python3-certbot-nginx -y
-
-# Получение сертификата
-sudo certbot --nginx -d your-domain.com
-```
-
-## Полезные команды
-
-```bash
-# Остановка контейнеров
-docker-compose down
-
-# Перезапуск
-docker-compose restart
-
-# Просмотр логов
-docker-compose logs -f web
-
-# Выполнение команд Django
-docker-compose exec web python manage.py migrate
-docker-compose exec web python manage.py collectstatic
-docker-compose exec web python manage.py createsuperuser
-
-# Создание нового приложения
-docker-compose exec web python manage.py startapp myapp
-
-# Бэкап базы данных
-docker-compose exec db pg_dump -U django_user django_db > backup.sql
-
-# Восстановление базы данных
-docker-compose exec -T db psql -U django_user django_db < backup.sql
-
-# Очистка (удаление контейнеров и volumes)
-docker-compose down -v
-```
-
-## Структура проекта
+## Project Structure
 
 ```
 .
-├── config/              # Django настройки проекта
-├── nginx/
-│   └── nginx.conf      # Конфигурация Nginx
-├── staticfiles/        # Собранные статические файлы
-├── .env                # Переменные окружения (не в git)
-├── .env.example        # Пример переменных окружения
-├── .gitignore
-├── docker-compose.yml  # Конфигурация Docker Compose
-├── Dockerfile          # Dockerfile для Django
-├── entrypoint.sh       # Entrypoint скрипт
-├── requirements.txt    # Python зависимости
-└── README.md
+├── config/              # Django project settings
+│   ├── settings.py      # Main configuration
+│   ├── urls.py          # URL routing
+│   └── wsgi.py          # WSGI entry point
+├── docs/                # 📚 Complete documentation
+├── nginx/               # Nginx configuration
+├── staticfiles/         # Collected static files
+├── docker-compose.yml   # Container orchestration
+├── Dockerfile           # Django container
+├── Makefile             # Development commands
+├── requirements.txt     # Python dependencies
+└── .env.example         # Environment template
 ```
+
+---
+
+## Development Workflow
+
+1. **Make changes** to code
+2. **Test locally**: Changes auto-reload in development
+3. **Run migrations** if models changed: `make migrate`
+4. **Check logs** if needed: `make logs`
+5. **Run tests**: `make test` (when implemented)
+
+See [Development Guide](./docs/guides/setup.md) for details.
+
+---
+
+## Production Deployment
+
+**Quick summary** (see [full deployment guide](./docs/guides/deployment.md)):
+
+1. **Server**: Ubuntu 20.04+ with Docker installed
+2. **Environment**: Configure `.env` with production secrets
+3. **Deploy**: `make build && make migrate`
+4. **Nginx**: Configure SSL with Let's Encrypt
+5. **Cloudflare**: Set SSL mode to "Full (strict)"
+
+**Important**: Always set `DEBUG=False` in production!
+
+---
+
+## Technology Stack
+
+| Component | Technology | Version | Purpose |
+|-----------|-----------|---------|---------|
+| Framework | Django | 5.0.1 | Web application framework |
+| Database | PostgreSQL | 15 | Primary data store |
+| WSGI Server | Gunicorn | 21.2.0 | Python WSGI HTTP server |
+| Reverse Proxy | Nginx | Latest | HTTP server and static files |
+| Containerization | Docker | 20.10+ | Application containers |
+| Static Files | WhiteNoise | 6.6.0 | Static file serving |
+
+See [Architecture Documentation](./docs/architecture/system.md) for detailed component descriptions.
+
+---
+
+## Security
+
+Production security features (enabled when `DEBUG=False`):
+
+- ✅ HTTPS enforcement
+- ✅ Secure cookies (session, CSRF)
+- ✅ Security headers (XSS, clickjacking, MIME sniffing protection)
+- ✅ CSRF protection
+- ✅ Password hashing (PBKDF2)
+- ✅ SQL injection protection (ORM parameterization)
+
+See [Security Documentation](./docs/security/overview.md) for complete security model.
+
+---
 
 ## Troubleshooting
 
-### Проблемы с подключением к БД
-
-Если возникают проблемы с подключением к PostgreSQL, проверьте:
+### Port already in use
 
 ```bash
-# Проверьте логи базы данных
+# Find process using port 8000
+lsof -i :8000
+kill -9 <PID>
+```
+
+### Database connection refused
+
+```bash
+# Check database status
+docker-compose ps db
 docker-compose logs db
 
-# Убедитесь, что контейнер БД запущен
-docker-compose ps
+# Restart database
+docker-compose restart db
 ```
 
-### Проблемы с статическими файлами
+### Static files not loading
 
 ```bash
-# Пересоберите статические файлы
-docker-compose exec web python manage.py collectstatic --noinput
+# Recollect static files
+make collectstatic
 ```
 
-### Проблемы с правами доступа
+For more troubleshooting, see:
+- [Setup Guide](./docs/guides/setup.md#troubleshooting)
+- [Deployment Guide](./docs/guides/deployment.md#troubleshooting-production-issues)
+- [Error Handling](./docs/runtime/error-handling.md)
 
-```bash
-# Проверьте права на entrypoint.sh
-chmod +x entrypoint.sh
-```
+---
 
-## Безопасность
+## Contributing
 
-Для production окружения:
+1. Read [Architecture Documentation](./docs/architecture/system.md)
+2. Follow [Development Guide](./docs/guides/setup.md)
+3. Write tests (see [Testing Guide](./docs/guides/testing.md))
+4. Update documentation when needed
 
-1. Используйте сильный `SECRET_KEY`
-2. Установите `DEBUG=False`
-3. Настройте правильные `ALLOWED_HOSTS`
-4. Используйте SSL сертификат
-5. Регулярно обновляйте зависимости
-6. Настройте firewall (UFW)
-7. Используйте надежные пароли для БД
-8. Регулярно делайте бэкапы
+---
 
-## Лицензия
+## License
 
 MIT
+
+---
+
+## Resources
+
+- **Documentation**: [`docs/README.md`](./docs/README.md) - Start here for complete documentation
+- **Django**: https://docs.djangoproject.com/
+- **Docker**: https://docs.docker.com/
+- **PostgreSQL**: https://www.postgresql.org/docs/
+
+---
+
+**Need help?** Check the [documentation](./docs/README.md) or open an issue.
