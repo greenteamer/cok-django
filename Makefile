@@ -1,4 +1,4 @@
-.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic test clean
+.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic test clean dev-setup
 
 # Build and start containers
 build:
@@ -63,3 +63,18 @@ backup:
 # Show status
 status:
 	docker-compose ps
+
+# Setup local development environment (for LSP/IDE support)
+dev-setup:
+	@echo "Setting up local development environment..."
+	@if [ ! -d ".venv" ]; then \
+		echo "Creating virtual environment..."; \
+		python3 -m venv .venv; \
+	else \
+		echo "Virtual environment already exists"; \
+	fi
+	@echo "Installing dependencies..."
+	@.venv/bin/pip install --upgrade pip -q
+	@.venv/bin/pip install -r requirements.txt -q
+	@echo "✓ Local development environment ready!"
+	@echo "  Restart your LSP/IDE to use .venv/bin/python interpreter"

@@ -548,36 +548,32 @@ docker-compose up -d
 
 ## IDE Setup
 
-### VS Code
+### Local Python Environment for LSP/Autocomplete
 
-Recommended extensions:
-- Python
-- Django
-- Docker
-- Remote - Containers
+The project runs in Docker, so dependencies are installed inside the container. To get IDE features like autocomplete, type checking, and import resolution working locally, you need a local Python virtual environment.
 
-**Settings** (`.vscode/settings.json`):
-```json
-{
-  "python.defaultInterpreterPath": "/usr/local/bin/python",
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
-  "editor.formatOnSave": true
-}
+**Setup**:
+
+```bash
+make dev-setup
 ```
 
-### PyCharm
+This command:
+- Creates `.venv/` virtual environment
+- Installs all dependencies from `requirements.txt`
 
-1. **Configure Python Interpreter**:
-   - Settings → Project → Python Interpreter
-   - Add Docker Compose interpreter
-   - Select `docker-compose.yml` and `web` service
+After running, configure your IDE to use `.venv/bin/python` as the Python interpreter and restart your LSP/IDE.
 
-2. **Configure Django Support**:
-   - Settings → Languages & Frameworks → Django
-   - Enable Django support
-   - Django project root: `/app`
-   - Settings: `config/settings.py`
+**Important Notes**:
+- This is ONLY for IDE/LSP support
+- The application still runs in Docker
+- `.venv/` is git-ignored
+- `pyrightconfig.json` is included in the repository for type checker configuration
+
+**When to run `make dev-setup` again**:
+- After cloning the project (first time setup)
+- After updating `requirements.txt`
+- If LSP stops recognizing imports
 
 ---
 

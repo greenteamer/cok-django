@@ -53,6 +53,7 @@ make logs            # View logs
 make shell           # Access container shell
 make migrate         # Run database migrations
 make test            # Run tests (when implemented)
+make dev-setup       # Setup local venv for IDE/LSP (optional)
 ```
 
 See `Makefile` for all available commands.
