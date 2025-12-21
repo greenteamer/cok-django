@@ -32,12 +32,31 @@ sudo cp -r media /var/www/coreofkeen.com/
 sudo chown -R www-data:www-data /var/www/coreofkeen.com
 ```
 
-## 4. Настройте nginx на хосте (без SSL сначала)
+## 4. Настройте Cloudflare SSL/TLS
 
-Используйте временную конфигурацию без SSL:
+**ВАЖНО**: Если используете Cloudflare, установите SSL/TLS режим на **"Full (strict)"**:
+
+1. Зайдите в Cloudflare Dashboard
+2. Выберите ваш домен
+3. SSL/TLS → Overview
+4. Установите режим: **Full (strict)**
+
+Это предотвратит бесконечные редиректы и обеспечит шифрование между Cloudflare и вашим сервером.
+
+## 5. Настройте SSL сертификат (если еще нет)
+
+Если SSL сертификат еще не установлен, получите его через certbot:
 
 ```bash
-sudo cp nginx/coreofkeen.com.temp.conf /etc/nginx/sites-available/coreofkeen.com
+sudo certbot --nginx -d coreofkeen.com -d www.coreofkeen.com
+```
+
+## 6. Настройте nginx на хосте
+
+Скопируйте финальную конфигурацию:
+
+```bash
+sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
 sudo ln -s /etc/nginx/sites-available/coreofkeen.com /etc/nginx/sites-enabled/
 ```
 
@@ -53,25 +72,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-## 5. Настройте SSL (HTTPS)
-
-Получите SSL сертификат через certbot:
-
-```bash
-sudo certbot --nginx -d coreofkeen.com -d www.coreofkeen.com
-```
-
-Certbot автоматически обновит конфигурацию nginx и добавит HTTPS.
-
-**ИЛИ** обновите на финальную конфигурацию вручную:
-
-```bash
-sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-## 6. Обновление кода на сервере
+## 7. Обновление кода на сервере
 
 После git pull или изменений:
 
