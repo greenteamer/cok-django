@@ -1,4 +1,4 @@
-.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic test clean dev-setup
+.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic deploy-static deploy test clean dev-setup
 
 # Build and start containers
 build:
@@ -44,6 +44,18 @@ createsuperuser:
 collectstatic:
 	docker-compose exec web python manage.py collectstatic --noinput
 
+# Deploy static files to Nginx (production only)
+deploy-static:
+	@echo "Collecting static files..."
+	docker-compose exec web python manage.py collectstatic --noinput
+	@echo "Copying static files to Nginx directory..."
+	sudo cp -r staticfiles/* /var/www/coreofkeen.com/staticfiles/
+	@echo "Setting permissions..."
+	sudo chown -R www-data:www-data /var/www/coreofkeen.com/staticfiles/
+	@echo "Reloading Nginx..."
+	sudo systemctl reload nginx
+	@echo "✓ Static files deployed successfully!"
+
 # Run tests
 test:
 	docker-compose exec web python manage.py test
@@ -52,9 +64,15 @@ test:
 clean:
 	docker-compose down -v
 
-# Initial setup
+# Initial setup (development)
 setup: build migrate createsuperuser
 	@echo "Setup complete! Access the app at http://localhost"
+
+# Full deployment (production)
+deploy: down build migrate deploy-static
+	@echo "✓ Deployment complete!"
+	@echo "  Check status: make status"
+	@echo "  View logs: make logs"
 
 # Database backup
 backup:

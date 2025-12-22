@@ -439,6 +439,28 @@ Look for:
 
 ### Update Application Code
 
+**Option 1: Automated deployment (recommended)**
+
+```bash
+# Pull latest code
+git pull
+
+# Deploy everything automatically
+make deploy
+```
+
+This single command will:
+1. Stop containers
+2. Rebuild with new code and dependencies
+3. Apply database migrations
+4. Collect static files
+5. Copy static files to Nginx directory
+6. Set correct permissions
+7. Reload Nginx
+8. Start containers
+
+**Option 2: Manual step-by-step**
+
 ```bash
 # Pull latest code
 git pull
@@ -449,14 +471,23 @@ make build
 # Apply new migrations
 make migrate
 
-# Collect static files
-make collectstatic
-
-# Copy static files to Nginx directory
-sudo cp -r staticfiles /var/www/coreofkeen.com/
+# Deploy static files to Nginx
+make deploy-static
 
 # Restart containers
 make restart
+```
+
+**Option 3: Update static files only**
+
+If you only changed CSS/JS/images:
+
+```bash
+# Pull latest code
+git pull
+
+# Deploy static files only (no rebuild)
+make deploy-static
 ```
 
 ---
@@ -656,10 +687,17 @@ For production at scale, consider managed PostgreSQL (AWS RDS, DigitalOcean, etc
 **Cause**: Nginx can't find static files
 
 **Solutions**:
-1. Verify files exist: `ls /var/www/coreofkeen.com/staticfiles/`
-2. Check permissions: `sudo chown -R www-data:www-data /var/www/coreofkeen.com`
-3. Verify Nginx config `alias` path is correct
-4. Recollect static files: `make collectstatic`
+1. Deploy static files: `make deploy-static`
+2. Verify files exist: `ls /var/www/coreofkeen.com/staticfiles/`
+3. Check permissions: `sudo chown -R www-data:www-data /var/www/coreofkeen.com`
+4. Verify Nginx config `alias` path is correct
+
+**Quick fix**:
+```bash
+make deploy-static
+```
+
+This collects static files, copies to Nginx, sets permissions, and reloads Nginx.
 
 ---
 
