@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "ckeditor",  # Rich text editor
+    "ckeditor_uploader",  # Image upload support for CKEditor
     "config",  # Our main config app
+    "blog",  # Blog application
 ]
 
 MIDDLEWARE = [
@@ -134,6 +137,34 @@ STATICFILES_DIRS = []
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# CKEditor Configuration
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_JQUERY_URL = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'skin': 'moono-lisa',
+        'toolbar_Basic': [
+            ['Source', '-', 'Bold', 'Italic']
+        ],
+        'toolbar_Full': [
+            ['Styles', 'Format', 'Bold', 'Italic', 'Underline', 'Strike', 'SpellChecker', 'Undo', 'Redo'],
+            ['Link', 'Unlink', 'Anchor'],
+            ['Image', 'Table', 'HorizontalRule'],
+            ['TextColor', 'BGColor'],
+            ['Smiley', 'SpecialChar'], ['Source'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+        ],
+        'toolbar': 'Full',
+        'height': 400,
+        'width': '100%',
+        'filebrowserWindowWidth': 940,
+        'filebrowserWindowHeight': 725,
+    },
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -189,6 +220,32 @@ UNFOLD = {
                         "title": "Groups",
                         "icon": "group",
                         "link": "/admin/auth/group/",
+                    },
+                ],
+            },
+            {
+                "title": "Blog",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Posts",
+                        "icon": "article",
+                        "link": "/admin/blog/post/",
+                    },
+                    {
+                        "title": "Categories",
+                        "icon": "folder",
+                        "link": "/admin/blog/category/",
+                    },
+                    {
+                        "title": "Tags",
+                        "icon": "label",
+                        "link": "/admin/blog/tag/",
+                    },
+                    {
+                        "title": "Comments",
+                        "icon": "comment",
+                        "link": "/admin/blog/comment/",
                     },
                 ],
             },

@@ -105,7 +105,16 @@ Read these documents to understand HOW to work with the codebase.
 
 ---
 
-## 7. Security & Compliance
+## 7. Application Modules
+
+Read these documents to understand Django app responsibilities and interfaces.
+
+- 📄 [`modules/blog.md`](./modules/blog.md)
+  Blog application: models, admin interface, and content management
+
+---
+
+## 8. Security & Compliance
 
 Read these documents to understand SECURITY boundaries.
 
@@ -114,7 +123,7 @@ Read these documents to understand SECURITY boundaries.
 
 ---
 
-## 8. Observability & Operations
+## 9. Observability & Operations
 
 Read these documents to understand how the system is monitored.
 
@@ -154,11 +163,6 @@ When implementing business features:
 - `domain/concepts.md` - Core domain concepts and terminology
 - `domain/invariants.md` - Business rules and constraints
 
-### Application Modules
-
-When creating Django apps:
-- `modules/<app-name>.md` - Document each Django app's responsibility, interfaces, and boundaries
-
 ### Internal APIs
 
 When building internal services:
@@ -178,7 +182,7 @@ When evolving the API or architecture:
 
 ## Last Updated
 
-2025-12-21
+2025-12-22
 
 This file MUST be updated whenever:
 
