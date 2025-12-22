@@ -1,4 +1,4 @@
-.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic deploy-static deploy test clean dev-setup
+.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic deploy-static deploy test clean dev-setup setup-nginx
 
 # Build and start containers
 build:
@@ -45,13 +45,12 @@ collectstatic:
 	docker-compose exec web python manage.py collectstatic --noinput
 
 # Deploy static files to Nginx (production only)
+# Note: Requires one-time setup (see docs/guides/deployment.md)
 deploy-static:
 	@echo "Collecting static files..."
 	docker-compose exec web python manage.py collectstatic --noinput
-	@echo "Copying static files to Nginx directory..."
-	sudo cp -r staticfiles/* /var/www/coreofkeen.com/staticfiles/
 	@echo "Setting permissions..."
-	sudo chown -R www-data:www-data /var/www/coreofkeen.com/staticfiles/
+	chmod -R 755 staticfiles/
 	@echo "Reloading Nginx..."
 	sudo systemctl reload nginx
 	@echo "✓ Static files deployed successfully!"
@@ -96,3 +95,8 @@ dev-setup:
 	@.venv/bin/pip install -r requirements.txt -q
 	@echo "✓ Local development environment ready!"
 	@echo "  Restart your LSP/IDE to use .venv/bin/python interpreter"
+
+# Generate Nginx configuration from template (production)
+setup-nginx:
+	@echo "Generating Nginx configuration..."
+	./scripts/setup-nginx.sh

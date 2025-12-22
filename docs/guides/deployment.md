@@ -175,6 +175,9 @@ make collectstatic
 
 # Create superuser
 make createsuperuser
+
+# Generate Nginx configuration (for Step 3)
+make setup-nginx
 ```
 
 **Verify containers are running**:
@@ -208,20 +211,64 @@ sudo apt install nginx -y
 
 ---
 
-### 3.2 Copy Static Files to Host
+### 3.2 Generate and Install Nginx Configuration
+
+**Modern approach**: Use a configuration template that automatically sets the correct paths. This eliminates hardcoded paths and the need for `sudo` during deployment.
+
+**Step 1: Generate Nginx configuration from template**
 
 ```bash
-# Create directory for static files
-sudo mkdir -p /var/www/coreofkeen.com
+# Generate Nginx config with correct project path
+make setup-nginx
 
-# Copy static and media files
-sudo cp -r staticfiles /var/www/coreofkeen.com/
-sudo mkdir -p media
-sudo cp -r media /var/www/coreofkeen.com/
-
-# Set ownership
-sudo chown -R www-data:www-data /var/www/coreofkeen.com
+# Or run the script directly
+./scripts/setup-nginx.sh
 ```
+
+This automatically replaces `{{PROJECT_PATH}}` with your actual project directory.
+
+**Step 2: Review and install the generated configuration**
+
+```bash
+# Review the generated configuration
+cat nginx/coreofkeen.com.conf
+
+# Copy to Nginx sites-available
+sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
+
+# Test configuration
+sudo nginx -t
+
+# If test passes, reload Nginx
+sudo systemctl reload nginx
+```
+
+**Step 3: Set permissions** (one-time setup):
+
+```bash
+# Ensure Nginx can read files
+chmod -R 755 staticfiles/
+chmod -R 755 media/
+
+# Allow Nginx user to access your home directory
+chmod 755 ~
+```
+
+**Step 4: Configure passwordless sudo for nginx reload** (optional but recommended):
+
+```bash
+# Allow nginx reload without password
+echo "$USER ALL=(ALL) NOPASSWD: /bin/systemctl reload nginx, /bin/systemctl restart nginx" | sudo tee /etc/sudoers.d/nginx-reload
+sudo chmod 440 /etc/sudoers.d/nginx-reload
+```
+
+This eliminates the need for password when running `make deploy-static`.
+
+**Benefits of template approach:**
+- ✅ No hardcoded user paths in repository
+- ✅ Works for any user/server automatically
+- ✅ Easy to regenerate if project moves
+- ✅ Template stored in version control
 
 ---
 
@@ -232,7 +279,17 @@ sudo chown -R www-data:www-data /var/www/coreofkeen.com
 sudo nano /etc/nginx/sites-available/coreofkeen.com
 ```
 
-**Initial configuration** (HTTP only, for Let's Encrypt):
+**For initial setup, use the template approach:**
+
+```bash
+# Generate configuration from template
+make setup-nginx
+
+# Copy to Nginx
+sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
+```
+
+The generated configuration will look like this (with your actual path):
 
 ```nginx
 server {
@@ -250,11 +307,11 @@ server {
     }
 
     location /static/ {
-        alias /var/www/coreofkeen.com/staticfiles/;
+        alias /home/youruser/yourpath/staticfiles/;  # Auto-generated
     }
 
     location /media/ {
-        alias /var/www/coreofkeen.com/media/;
+        alias /home/youruser/yourpath/media/;  # Auto-generated
     }
 }
 ```
@@ -437,6 +494,53 @@ Look for:
 
 ## Maintenance Tasks
 
+### Migrate from /var/www to Project Directory (One-time)
+
+If you previously deployed using `/var/www/coreofkeen.com/staticfiles/`, migrate to the modern template-based approach:
+
+```bash
+# 1. Pull latest code with template
+cd ~/dev/cok-django
+git pull
+
+# 2. Generate Nginx configuration from template
+make setup-nginx
+
+# 3. Review generated configuration
+cat nginx/coreofkeen.com.conf
+
+# 4. Copy to Nginx sites-available
+sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
+
+# 5. Set permissions on project directory
+chmod 755 ~
+chmod -R 755 staticfiles/
+chmod -R 755 media/
+
+# 6. Configure passwordless nginx reload
+echo "$USER ALL=(ALL) NOPASSWD: /bin/systemctl reload nginx, /bin/systemctl restart nginx" | sudo tee /etc/sudoers.d/nginx-reload
+sudo chmod 440 /etc/sudoers.d/nginx-reload
+
+# 7. Test Nginx configuration
+sudo nginx -t
+
+# 8. Reload Nginx
+sudo systemctl reload nginx
+
+# 9. (Optional) Remove old /var/www directory
+sudo rm -rf /var/www/coreofkeen.com/
+```
+
+After this setup, `make deploy-static` will work **without requiring password**.
+
+**What changed:**
+- ❌ Old: Hardcoded `/var/www/coreofkeen.com/staticfiles/` in repository
+- ❌ Old: Hardcoded `/home/adminuser/dev/cok-django/staticfiles/` in repository
+- ✅ New: Template with `{{PROJECT_PATH}}` placeholder
+- ✅ New: Automatic path detection via `make setup-nginx`
+
+---
+
 ### Update Application Code
 
 **Option 1: Automated deployment (recommended)**
@@ -453,11 +557,10 @@ This single command will:
 1. Stop containers
 2. Rebuild with new code and dependencies
 3. Apply database migrations
-4. Collect static files
-5. Copy static files to Nginx directory
-6. Set correct permissions
-7. Reload Nginx
-8. Start containers
+4. Collect static files (in project directory)
+5. Set correct permissions
+6. Reload Nginx
+7. Start containers
 
 **Option 2: Manual step-by-step**
 
@@ -684,20 +787,36 @@ For production at scale, consider managed PostgreSQL (AWS RDS, DigitalOcean, etc
 
 ### Static Files Not Loading (404)
 
-**Cause**: Nginx can't find static files
+**Cause**: Nginx can't find or read static files
 
 **Solutions**:
 1. Deploy static files: `make deploy-static`
-2. Verify files exist: `ls /var/www/coreofkeen.com/staticfiles/`
-3. Check permissions: `sudo chown -R www-data:www-data /var/www/coreofkeen.com`
-4. Verify Nginx config `alias` path is correct
+2. Verify files exist: `ls staticfiles/`
+3. Check permissions: `chmod -R 755 staticfiles/`
+4. Verify Nginx config `alias` path points to your project directory
+5. Ensure Nginx can access your home directory: `chmod 755 ~`
 
 **Quick fix**:
 ```bash
 make deploy-static
 ```
 
-This collects static files, copies to Nginx, sets permissions, and reloads Nginx.
+This collects static files, sets permissions, and reloads Nginx.
+
+**Check Nginx configuration**:
+```bash
+sudo nginx -t
+sudo cat /etc/nginx/sites-available/coreofkeen.com | grep -A 2 "location /static/"
+```
+
+Should show: `alias /home/youruser/yourpath/staticfiles/;` (with your actual path)
+
+**Note**: If you see `{{PROJECT_PATH}}` in the configuration, you need to regenerate it:
+```bash
+make setup-nginx
+sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
+sudo systemctl reload nginx
+```
 
 ---
 

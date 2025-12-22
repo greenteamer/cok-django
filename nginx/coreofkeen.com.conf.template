@@ -27,14 +27,14 @@ server {
 
     # Static files
     location /static/ {
-        alias /var/www/coreofkeen.com/staticfiles/;
+        alias {{PROJECT_PATH}}/staticfiles/;
         expires 30d;
         add_header Cache-Control "public, immutable";
     }
 
     # Media files
     location /media/ {
-        alias /var/www/coreofkeen.com/media/;
+        alias {{PROJECT_PATH}}/media/;
         expires 7d;
     }
 

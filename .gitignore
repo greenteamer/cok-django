@@ -29,3 +29,7 @@ Thumbs.db
 
 # Docker
 *.pid
+
+# Nginx generated configs
+nginx/coreofkeen.com.conf
+nginx/nginx.conf
