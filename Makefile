@@ -1,4 +1,4 @@
-.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic deploy-static deploy test clean dev-setup setup-nginx
+.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic fix-permissions deploy-static deploy test clean dev-setup setup-nginx
 
 # Build and start containers
 build:
@@ -44,11 +44,19 @@ createsuperuser:
 collectstatic:
 	docker-compose exec web python manage.py collectstatic --noinput
 
+# Fix file permissions for nginx (production only)
+fix-permissions:
+	@echo "Fixing file permissions for nginx..."
+	./scripts/fix-permissions.sh
+	@echo "✓ Permissions fixed!"
+
 # Deploy static files to Nginx (production only)
 # Note: Requires one-time setup (see docs/guides/deployment.md)
 deploy-static:
 	@echo "Collecting static files..."
 	docker-compose exec web python manage.py collectstatic --noinput
+	@echo "Fixing file permissions..."
+	./scripts/fix-permissions.sh
 	@echo "Reloading Nginx..."
 	sudo systemctl reload nginx
 	@echo "✓ Static files deployed successfully!"

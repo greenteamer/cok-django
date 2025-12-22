@@ -799,23 +799,71 @@ For production at scale, consider managed PostgreSQL (AWS RDS, DigitalOcean, etc
 
 ---
 
-### Static Files Not Loading (404)
+### Static Files Not Loading (403 Forbidden) ⚠️ COMMON ISSUE
 
-**Cause**: Nginx can't find or read static files
+**Cause**: Nginx (running as `www-data`) cannot read files created by Docker (created as `root`)
 
-**Solutions**:
-1. Deploy static files: `make deploy-static`
-2. Verify files exist: `ls staticfiles/`
-3. Check permissions: `chmod -R 755 staticfiles/`
-4. Verify Nginx config `alias` path points to your project directory
-5. Ensure Nginx can access your home directory: `chmod 755 ~`
+**This happens when you run**:
+```bash
+docker-compose exec web python manage.py collectstatic
+# ❌ Creates files as root, nginx can't read them!
+```
 
-**Quick fix**:
+**✅ SOLUTION (Automatic)**:
 ```bash
 make deploy-static
 ```
 
-This collects static files, sets permissions, and reloads Nginx.
+This command now automatically:
+1. Collects static files
+2. **Fixes ownership and permissions** for nginx
+3. Reloads nginx
+
+**Manual Fix** (if needed):
+```bash
+make fix-permissions
+# Or manually:
+sudo chown -R www-data:www-data staticfiles/ media/
+sudo chmod -R 755 staticfiles/ media/
+sudo systemctl reload nginx
+```
+
+**Verification**:
+```bash
+# Test static file access
+curl -I https://your-domain.com/static/admin/css/base.css
+# Should return: HTTP/2 200 (not 403!)
+
+# Check nginx error log
+sudo tail -f /var/log/nginx/error.log
+```
+
+**SELinux Systems** (if above doesn't help):
+```bash
+# Check if SELinux is blocking
+sudo tail -f /var/log/nginx/error.log | grep -i selinux
+
+# Set correct SELinux context
+sudo chcon -Rt httpd_sys_content_t staticfiles/
+sudo chcon -Rt httpd_sys_content_t media/
+
+# Or temporarily disable SELinux for testing
+sudo setenforce 0  # Temporary only!
+```
+
+**Quick Reference**: See `QUICKFIX-403.md` in project root for instant solutions.
+
+---
+
+### Static Files Not Loading (404)
+
+**Cause**: Nginx can't find static files (wrong path configuration)
+
+**Solutions**:
+1. Deploy static files: `make deploy-static`
+2. Verify files exist: `ls staticfiles/`
+3. Verify Nginx config `alias` path points to your project directory
+4. Ensure Nginx can access your home directory: `chmod 755 ~`
 
 **Check Nginx configuration**:
 ```bash
