@@ -246,13 +246,23 @@ sudo systemctl reload nginx
 **Step 3: Set permissions** (one-time setup):
 
 ```bash
-# Ensure Nginx can read files
+# Change ownership from root to current user
+# (staticfiles created by Docker belong to root)
+sudo chown -R $USER:$USER staticfiles/ 2>/dev/null || true
+sudo chown -R $USER:$USER media/ 2>/dev/null || true
+
+# Set read permissions for Nginx
 chmod -R 755 staticfiles/
 chmod -R 755 media/
 
 # Allow Nginx user to access your home directory
 chmod 755 ~
 ```
+
+**Why change ownership?**
+- Docker creates `staticfiles/` as root
+- Without changing ownership, you need sudo for every deploy
+- After changing ownership once, deploys work without sudo
 
 **Step 4: Configure passwordless sudo for nginx reload** (optional but recommended):
 
@@ -513,6 +523,11 @@ cat nginx/coreofkeen.com.conf
 sudo cp nginx/coreofkeen.com.conf /etc/nginx/sites-available/coreofkeen.com
 
 # 5. Set permissions on project directory
+# Change ownership from root (Docker) to current user
+sudo chown -R $USER:$USER staticfiles/ 2>/dev/null || true
+sudo chown -R $USER:$USER media/ 2>/dev/null || true
+
+# Set read permissions
 chmod 755 ~
 chmod -R 755 staticfiles/
 chmod -R 755 media/
@@ -558,9 +573,8 @@ This single command will:
 2. Rebuild with new code and dependencies
 3. Apply database migrations
 4. Collect static files (in project directory)
-5. Set correct permissions
-6. Reload Nginx
-7. Start containers
+5. Reload Nginx
+6. Start containers
 
 **Option 2: Manual step-by-step**
 
@@ -854,6 +868,31 @@ sudo systemctl reload nginx
    sudo mkswap /swapfile
    sudo swapon /swapfile
    ```
+
+---
+
+### Permission Denied on staticfiles/
+
+**Error**: `chmod: changing permissions of 'staticfiles/': Operation not permitted`
+
+**Cause**: Docker creates `staticfiles/` as root, normal user can't change permissions
+
+**Solution** (one-time fix):
+
+```bash
+# Change ownership to current user
+sudo chown -R $USER:$USER staticfiles/
+sudo chown -R $USER:$USER media/
+
+# Now set permissions (without sudo)
+chmod -R 755 staticfiles/
+chmod -R 755 media/
+
+# Test deploy
+make deploy-static
+```
+
+After this one-time fix, `make deploy-static` will work without sudo.
 
 ---
 

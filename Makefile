@@ -49,8 +49,6 @@ collectstatic:
 deploy-static:
 	@echo "Collecting static files..."
 	docker-compose exec web python manage.py collectstatic --noinput
-	@echo "Setting permissions..."
-	chmod -R 755 staticfiles/
 	@echo "Reloading Nginx..."
 	sudo systemctl reload nginx
 	@echo "✓ Static files deployed successfully!"
