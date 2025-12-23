@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "ckeditor_uploader",  # Image upload support for CKEditor
     "config",  # Our main config app
     "blog",  # Blog application
+    "resume",  # Resume/CV application
 ]
 
 MIDDLEWARE = [
@@ -246,6 +247,37 @@ UNFOLD = {
                         "title": "Comments",
                         "icon": "comment",
                         "link": "/admin/blog/comment/",
+                    },
+                ],
+            },
+            {
+                "title": "Resume",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Profile",
+                        "icon": "account_circle",
+                        "link": "/admin/resume/profile/",
+                    },
+                    {
+                        "title": "Experience",
+                        "icon": "work",
+                        "link": "/admin/resume/experience/",
+                    },
+                    {
+                        "title": "Skills",
+                        "icon": "code",
+                        "link": "/admin/resume/skill/",
+                    },
+                    {
+                        "title": "Certifications",
+                        "icon": "school",
+                        "link": "/admin/resume/certification/",
+                    },
+                    {
+                        "title": "Achievements",
+                        "icon": "emoji_events",
+                        "link": "/admin/resume/achievement/",
                     },
                 ],
             },

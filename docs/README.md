@@ -112,6 +112,9 @@ Read these documents to understand Django app responsibilities and interfaces.
 - 📄 [`modules/blog.md`](./modules/blog.md)
   Blog application: models, admin interface, and content management
 
+- 📄 [`modules/resume.md`](./modules/resume.md)
+  Resume/CV application: professional profile, experience, skills, certifications, and achievements
+
 ---
 
 ## 8. Security & Compliance
@@ -182,7 +185,7 @@ When evolving the API or architecture:
 
 ## Last Updated
 
-2025-12-22
+2025-12-23
 
 This file MUST be updated whenever:
 
