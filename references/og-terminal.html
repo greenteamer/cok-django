@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+
+      .card {
+        width: 1200px;
+        height: 630px;
+        background: #f8f9fa;
+        position: relative;
+        font-family: "Sora", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* Subtle dot pattern */
+      .dot-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+        background-size: 24px 24px;
+        opacity: 0.5;
+      }
+
+      /* Terminal window */
+      .terminal {
+        width: 900px;
+        background: #1e1e1e;
+        border-radius: 12px;
+        box-shadow:
+          0 25px 80px rgba(0, 0, 0, 0.25),
+          0 10px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+      }
+
+      .terminal-header {
+        background: #2d2d2d;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .terminal-btn {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .btn-red {
+        background: #ff5f57;
+      }
+      .btn-yellow {
+        background: #febc2e;
+      }
+      .btn-green {
+        background: #28c840;
+      }
+
+      .terminal-title {
+        flex: 1;
+        text-align: center;
+        color: #888;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        margin-right: 52px;
+      }
+
+      .terminal-body {
+        padding: 28px 32px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .prompt {
+        color: #6bdf6b;
+      }
+
+      .command {
+        color: #e4e4e4;
+      }
+
+      .flag {
+        color: #79b8ff;
+      }
+
+      .file {
+        color: #ffab70;
+      }
+
+      .output {
+        color: #888;
+        margin-top: 12px;
+        padding-left: 0;
+      }
+
+      .output-line {
+        display: block;
+        margin: 4px 0;
+      }
+
+      .success {
+        color: #6bdf6b;
+      }
+
+      .highlight {
+        color: #79b8ff;
+      }
+
+      .dim {
+        color: #666;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 18px;
+        background: #6bdf6b;
+        margin-left: 4px;
+        animation: blink 1s infinite;
+        vertical-align: middle;
+      }
+
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Title section */
+      .title-section {
+        position: absolute;
+        bottom: 60px;
+        left: 80px;
+        right: 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        z-index: 2;
+      }
+
+      .title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+      }
+
+      .title span {
+        color: #28c840;
+      }
+
+      .meta {
+        font-size: 13px;
+        color: #666;
+        font-family: "JetBrains Mono", monospace;
+        text-align: right;
+      }
+
+      .meta strong {
+        color: #1a1a1a;
+      }
+
+      /* Decorative corner elements */
+      .corner-tl,
+      .corner-br {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border: 3px solid #28c840;
+        opacity: 0.15;
+      }
+
+      .corner-tl {
+        top: 40px;
+        left: 60px;
+        border-right: none;
+        border-bottom: none;
+      }
+
+      .corner-br {
+        bottom: 40px;
+        right: 60px;
+        border-left: none;
+        border-top: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="dot-bg"></div>
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-btn btn-red"></div>
+          <div class="terminal-btn btn-yellow"></div>
+          <div class="terminal-btn btn-green"></div>
+          <div class="terminal-title">~/stationeers-compiler</div>
+        </div>
+        <div class="terminal-body">
+          <div>
+            <span class="prompt">❯</span>
+            <span class="command"> rescript-ic10 compile</span>
+            <span class="file"> furnace.res</span>
+          </div>
+          <div class="output">
+            <span class="output-line"
+              ><span class="dim">[1/4]</span> Lexing
+              <span class="highlight">→</span> 847 tokens</span
+            >
+            <span class="output-line"
+              ><span class="dim">[2/4]</span> Parsing
+              <span class="highlight">→</span> AST built</span
+            >
+            <span class="output-line"
+              ><span class="dim">[3/4]</span> Optimizing
+              <span class="highlight">→</span> 7 passes</span
+            >
+            <span class="output-line"
+              ><span class="dim">[4/4]</span> Generating
+              <span class="highlight">→</span> IC10 assembly</span
+            >
+            <span class="output-line" style="margin-top: 12px">
+              <span class="success">✓</span> Compiled to
+              <span class="file">furnace.ic10</span>
+              <span class="dim">(42 lines, 12 registers)</span>
+            </span>
+          </div>
+          <div style="margin-top: 16px">
+            <span class="prompt">❯</span><span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="title-section">
+        <div class="title">
+          Why I Built a <span>Compiler</span> for a Space Game
+        </div>
+        <div class="meta">
+          Part 1/8<br />
+          <strong>Compiler Series</strong>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
