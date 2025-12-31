@@ -151,6 +151,50 @@ The `blog` Django app provides complete blogging functionality including posts, 
 
 ---
 
+## Views
+
+### post_detail
+
+**Purpose**: Display a single published blog post
+
+**Location**: `blog/views.py:9`
+
+**URL Pattern**: `/blog/<slug>/` (name: `post_detail`)
+
+**Template**: `templates/blog/post_detail.html`
+
+**Parameters**:
+- `slug` (str): Post slug from URL
+
+**Query Logic**:
+- Fetches post by slug AND status='published' (404 if not found or draft)
+- Retrieves next and previous published posts using `get_next_post()` and `get_previous_post()`
+
+**Context Variables**:
+- `post`: The Post instance
+- `next_post`: Next published post (or None)
+- `previous_post`: Previous published post (or None)
+
+**Design**:
+- Only published posts are accessible
+- Draft posts return 404 to prevent unauthorized access
+- Post navigation allows readers to browse chronologically
+
+**Template Features**:
+- Hero section with post title, category badge, author, date, and tags
+- Featured image display (if available)
+- Full post content with rich text formatting (CKEditor output)
+- Previous/Next post navigation
+- Back to all posts link
+- Responsive design matching home page style
+
+**SEO**:
+- Uses `post.meta_description` for page description
+- Includes structured post metadata (author, date, category)
+- Semantic HTML for better search indexing
+
+---
+
 ## Admin Interface
 
 All models use Unfold admin theme for enhanced UI.
@@ -668,24 +712,39 @@ Potential additions:
 
 ---
 
-## API Endpoints
+## URL Endpoints
 
-**None currently implemented.**
+### Implemented
 
-Future considerations:
+**Post Detail View**:
+```
+/blog/<slug>/                  # Post detail page (public)
+```
+
+**URL Configuration**: `config/urls.py:27`
+
+**Example**: `/blog/my-first-post/`
+
+**Access Control**: Only published posts are accessible (drafts return 404)
+
+**Integration**: Home page (`templates/home.html`) links to post detail pages via `post.get_absolute_url()`
+
+**URL Structure Rationale**:
+- `/blog/<slug>/` - Simple, clean URLs for individual posts
+- Reserved short paths for future features: `category`, `tag`, `archive`, `author`
+- SEO-friendly: shorter URLs perform better
+- Follows common blog conventions (WordPress, Ghost, Medium, etc.)
+
+### Future Endpoints
+
+Not yet implemented:
+- `/blog/` - Post list page
+- `/blog/category/<slug>/` - Category posts
+- `/blog/tag/<slug>/` - Tag posts
+- `/blog/archive/<year>/` or `/blog/<year>/<month>/` - Date-based archives
+- `/blog/author/<username>/` - Author's posts
+- `/blog/<slug>/comment/` - Comment submission endpoint (POST)
 - REST API via Django REST Framework
-- Public blog frontend views
-- Comment submission endpoint
-- Post search/filter API
-
-Suggested URL structure:
-```
-/blog/                          # Post list
-/blog/post/<slug>/             # Post detail
-/blog/category/<slug>/         # Category posts
-/blog/tag/<slug>/              # Tag posts
-/blog/post/<slug>/comment/     # Submit comment
-```
 
 ---
 
@@ -724,4 +783,4 @@ Suggested URL structure:
 
 ---
 
-**Last Updated**: 2025-12-22
+**Last Updated**: 2025-12-31

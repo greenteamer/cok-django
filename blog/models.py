@@ -236,7 +236,7 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return f"/blog/post/{self.slug}/"
+        return f"/blog/{self.slug}/"
 
     def save(self, *args, **kwargs):
         # Auto-generate slug from title if not provided

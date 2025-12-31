@@ -466,6 +466,12 @@ body {
     gap: var(--spacing-md);
 }
 
+.post-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .post-card {
     background-color: var(--color-bg-secondary);
     border-radius: var(--border-radius);

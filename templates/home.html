@@ -157,18 +157,20 @@
         <div class="posts-grid">
             {% if recent_posts %}
                 {% for post in recent_posts %}
-                <article class="post-card">
-                    {% if post.featured_image %}
-                    <div class="post-image">
-                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
-                    </div>
-                    {% endif %}
-                    <div class="post-content">
-                        <div class="post-date">{{ post.published_at|date:"M d, Y" }}</div>
-                        <h3 class="post-title">{{ post.title }}</h3>
-                        <p class="post-excerpt">{{ post.excerpt }}</p>
-                    </div>
-                </article>
+                <a href="{{ post.get_absolute_url }}" class="post-card-link">
+                    <article class="post-card">
+                        {% if post.featured_image %}
+                        <div class="post-image">
+                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                        </div>
+                        {% endif %}
+                        <div class="post-content">
+                            <div class="post-date">{{ post.published_at|date:"M d, Y" }}</div>
+                            <h3 class="post-title">{{ post.title }}</h3>
+                            <p class="post-excerpt">{{ post.excerpt }}</p>
+                        </div>
+                    </article>
+                </a>
                 {% endfor %}
             {% else %}
                 <article class="post-card">
