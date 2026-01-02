@@ -1,0 +1,10 @@
+/**
+ * Base Section Styles
+ *
+ * Common styling for all <section> elements.
+ * Provides consistent vertical spacing across the site.
+ */
+
+section {
+  padding: var(--spacing-xl) 0;
+}

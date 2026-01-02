@@ -1,0 +1,44 @@
+/**
+ * Design Tokens (CSS Custom Properties)
+ *
+ * These variables define the design system for the entire application.
+ * Think of this as your theme configuration file.
+ */
+
+:root {
+  /* Text Colors */
+  --color-text-primary: #0a0a0a;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+
+  /* Background Colors */
+  --color-bg-primary: #fafafa;
+  --color-bg-secondary: #ffffff;
+  --color-bg-card: #f5f5f5;
+
+  /* Border & Accent Colors */
+  --color-border: #e5e5e5;
+  --color-accent: #0a0a0a;
+
+  /* Semantic Colors */
+  --color-green: #10b981;
+  --color-blue: #6b9af5;
+  --color-orange: #fb923c;
+  --color-purple: #a78bfa;
+
+  /* Spacing Scale */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 6rem;
+
+  /* Border Radius */
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+}

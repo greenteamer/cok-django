@@ -1,0 +1,55 @@
+/**
+ * SectionHeader Component
+ *
+ * Section header with title, description, and optional action link.
+ * Usage:
+ *   <div class="SectionHeader">
+ *     <div>
+ *       <h2 class="SectionHeader__title">Title</h2>
+ *       <p class="SectionHeader__description">Description</p>
+ *     </div>
+ *     <a class="SectionHeader__link">View all →</a>
+ *   </div>
+ */
+
+.SectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Main title */
+.SectionHeader__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Subtitle/description */
+.SectionHeader__subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Description text */
+.SectionHeader__description {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+/* Action link with arrow */
+.SectionHeader__link {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.SectionHeader__link:hover {
+  transform: translateX(4px);
+}

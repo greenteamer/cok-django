@@ -1,0 +1,77 @@
+/**
+ * Timeline Section
+ *
+ * Vertical timeline for experience/history.
+ * Usage:
+ *   <div class="Timeline">
+ *     <div class="Timeline__item">...</div>
+ *   </div>
+ */
+
+.Timeline {
+  max-width: 800px;
+  margin: var(--spacing-lg) 0;
+}
+
+/* Individual timeline item */
+.Timeline__item {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+}
+
+/* Connecting line between items */
+.Timeline__item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 30px;
+  width: 2px;
+  height: calc(100% + var(--spacing-lg));
+  background-color: var(--color-border);
+}
+
+/* Timeline dot indicator */
+.Timeline__dot {
+  width: 14px;
+  height: 14px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+  border: 3px solid var(--color-bg-secondary);
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+/* Timeline content */
+.Timeline__content {
+  flex: 1;
+}
+
+/* Position/title */
+.Timeline__position {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+/* Company name */
+.Timeline__company {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Date range */
+.Timeline__date {
+  color: var(--color-text-tertiary);
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Description */
+.Timeline__description {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}

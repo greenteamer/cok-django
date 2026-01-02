@@ -8,7 +8,9 @@ Before you begin, ensure you have:
 
 - **Docker** 20.10+ installed
 - **Docker Compose** 2.0+ installed (or docker-compose plugin)
+- **Node.js** 16+ (for CSS build system)
 - **Git** (to clone the repository)
+- **Make** (usually pre-installed on macOS/Linux)
 - **Code editor** (VS Code, PyCharm, etc.)
 
 ### Installing Docker
@@ -43,6 +45,29 @@ sudo apt install docker-compose-plugin -y
 
 Download and install Docker Desktop from https://www.docker.com/products/docker-desktop
 
+### Installing Node.js
+
+#### macOS
+
+```bash
+# Install via Homebrew
+brew install node
+
+# Or download from https://nodejs.org/
+```
+
+#### Linux (Ubuntu/Debian)
+
+```bash
+# Install Node.js 18.x LTS
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+#### Windows
+
+Download and install from https://nodejs.org/
+
 ### Verify Installation
 
 ```bash
@@ -51,6 +76,15 @@ docker --version
 
 docker-compose --version
 # Docker Compose version 2.0.0 or higher
+
+node --version
+# Node.js version 16.0.0 or higher
+
+npm --version
+# npm version 8.0.0 or higher
+
+make --version
+# GNU Make 3.81 or higher
 ```
 
 ---
@@ -77,7 +111,9 @@ The default `.env` values are suitable for development. No changes needed.
 make setup
 ```
 
-This command:
+This command automatically:
+- Installs Node.js dependencies
+- Builds CSS from component files
 - Builds Docker images
 - Starts database and web containers
 - Runs database migrations
@@ -85,9 +121,11 @@ This command:
 
 **Alternative** (manual steps):
 ```bash
-make build      # Build and start containers
-make migrate    # Run database migrations
-make createsuperuser  # Create admin user
+make css-install        # Install frontend dependencies
+make css-build          # Build CSS
+make build              # Build and start containers
+make migrate            # Run database migrations
+make createsuperuser    # Create admin user
 ```
 
 ### 4. Access the Application
@@ -130,6 +168,11 @@ See `config/environment.md` for detailed explanation of each variable.
 ### Step 2: Build Docker Images
 
 ```bash
+make build
+```
+
+Or directly:
+```bash
 docker-compose up --build -d
 ```
 
@@ -157,6 +200,11 @@ docker-compose up --build -d
 
 The `entrypoint.sh` script waits for PostgreSQL to be ready:
 
+```bash
+make logs
+```
+
+Or directly:
 ```bash
 docker-compose logs web
 ```
@@ -267,7 +315,7 @@ make restart
 # View logs (follow mode)
 make logs
 
-# View logs for specific service
+# View logs for specific service (requires direct docker-compose)
 docker-compose logs -f web
 docker-compose logs -f db
 ```
@@ -408,9 +456,71 @@ This copies static files from Django apps to `staticfiles/` directory.
 
 ---
 
+### Frontend/CSS Development
+
+This project uses a component-based CSS architecture with PostCSS build system.
+
+#### Install Dependencies
+
+If not already installed during setup:
+
+```bash
+make css-install
+```
+
+#### Build CSS
+
+One-time build:
+
+```bash
+make css-build
+```
+
+#### Development with Watch Mode
+
+**Recommended for active CSS development:**
+
+```bash
+# Terminal 1: CSS watch mode (auto-rebuild on changes)
+make css-watch
+
+# Terminal 2: Django server
+make up
+make logs
+```
+
+The CSS watch mode monitors all `.css` files in `static/css/` and automatically rebuilds when you save changes.
+
+#### Production Build
+
+For deployment (minified CSS):
+
+```bash
+make css-prod
+```
+
+#### File Structure
+
+```
+static/css/
+├── main.css              # Entry point
+├── base/                 # Foundation (reset, variables)
+├── layout/               # Layout components (Navbar, Footer)
+├── components/           # Reusable UI components
+├── sections/             # Page sections
+├── pages/                # Page-specific styles
+└── dist/                 # Built CSS (generated, gitignored)
+```
+
+**Documentation**: See [`docs/frontend/css-architecture.md`](../frontend/css-architecture.md) for detailed documentation on CSS architecture, BEM naming, and component patterns.
+
+---
+
 ## Development Workflow
 
-Typical development workflow:
+### Backend Development (Django/Python)
+
+Typical workflow:
 
 1. **Start containers**: `make up`
 2. **Make code changes** in your editor
@@ -419,6 +529,32 @@ Typical development workflow:
 5. **Run migrations** if models changed: `make makemigrations && make migrate`
 6. **Check logs** if errors: `make logs`
 7. **Stop containers** when done: `make down`
+
+### Frontend Development (CSS)
+
+When working on styles:
+
+1. **Start CSS watch mode** (Terminal 1): `make css-watch`
+2. **Start containers** (Terminal 2): `make up`
+3. **Edit CSS files** in `static/css/`
+4. **Changes auto-rebuild** (watch mode detects changes)
+5. **Refresh browser** to see changes
+6. **Stop watch mode** when done: `Ctrl+C`
+
+### Full-Stack Development
+
+When working on both backend and frontend:
+
+```bash
+# Terminal 1: CSS watch
+make css-watch
+
+# Terminal 2: Django logs
+make up
+make logs
+```
+
+All changes (Python and CSS) auto-reload.
 
 ---
 

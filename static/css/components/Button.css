@@ -1,0 +1,59 @@
+/**
+ * Button Component
+ *
+ * Reusable button with multiple variants.
+ * Usage:
+ *   <a class="Button Button--primary">Primary</a>
+ *   <a class="Button Button--secondary">Secondary</a>
+ *   <a class="Button Button--cta">CTA</a>
+ */
+
+.Button {
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Variant: Primary */
+.Button--primary {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.Button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Variant: Secondary */
+.Button--secondary {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.Button--secondary:hover {
+  background-color: var(--color-bg-card);
+}
+
+/* Variant: CTA (Call-to-Action) */
+.Button--cta {
+  padding: 0.5rem 1.25rem;
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border);
+}
+
+.Button--cta:hover {
+  background-color: var(--color-accent);
+  color: white;
+  transform: translateX(2px);
+}

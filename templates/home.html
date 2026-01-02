@@ -3,25 +3,25 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <div class="hero-text">
-                <div class="status-badge">
-                    <span class="status-dot"></span>
+<section class="Hero">
+    <div class="Container">
+        <div class="Hero__content">
+            <div>
+                <div class="StatusBadge">
+                    <span class="StatusBadge__dot"></span>
                     Available for new projects
                 </div>
-                <h1 class="hero-title">
+                <h1 class="Hero__title">
                     Crafting fluid
-                    <span class="hero-title-fade">mobile<br>experiences</span>
+                    <span class="Hero__titleFade">mobile<br>experiences</span>
                 </h1>
-                <p class="hero-description">
+                <p class="Hero__description">
                     Specialized in React Native and Expo. I build
                     performant, cross-platform applications with pixel-perfect design and native-like feel.
                 </p>
-                <div class="hero-cta">
-                    <a href="#work" class="btn btn-primary">View Projects</a>
-                    <a href="#" class="btn btn-secondary">
+                <div class="Hero__cta">
+                    <a href="#work" class="Button Button--primary">View Projects</a>
+                    <a href="#" class="Button Button--secondary">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"></path>
                         </svg>
@@ -29,21 +29,15 @@
                     </a>
                 </div>
             </div>
-            <div class="hero-image">
-                <div class="phone-mockup">
-                    <div class="phone-screen">
-                        <div class="phone-notch"></div>
-                        <div class="phone-content">
-                            <div class="card card-blue"></div>
-                            <div class="card card-orange">
-                                <span class="card-icon">📊</span>
-                            </div>
-                            <div class="card card-purple">
-                                <span class="card-icon">&lt;/&gt;</span>
-                            </div>
-                            <div class="card card-green">
-                                <span class="card-icon">📱</span>
-                            </div>
+            <div class="Hero__image">
+                <div class="PhoneMockup">
+                    <div class="PhoneMockup__screen">
+                        <div class="PhoneMockup__notch"></div>
+                        <div class="PhoneMockup__content">
+                            <div class="Card Card--blue"></div>
+                            <div class="Card Card--orange">📊</div>
+                            <div class="Card Card--purple">&lt;/&gt;</div>
+                            <div class="Card Card--green">📱</div>
                         </div>
                     </div>
                 </div>
@@ -53,41 +47,41 @@
 </section>
 
 <!-- Technologies Section -->
-<section id="stack" class="technologies">
-    <div class="container">
-        <h3 class="section-subtitle">TECHNOLOGIES I USE</h3>
-        <div class="tech-grid">
+<section id="stack" class="TechGrid">
+    <div class="Container">
+        <h3 class="SectionHeader__subtitle">TECHNOLOGIES I USE</h3>
+        <div class="TechGrid__grid">
             {% if skills %}
                 {% for skill in skills %}
-                <div class="tech-item">
-                    <div class="tech-icon">{{ skill.name|slice:":1" }}</div>
-                    <div class="tech-name">{{ skill.name }}</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">{{ skill.name|slice:":1" }}</div>
+                    <div class="TechGrid__name">{{ skill.name }}</div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="tech-item">
-                    <div class="tech-icon">⚛</div>
-                    <div class="tech-name">React Native</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">⚛</div>
+                    <div class="TechGrid__name">React Native</div>
                 </div>
-                <div class="tech-item">
-                    <div class="tech-icon">TS</div>
-                    <div class="tech-name">TypeScript</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">TS</div>
+                    <div class="TechGrid__name">TypeScript</div>
                 </div>
-                <div class="tech-item">
-                    <div class="tech-icon">△</div>
-                    <div class="tech-name">Expo</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">△</div>
+                    <div class="TechGrid__name">Expo</div>
                 </div>
-                <div class="tech-item">
-                    <div class="tech-icon">✨</div>
-                    <div class="tech-name">Reanimated</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">✨</div>
+                    <div class="TechGrid__name">Reanimated</div>
                 </div>
-                <div class="tech-item">
-                    <div class="tech-icon">🌬</div>
-                    <div class="tech-name">NativeWind</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">🌬</div>
+                    <div class="TechGrid__name">NativeWind</div>
                 </div>
-                <div class="tech-item">
-                    <div class="tech-icon">🔥</div>
-                    <div class="tech-name">Firebase</div>
+                <div class="TechGrid__item">
+                    <div class="TechGrid__icon">🔥</div>
+                    <div class="TechGrid__name">Firebase</div>
                 </div>
             {% endif %}
         </div>
@@ -95,52 +89,52 @@
 </section>
 
 <!-- Featured Projects Section -->
-<section id="work" class="featured-projects">
-    <div class="container">
-        <div class="section-header">
+<section id="work" class="ProjectCard">
+    <div class="Container">
+        <div class="SectionHeader">
             <div>
-                <h2 class="section-title">Featured Projects</h2>
-                <p class="section-description">A selection of mobile applications built for performance and user experience.</p>
+                <h2 class="SectionHeader__title">Featured Projects</h2>
+                <p class="SectionHeader__description">A selection of mobile applications built for performance and user experience.</p>
             </div>
-            <a href="#" class="link-arrow">View all archives →</a>
+            <a href="#" class="SectionHeader__link">View all archives →</a>
         </div>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-image">
-                    <div class="project-mockup project-mockup-1"></div>
+        <div class="ProjectCard__grid">
+            <div class="ProjectCard__card">
+                <div class="ProjectCard__image">
+                    <div class="ProjectCard__mockup ProjectCard__mockup--variant1"></div>
                 </div>
-                <div class="project-content">
-                    <div class="project-header">
+                <div class="ProjectCard__content">
+                    <div class="ProjectCard__header">
                         <h3>FinTrack Pro</h3>
-                        <div class="project-tags">
-                            <span class="tag">React Native</span>
-                            <span class="tag">Skia</span>
+                        <div class="ProjectCard__tags">
+                            <span class="Tag">React Native</span>
+                            <span class="Tag">Skia</span>
                         </div>
                     </div>
-                    <p class="project-description">
+                    <p class="ProjectCard__description">
                         A high-performance financial tracking application featuring
                         real-time charts using Skia and offline-first architecture via…
                     </p>
-                    <a href="#" class="project-link">View Case Study →</a>
+                    <a href="#" class="ProjectCard__link">View Case Study →</a>
                 </div>
             </div>
-            <div class="project-card">
-                <div class="project-image">
-                    <div class="project-mockup project-mockup-2"></div>
+            <div class="ProjectCard__card">
+                <div class="ProjectCard__image">
+                    <div class="ProjectCard__mockup ProjectCard__mockup--variant2"></div>
                 </div>
-                <div class="project-content">
-                    <div class="project-header">
+                <div class="ProjectCard__content">
+                    <div class="ProjectCard__header">
                         <h3>Lens Social</h3>
-                        <div class="project-tags">
-                            <span class="tag">Expo</span>
-                            <span class="tag">GraphQL</span>
+                        <div class="ProjectCard__tags">
+                            <span class="Tag">Expo</span>
+                            <span class="Tag">GraphQL</span>
                         </div>
                     </div>
-                    <p class="project-description">
+                    <p class="ProjectCard__description">
                         Social media platform for photographers. Implements complex
                         gestures using Reanimated and seamless media caching.
                     </p>
-                    <a href="#" class="project-link">App Store →</a>
+                    <a href="#" class="ProjectCard__link">App Store →</a>
                 </div>
             </div>
         </div>
@@ -148,45 +142,45 @@
 </section>
 
 <!-- Writing Section -->
-<section id="writing" class="writing">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Writing</h2>
-            <a href="#" class="link-arrow">View all posts →</a>
+<section id="writing">
+    <div class="Container">
+        <div class="SectionHeader">
+            <h2 class="SectionHeader__title">Writing</h2>
+            <a href="/blog/" class="SectionHeader__link">View all posts →</a>
         </div>
-        <div class="posts-grid">
+        <div class="PostCard__grid">
             {% if recent_posts %}
                 {% for post in recent_posts %}
-                <a href="{{ post.get_absolute_url }}" class="post-card-link">
-                    <article class="post-card">
+                <a href="{{ post.get_absolute_url }}" class="PostCard__link">
+                    <article class="PostCard">
                         {% if post.featured_image %}
-                        <div class="post-image">
+                        <div class="PostCard__image">
                             <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
                         </div>
                         {% endif %}
-                        <div class="post-content">
-                            <div class="post-date">{{ post.published_at|date:"M d, Y" }}</div>
-                            <h3 class="post-title">{{ post.title }}</h3>
-                            <p class="post-excerpt">{{ post.excerpt }}</p>
+                        <div class="PostCard__content">
+                            <div class="PostCard__date">{{ post.published_at|date:"M d, Y" }}</div>
+                            <h3 class="PostCard__title">{{ post.title }}</h3>
+                            <p class="PostCard__excerpt">{{ post.excerpt }}</p>
                         </div>
                     </article>
                 </a>
                 {% endfor %}
             {% else %}
-                <article class="post-card">
-                    <div class="post-date">Apr 12, 2024</div>
-                    <h3 class="post-title">The State of React Native in 2024</h3>
-                    <p class="post-excerpt">A deep dive into the New Architecture, Bridgingless Mode, and what it means for the future of mobile development.</p>
+                <article class="PostCard">
+                    <div class="PostCard__date">Apr 12, 2024</div>
+                    <h3 class="PostCard__title">The State of React Native in 2024</h3>
+                    <p class="PostCard__excerpt">A deep dive into the New Architecture, Bridgingless Mode, and what it means for the future of mobile development.</p>
                 </article>
-                <article class="post-card">
-                    <div class="post-date">Mar 28, 2024</div>
-                    <h3 class="post-title">Mastering FlashList Performance</h3>
-                    <p class="post-excerpt">Techniques for optimizing large lists in React Native. How to recycle views effectively and avoid blank spaces.</p>
+                <article class="PostCard">
+                    <div class="PostCard__date">Mar 28, 2024</div>
+                    <h3 class="PostCard__title">Mastering FlashList Performance</h3>
+                    <p class="PostCard__excerpt">Techniques for optimizing large lists in React Native. How to recycle views effectively and avoid blank spaces.</p>
                 </article>
-                <article class="post-card">
-                    <div class="post-date">Feb 15, 2024</div>
-                    <h3 class="post-title">Expo Router: A First Look</h3>
-                    <p class="post-excerpt">Moving from React Navigation to file-based routing. Pros, cons, and migration strategies for existing apps.</p>
+                <article class="PostCard">
+                    <div class="PostCard__date">Feb 15, 2024</div>
+                    <h3 class="PostCard__title">Expo Router: A First Look</h3>
+                    <p class="PostCard__excerpt">Moving from React Navigation to file-based routing. Pros, cons, and migration strategies for existing apps.</p>
                 </article>
             {% endif %}
         </div>
@@ -194,44 +188,44 @@
 </section>
 
 <!-- Experience Section -->
-<section id="about" class="experience">
-    <div class="container">
-        <h2 class="section-title">Experience</h2>
-        <div class="timeline">
+<section id="about" style="padding: var(--spacing-xl) 0; background-color: var(--color-bg-secondary);">
+    <div class="Container">
+        <h2 class="SectionHeader__title">Experience</h2>
+        <div class="Timeline">
             {% if experiences %}
                 {% for exp in experiences %}
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3 class="timeline-position">{{ exp.position }}</h3>
-                        <div class="timeline-company">at {{ exp.company }}</div>
-                        <div class="timeline-date">
+                <div class="Timeline__item">
+                    <div class="Timeline__dot"></div>
+                    <div class="Timeline__content">
+                        <h3 class="Timeline__position">{{ exp.position }}</h3>
+                        <div class="Timeline__company">at {{ exp.company }}</div>
+                        <div class="Timeline__date">
                             {{ exp.start_date|date:"Y" }} — {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"Y" }}{% endif %}
                         </div>
-                        <div class="timeline-description">{{ exp.description|striptags|truncatewords:30 }}</div>
+                        <div class="Timeline__description">{{ exp.description|striptags|truncatewords:30 }}</div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3 class="timeline-position">Senior Mobile Engineer</h3>
-                        <div class="timeline-company">at TechCorp</div>
-                        <div class="timeline-date">2021 — Present</div>
-                        <div class="timeline-description">
+                <div class="Timeline__item">
+                    <div class="Timeline__dot"></div>
+                    <div class="Timeline__content">
+                        <h3 class="Timeline__position">Senior Mobile Engineer</h3>
+                        <div class="Timeline__company">at TechCorp</div>
+                        <div class="Timeline__date">2021 — Present</div>
+                        <div class="Timeline__description">
                             Leading the React Native migration. Reduced app bundle size by 35% and improved TTI
                             by 40%. Mentoring 3 junior developers.
                         </div>
                     </div>
                 </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3 class="timeline-position">React Native Developer</h3>
-                        <div class="timeline-company">at AppStudio</div>
-                        <div class="timeline-date">2019 — 2021</div>
-                        <div class="timeline-description">
+                <div class="Timeline__item">
+                    <div class="Timeline__dot"></div>
+                    <div class="Timeline__content">
+                        <h3 class="Timeline__position">React Native Developer</h3>
+                        <div class="Timeline__company">at AppStudio</div>
+                        <div class="Timeline__date">2019 — 2021</div>
+                        <div class="Timeline__description">
                             Developed and shipped 5+ apps to App Store and Play Store. Implemented CI/CD
                             pipelines using Bitrise and Fastlane.
                         </div>

@@ -7,24 +7,24 @@
 
 {% block content %}
 <!-- Post Hero Section -->
-<section class="post-hero">
-    <div class="container">
-        <div class="post-hero-content">
-            <div class="status-badge">
-                <span class="status-dot"></span>
+<section class="BlogDetail__hero">
+    <div class="Container">
+        <div class="BlogDetail__heroContent">
+            <div class="StatusBadge">
+                <span class="StatusBadge__dot"></span>
                 {{ post.category.name|default:"Blog Post" }}
             </div>
-            <h1 class="hero-title">{{ post.title }}</h1>
+            <h1 class="Hero__title">{{ post.title }}</h1>
 
-            <div class="post-meta">
-                <div class="post-author">
+            <div class="BlogDetail__meta">
+                <div class="BlogDetail__author">
                     By {{ post.author.get_full_name|default:post.author.username }}
                 </div>
-                <div class="post-date">{{ post.published_at|date:"F d, Y" }}</div>
+                <div class="PostCard__date">{{ post.published_at|date:"F d, Y" }}</div>
                 {% if post.tags.exists %}
-                <div class="post-tags">
+                <div class="BlogDetail__tags">
                     {% for tag in post.tags.all %}
-                        <span class="tag">{{ tag.name }}</span>
+                        <span class="Tag">{{ tag.name }}</span>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -35,9 +35,9 @@
 
 {% if post.featured_image %}
 <!-- Featured Image Section -->
-<section class="post-featured-image">
-    <div class="container">
-        <div class="featured-image-wrapper">
+<section class="BlogDetail__featuredImage">
+    <div class="Container">
+        <div class="BlogDetail__imageWrapper">
             <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
         </div>
     </div>
@@ -45,10 +45,10 @@
 {% endif %}
 
 <!-- Post Content Section -->
-<section class="post-content-section">
-    <div class="container">
-        <article class="post-article">
-            <div class="post-body">
+<section class="BlogDetail__contentSection">
+    <div class="Container">
+        <article class="BlogDetail__article">
+            <div class="BlogDetail__body">
                 {{ post.content|safe }}
             </div>
         </article>
@@ -57,25 +57,25 @@
 
 <!-- Post Navigation -->
 {% if previous_post or next_post %}
-<section class="post-navigation">
-    <div class="container">
-        <div class="post-nav-wrapper">
+<section class="BlogDetail__navigation">
+    <div class="Container">
+        <div class="BlogDetail__navWrapper">
             {% if previous_post %}
-            <a href="{{ previous_post.get_absolute_url }}" class="post-nav-link post-nav-prev">
-                <div class="post-nav-label">← Previous Post</div>
-                <div class="post-nav-title">{{ previous_post.title }}</div>
+            <a href="{{ previous_post.get_absolute_url }}" class="BlogDetail__navLink BlogDetail__navLink--prev">
+                <div class="BlogDetail__navLabel">← Previous Post</div>
+                <div class="BlogDetail__navTitle">{{ previous_post.title }}</div>
             </a>
             {% else %}
-            <div class="post-nav-spacer"></div>
+            <div></div>
             {% endif %}
 
             {% if next_post %}
-            <a href="{{ next_post.get_absolute_url }}" class="post-nav-link post-nav-next">
-                <div class="post-nav-label">Next Post →</div>
-                <div class="post-nav-title">{{ next_post.title }}</div>
+            <a href="{{ next_post.get_absolute_url }}" class="BlogDetail__navLink BlogDetail__navLink--next">
+                <div class="BlogDetail__navLabel">Next Post →</div>
+                <div class="BlogDetail__navTitle">{{ next_post.title }}</div>
             </a>
             {% else %}
-            <div class="post-nav-spacer"></div>
+            <div></div>
             {% endif %}
         </div>
     </div>
@@ -83,232 +83,9 @@
 {% endif %}
 
 <!-- Back to All Posts -->
-<section class="back-to-posts">
-    <div class="container">
-        <a href="/#writing" class="link-arrow">← Back to all posts</a>
+<section class="BlogDetail__backToPosts">
+    <div class="Container">
+        <a href="/blog/" class="SectionHeader__link">← Back to all posts</a>
     </div>
 </section>
-
-<!-- Add some custom styles for post detail page -->
-<style>
-.post-hero {
-    padding: 8rem 0 3rem;
-    background: linear-gradient(180deg, rgba(99, 102, 241, 0.05) 0%, transparent 100%);
-}
-
-.post-hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.post-hero .hero-title {
-    font-size: 3rem;
-    line-height: 1.2;
-    margin: 1.5rem 0;
-}
-
-.post-meta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-    color: #64748b;
-    flex-wrap: wrap;
-}
-
-.post-author {
-    font-weight: 500;
-}
-
-.post-tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.post-featured-image {
-    padding: 2rem 0;
-}
-
-.featured-image-wrapper {
-    max-width: 1000px;
-    margin: 0 auto;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-}
-
-.featured-image-wrapper img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.post-content-section {
-    padding: 4rem 0;
-}
-
-.post-article {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.post-body {
-    font-size: 1.125rem;
-    line-height: 1.8;
-    color: #334155;
-}
-
-.post-body h2 {
-    font-size: 2rem;
-    margin-top: 3rem;
-    margin-bottom: 1rem;
-    color: #0f172a;
-}
-
-.post-body h3 {
-    font-size: 1.5rem;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #1e293b;
-}
-
-.post-body p {
-    margin-bottom: 1.5rem;
-}
-
-.post-body ul, .post-body ol {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
-}
-
-.post-body li {
-    margin-bottom: 0.5rem;
-}
-
-.post-body pre {
-    background: #1e293b;
-    color: #e2e8f0;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-    margin: 2rem 0;
-}
-
-.post-body code {
-    background: #f1f5f9;
-    color: #6366f1;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.9em;
-}
-
-.post-body pre code {
-    background: transparent;
-    color: inherit;
-    padding: 0;
-}
-
-.post-body blockquote {
-    border-left: 4px solid #6366f1;
-    padding-left: 1.5rem;
-    margin: 2rem 0;
-    color: #64748b;
-    font-style: italic;
-}
-
-.post-body img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 0.5rem;
-    margin: 2rem 0;
-}
-
-.post-navigation {
-    padding: 3rem 0;
-    border-top: 1px solid #e2e8f0;
-}
-
-.post-nav-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.post-nav-link {
-    display: block;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e2e8f0;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.post-nav-link:hover {
-    border-color: #6366f1;
-    background: rgba(99, 102, 241, 0.05);
-    transform: translateY(-2px);
-}
-
-.post-nav-prev {
-    text-align: left;
-}
-
-.post-nav-next {
-    text-align: right;
-}
-
-.post-nav-label {
-    font-size: 0.875rem;
-    color: #6366f1;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.post-nav-title {
-    font-size: 1.125rem;
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.post-nav-spacer {
-    /* Empty spacer for grid alignment */
-}
-
-.back-to-posts {
-    padding: 2rem 0 4rem;
-    text-align: center;
-}
-
-@media (max-width: 768px) {
-    .post-hero {
-        padding: 5rem 0 2rem;
-    }
-
-    .post-hero .hero-title {
-        font-size: 2rem;
-    }
-
-    .post-meta {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .post-nav-wrapper {
-        grid-template-columns: 1fr;
-    }
-
-    .post-nav-next {
-        text-align: left;
-    }
-
-    .post-body {
-        font-size: 1rem;
-    }
-}
-</style>
 {% endblock %}

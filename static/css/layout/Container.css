@@ -1,0 +1,12 @@
+/**
+ * Container Component
+ *
+ * Max-width container for centering page content.
+ * Used across all pages for consistent content width.
+ */
+
+.Container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}

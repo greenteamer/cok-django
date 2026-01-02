@@ -1,0 +1,11 @@
+/**
+ * CSS Reset
+ *
+ * Removes default browser styles for consistent cross-browser rendering.
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

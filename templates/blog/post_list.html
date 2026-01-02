@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}All Posts | Alex Dev{% endblock %}
+
+{% block description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
+
+{% block content %}
+<!-- Blog Header Section -->
+<section class="BlogList__header">
+    <div class="Container">
+        <div class="BlogList__headerContent">
+            <div class="StatusBadge">
+                <span class="StatusBadge__dot"></span>
+                Blog
+            </div>
+            <h1 class="Hero__title">Writing</h1>
+            <p class="Hero__description">
+                Thoughts on React Native, mobile development, performance optimization, and the latest web technologies.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Posts Grid Section -->
+<section class="BlogList__posts">
+    <div class="Container">
+        {% if posts %}
+            <div class="BlogList__grid">
+                {% for post in posts %}
+                <a href="{{ post.get_absolute_url }}" class="PostCard__link">
+                    <article class="PostCard">
+                        {% if post.featured_image %}
+                        <div class="PostCard__image">
+                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                        </div>
+                        {% endif %}
+                        <div class="PostCard__content">
+                            <div class="BlogList__metaRow">
+                                <div class="PostCard__date">{{ post.published_at|date:"M d, Y" }}</div>
+                                {% if post.category %}
+                                <div class="BlogList__category">{{ post.category.name }}</div>
+                                {% endif %}
+                            </div>
+                            <h3 class="PostCard__title">{{ post.title }}</h3>
+                            <p class="PostCard__excerpt">{{ post.excerpt }}</p>
+                            {% if post.tags.exists %}
+                            <div class="BlogList__tags">
+                                {% for tag in post.tags.all %}
+                                    <span class="Tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="BlogList__noPosts">
+                <p>No posts published yet. Check back soon!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

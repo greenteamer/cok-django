@@ -2,12 +2,30 @@
 Views for the blog app.
 
 URL Structure:
+- /blog/ - All posts list page
 - /blog/<slug>/ - Individual post detail page
 - Reserved paths: 'category', 'tag', 'archive', 'author' for future features
 """
 
 from django.shortcuts import render, get_object_or_404
 from .models import Post
+
+
+def post_list(request):
+    """
+    Blog post list view.
+
+    URL: /blog/
+
+    Displays all published posts ordered by published date.
+    """
+    posts = Post.objects.filter(status='published').order_by('-published_at')
+
+    context = {
+        'posts': posts,
+    }
+
+    return render(request, 'blog/post_list.html', context)
 
 
 def post_detail(request, slug):

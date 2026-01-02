@@ -1,4 +1,4 @@
-.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic fix-permissions deploy-static deploy test clean dev-setup setup-nginx
+.PHONY: build up down restart logs shell migrate makemigrations createsuperuser collectstatic fix-permissions deploy-static deploy test clean dev-setup setup-nginx css-install css-build css-watch css-prod
 
 # Build and start containers
 build:
@@ -70,11 +70,11 @@ clean:
 	docker-compose down -v
 
 # Initial setup (development)
-setup: build migrate createsuperuser
-	@echo "Setup complete! Access the app at http://localhost"
+setup: css-install css-build build migrate createsuperuser
+	@echo "Setup complete! Access the app at http://localhost:8000"
 
 # Full deployment (production)
-deploy: down build migrate deploy-static
+deploy: css-prod down build migrate deploy-static
 	@echo "✓ Deployment complete!"
 	@echo "  Check status: make status"
 	@echo "  View logs: make logs"
@@ -106,3 +106,31 @@ dev-setup:
 setup-nginx:
 	@echo "Generating Nginx configuration..."
 	./scripts/setup-nginx.sh
+
+# ============================================
+# Frontend/CSS Commands
+# ============================================
+
+# Install Node.js dependencies
+css-install:
+	@echo "Installing Node.js dependencies..."
+	npm install
+	@echo "✓ Dependencies installed!"
+
+# Build CSS (one-time)
+css-build:
+	@echo "Building CSS..."
+	npm run css:build
+	@echo "✓ CSS built successfully!"
+
+# Watch and rebuild CSS on changes (development)
+css-watch:
+	@echo "Starting CSS watch mode..."
+	@echo "Press Ctrl+C to stop"
+	npm run css:watch
+
+# Build production CSS (minified)
+css-prod:
+	@echo "Building production CSS..."
+	npm run css:prod
+	@echo "✓ Production CSS built successfully!"

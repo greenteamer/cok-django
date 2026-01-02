@@ -135,6 +135,15 @@ Read these documents to understand how the system is monitored.
 
 ---
 
+## 10. Frontend Architecture
+
+Read these documents to understand frontend organization and build process.
+
+- 📄 [`frontend/css-architecture.md`](./frontend/css-architecture.md)
+  Component-based CSS architecture, BEM naming, PostCSS build system, and development workflow
+
+---
+
 ## Documentation Ownership Rules
 
 - Each document has a single owner (team or module)

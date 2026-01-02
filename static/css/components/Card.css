@@ -1,0 +1,40 @@
+/**
+ * Card Component
+ *
+ * Generic card component with color variants.
+ * Used in phone mockup demonstration.
+ * Usage: <div class="Card Card--blue">...</div>
+ */
+
+.Card {
+  height: 80px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 1.5rem;
+}
+
+/* Variant: Blue */
+.Card--blue {
+  background: linear-gradient(135deg, #6b9af5 0%, #5b8ce5 100%);
+  height: 120px;
+}
+
+/* Variant: Orange */
+.Card--orange {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  color: var(--color-orange);
+}
+
+/* Variant: Purple */
+.Card--purple {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  color: var(--color-purple);
+}
+
+/* Variant: Green */
+.Card--green {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  color: var(--color-green);
+}

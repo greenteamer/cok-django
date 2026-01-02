@@ -1,0 +1,87 @@
+/**
+ * BlogList Page Styles
+ *
+ * Styles specific to blog posts listing page.
+ * Usage: Applied to templates/blog/post_list.html
+ */
+
+/* Blog Header */
+.BlogList__header {
+  padding: 8rem 0 3rem;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.05) 0%, transparent 100%);
+}
+
+.BlogList__headerContent {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.BlogList__header .Hero__title {
+  font-size: 3.5rem;
+  line-height: 1.2;
+  margin: 1.5rem 0;
+}
+
+/* Blog Posts Section */
+.BlogList__posts {
+  padding: 4rem 0;
+}
+
+.BlogList__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+/* Post Meta Row */
+.BlogList__metaRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Post Category Badge */
+.BlogList__category {
+  font-size: 0.8rem;
+  color: #6366f1;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  background-color: rgba(99, 102, 241, 0.1);
+  border-radius: 20px;
+}
+
+/* Post Tags */
+.BlogList__tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* No Posts Message */
+.BlogList__noPosts {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+}
+
+.BlogList__noPosts p {
+  font-size: 1.125rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .BlogList__header {
+    padding: 5rem 0 2rem;
+
+    .Hero__title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .BlogList__grid {
+    grid-template-columns: 1fr;
+  }
+}

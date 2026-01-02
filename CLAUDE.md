@@ -280,6 +280,43 @@ If forced to choose between:
 
 → choose correct documentation.
 
+## MAKEFILE AS COMMAND ENTRY POINT
+
+This project uses **Makefile as the SINGLE entry point** for all development and deployment commands.
+
+### Rules:
+
+1. **ALL commands MUST be accessible through Makefile**
+   - Docker commands → wrapped in Makefile targets
+   - Django commands → wrapped in Makefile targets
+   - Frontend/CSS commands → wrapped in Makefile targets
+   - Deployment commands → wrapped in Makefile targets
+
+2. **Direct tool invocation is DISCOURAGED**
+   - ❌ `docker-compose up -d` → ✅ `make up`
+   - ❌ `npm run css:build` → ✅ `make css-build`
+   - ❌ `python manage.py migrate` → ✅ `make migrate`
+
+3. **Documentation MUST use Makefile commands**
+   - All README.md examples → use `make` commands
+   - All docs/ examples → use `make` commands
+   - Quick start guides → use `make` commands
+
+4. **Rationale**:
+   - Consistency across local development and Docker environments
+   - Single source of truth for all operations
+   - Easier onboarding for new developers
+   - Works the same locally and on server
+
+### Exceptions:
+
+Direct tool usage is acceptable ONLY when:
+- Inside a container shell (`make shell`)
+- Debugging a specific tool
+- Documented as advanced usage
+
+---
+
 ## Design Notes
 
 Some design decisions may be discussed outside runtime documentation.

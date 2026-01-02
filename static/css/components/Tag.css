@@ -1,0 +1,15 @@
+/**
+ * Tag Component
+ *
+ * Small label/badge for categorization.
+ * Usage: <span class="Tag">React</span>
+ */
+
+.Tag {
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}

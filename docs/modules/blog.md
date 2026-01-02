@@ -153,11 +153,46 @@ The `blog` Django app provides complete blogging functionality including posts, 
 
 ## Views
 
+### post_list
+
+**Purpose**: Display all published blog posts
+
+**Location**: `blog/views.py:14`
+
+**URL Pattern**: `/blog/` (name: `post_list`)
+
+**Template**: `templates/blog/post_list.html`
+
+**Query Logic**:
+- Fetches all posts with status='published'
+- Orders by published_at descending (newest first)
+
+**Context Variables**:
+- `posts`: QuerySet of all published Post instances
+
+**Design**:
+- Only published posts are shown
+- No pagination implemented yet (future enhancement)
+- Grid layout matching home page Writing section
+
+**Template Features**:
+- Hero section with blog title and description
+- Responsive grid of post cards
+- Each card shows: featured image, date, category, title, excerpt, tags
+- Cards link to individual post detail pages
+- Empty state message if no posts exist
+
+**SEO**:
+- Generic blog description in meta tags
+- All posts indexed on single page (consider pagination for large blogs)
+
+---
+
 ### post_detail
 
 **Purpose**: Display a single published blog post
 
-**Location**: `blog/views.py:9`
+**Location**: `blog/views.py:31`
 
 **URL Pattern**: `/blog/<slug>/` (name: `post_detail`)
 
@@ -642,17 +677,21 @@ Future test coverage should include:
 Potential additions:
 
 1. ~~**Rich Text Editor**~~: ✅ **IMPLEMENTED** - CKEditor with image upload support
-2. **Post Scheduling**: Schedule posts for future publication
-3. **View Counter**: Track post view counts
-4. **Related Posts**: Auto-suggest related posts by category/tags
-5. **Comment Threading**: Nested reply support
-6. **Spam Protection**: Integrate Akismet or similar service
-7. **RSS Feed**: Auto-generate RSS feed from published posts
-8. **Sitemap**: Auto-generate XML sitemap for SEO
-9. **Draft Preview**: Public preview URL for draft posts
-10. **Post Versions**: Track content revisions
-11. **Slug Versioning**: Auto-append numbers to duplicate slugs (e.g., "my-post-2")
-12. **Author Profiles**: Extend User model with bio, avatar, social links
+2. ~~**Post List Page**~~: ✅ **IMPLEMENTED** - All posts view at `/blog/`
+3. **Pagination**: Add pagination to post list (e.g., 10 posts per page)
+4. **Post Scheduling**: Schedule posts for future publication
+5. **View Counter**: Track post view counts
+6. **Related Posts**: Auto-suggest related posts by category/tags
+7. **Comment Threading**: Nested reply support
+8. **Spam Protection**: Integrate Akismet or similar service
+9. **RSS Feed**: Auto-generate RSS feed from published posts
+10. **Sitemap**: Auto-generate XML sitemap for SEO
+11. **Draft Preview**: Public preview URL for draft posts
+12. **Post Versions**: Track content revisions
+13. **Slug Versioning**: Auto-append numbers to duplicate slugs (e.g., "my-post-2")
+14. **Author Profiles**: Extend User model with bio, avatar, social links
+15. **Search**: Full-text search across posts
+16. **Category/Tag Pages**: Filter posts by category or tag
 
 ---
 
@@ -716,20 +755,38 @@ Potential additions:
 
 ### Implemented
 
+**Post List View**:
+```
+/blog/                         # All posts list page (public)
+```
+
+**URL Configuration**: `config/urls.py:27`
+
+**Access Control**: Only published posts are shown
+
+**Integration**:
+- Home page "View all posts" link (`templates/home.html:155`)
+- Post detail page "Back to all posts" link (`templates/blog/post_detail.html:88`)
+
+---
+
 **Post Detail View**:
 ```
 /blog/<slug>/                  # Post detail page (public)
 ```
 
-**URL Configuration**: `config/urls.py:27`
+**URL Configuration**: `config/urls.py:28`
 
 **Example**: `/blog/my-first-post/`
 
 **Access Control**: Only published posts are accessible (drafts return 404)
 
-**Integration**: Home page (`templates/home.html`) links to post detail pages via `post.get_absolute_url()`
+**Integration**:
+- Home page post cards (`templates/home.html`) link via `post.get_absolute_url()`
+- Blog list page post cards (`templates/blog/post_list.html`) link via `post.get_absolute_url()`
 
 **URL Structure Rationale**:
+- `/blog/` - Main blog index
 - `/blog/<slug>/` - Simple, clean URLs for individual posts
 - Reserved short paths for future features: `category`, `tag`, `archive`, `author`
 - SEO-friendly: shorter URLs perform better
@@ -738,12 +795,12 @@ Potential additions:
 ### Future Endpoints
 
 Not yet implemented:
-- `/blog/` - Post list page
 - `/blog/category/<slug>/` - Category posts
 - `/blog/tag/<slug>/` - Tag posts
 - `/blog/archive/<year>/` or `/blog/<year>/<month>/` - Date-based archives
 - `/blog/author/<username>/` - Author's posts
 - `/blog/<slug>/comment/` - Comment submission endpoint (POST)
+- Pagination for `/blog/` (e.g., `/blog/page/2/`)
 - REST API via Django REST Framework
 
 ---

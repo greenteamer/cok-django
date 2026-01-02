@@ -1,0 +1,49 @@
+/**
+ * TechGrid Section
+ *
+ * Grid display of technologies/skills.
+ * Usage:
+ *   <section class="TechGrid">
+ *     <div class="TechGrid__item">...</div>
+ *   </section>
+ */
+
+.TechGrid {
+  text-align: center;
+}
+
+/* Technology grid container */
+.TechGrid__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Individual tech item card */
+.TechGrid__item {
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s;
+}
+
+.TechGrid__item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Technology icon */
+.TechGrid__icon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Technology name */
+.TechGrid__name {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}

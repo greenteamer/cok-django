@@ -20,10 +20,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import home
-from blog.views import post_detail
+from blog.views import post_list, post_detail
 
 urlpatterns = [
     path("", home, name="home"),
+    path("blog/", post_list, name="post_list"),
     path("blog/<slug:slug>/", post_detail, name="post_detail"),
     path("admin/", admin.site.urls),
     path("ckeditor/", include("ckeditor_uploader.urls")),

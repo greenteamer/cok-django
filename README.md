@@ -18,6 +18,7 @@ Production-ready Django 5.0 application template with Docker, PostgreSQL, Gunico
 
 - Docker 20.10+
 - Docker Compose 2.0+
+- Node.js 16+ (for CSS build system)
 
 ### Setup
 
@@ -30,13 +31,8 @@ cd cokdjango
 cp .env.example .env
 # Default values work for development
 
-# 3. Start application
+# 3. Run setup (installs dependencies, builds CSS, starts containers)
 make setup
-
-# Or manually:
-# docker-compose up --build -d
-# docker-compose exec web python manage.py migrate
-# docker-compose exec web python manage.py createsuperuser
 ```
 
 ### Access
@@ -47,6 +43,7 @@ make setup
 ### Common Commands
 
 ```bash
+# Docker Commands
 make up              # Start containers
 make down            # Stop containers
 make logs            # View logs
@@ -54,6 +51,12 @@ make shell           # Access container shell
 make migrate         # Run database migrations
 make test            # Run tests (when implemented)
 make dev-setup       # Setup local venv for IDE/LSP (optional)
+
+# Frontend/CSS Commands
+make css-install     # Install Node.js dependencies
+make css-build       # Build CSS (one-time)
+make css-watch       # Watch and rebuild CSS on changes
+make css-prod        # Build production CSS (minified)
 ```
 
 See `Makefile` for all available commands.

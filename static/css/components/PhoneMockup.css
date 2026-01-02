@@ -1,0 +1,52 @@
+/**
+ * PhoneMockup Component
+ *
+ * iPhone-style phone mockup display.
+ * Usage:
+ *   <div class="PhoneMockup">
+ *     <div class="PhoneMockup__screen">
+ *       <div class="PhoneMockup__notch"></div>
+ *       <div class="PhoneMockup__content">...</div>
+ *     </div>
+ *   </div>
+ */
+
+.PhoneMockup {
+  width: 280px;
+  height: 560px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+/* Phone screen area */
+.PhoneMockup__screen {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Phone notch */
+.PhoneMockup__notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: var(--color-bg-primary);
+  border-radius: 0 0 20px 20px;
+}
+
+/* Content area */
+.PhoneMockup__content {
+  padding: 48px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

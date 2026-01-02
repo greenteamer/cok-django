@@ -6,24 +6,24 @@
     <title>{% block title %}Alex Dev | React Native Engineer{% endblock %}</title>
     <meta name="description" content="{% block description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <a href="/">ALEX<span class="brand-accent">.RN</span></a>
+    <nav class="Navbar">
+        <div class="Container">
+            <div class="Navbar__brand">
+                <a href="/">ALEX<span class="Navbar__brandAccent">.RN</span></a>
             </div>
-            <div class="nav-links">
+            <div class="Navbar__links">
                 <a href="#work">Work</a>
                 <a href="#writing">Writing</a>
                 <a href="#stack">Stack</a>
                 <a href="#about">About</a>
             </div>
-            <div class="nav-cta">
-                <a href="#contact" class="btn-cta">Let's Talk →</a>
+            <div>
+                <a href="#contact" class="Button Button--cta">Let's Talk →</a>
             </div>
         </div>
     </nav>
@@ -34,14 +34,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-cta">
+    <footer class="Footer">
+        <div class="Container">
+            <div class="Footer__content">
+                <div class="Footer__cta">
                     <h2>Let's build something great.</h2>
                     <p>Based in San Francisco, CA. Remote available.</p>
                 </div>
-                <div class="footer-social">
+                <div class="Footer__social">
                     <a href="#" aria-label="Twitter">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
@@ -66,7 +66,7 @@
                     </a>
                 </div>
             </div>
-            <div class="footer-bottom">
+            <div class="Footer__bottom">
                 <p>&copy; 2024 Alex Dev. All rights reserved.</p>
                 <p>Designed with Tailwind.</p>
             </div>

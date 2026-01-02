@@ -1,0 +1,117 @@
+/**
+ * Main CSS Entry Point
+ *
+ * This file imports all component CSS files.
+ * Think of this like React's index.js that imports all components.
+ *
+ * Build commands:
+ *   Development: npm run css:build
+ *   Watch mode:  npm run css:watch
+ *   Production:  npm run css:prod
+ */
+
+/* ============================================
+   1. Base Layer - Foundation
+   ============================================ */
+@import './base/reset.css';
+@import './base/variables.css';
+@import './base/typography.css';
+@import './base/sections.css';
+
+/* ============================================
+   2. Layout Components - Page structure
+   ============================================ */
+@import './layout/Container.css';
+@import './layout/Navbar.css';
+@import './layout/Footer.css';
+
+/* ============================================
+   3. Reusable Components - UI primitives
+   ============================================ */
+@import './components/Button.css';
+@import './components/Card.css';
+@import './components/Tag.css';
+@import './components/StatusBadge.css';
+@import './components/PhoneMockup.css';
+@import './components/SectionHeader.css';
+
+/* ============================================
+   4. Section Components - Composed sections
+   ============================================ */
+@import './sections/Hero.css';
+@import './sections/TechGrid.css';
+@import './sections/ProjectCard.css';
+@import './sections/PostCard.css';
+@import './sections/Timeline.css';
+
+/* ============================================
+   5. Page-Specific Styles
+   ============================================ */
+@import './pages/BlogDetail.css';
+@import './pages/BlogList.css';
+
+/* ============================================
+   6. Responsive Utilities
+   ============================================ */
+
+/* Mobile-first responsive breakpoint */
+@media (max-width: 768px) {
+  .Container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .Navbar__links {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .Hero__content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .Hero__title {
+    font-size: 2.5rem;
+  }
+
+  .Hero__image {
+    order: -1;
+  }
+
+  .PhoneMockup {
+    width: 240px;
+    height: 480px;
+  }
+
+  .TechGrid__grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .ProjectCard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .PostCard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .Footer__content {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .Footer__bottom {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    text-align: center;
+  }
+
+  .SectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .SectionHeader__title {
+    font-size: 2rem;
+  }
+}

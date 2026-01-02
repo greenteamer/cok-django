@@ -1,0 +1,54 @@
+/**
+ * Hero Section
+ *
+ * Main hero section with title, description, CTA buttons, and phone mockup.
+ * Usage: <section class="Hero">...</section>
+ */
+
+.Hero {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Two-column grid layout */
+.Hero__content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+/* Main hero title */
+.Hero__title {
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.02em;
+}
+
+/* Faded title variant */
+.Hero__titleFade {
+  color: var(--color-text-tertiary);
+  font-weight: 300;
+}
+
+/* Hero description text */
+.Hero__description {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-md);
+}
+
+/* CTA buttons container */
+.Hero__cta {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Hero image/mockup container */
+.Hero__image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
