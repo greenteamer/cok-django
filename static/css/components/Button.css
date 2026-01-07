@@ -20,6 +20,10 @@
   gap: 0.5rem;
 }
 
+.Button:hover {
+  cursor: pointer;
+}
+
 /* Variant: Primary */
 .Button--primary {
   background-color: var(--color-accent);

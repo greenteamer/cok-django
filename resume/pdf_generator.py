@@ -9,8 +9,15 @@ from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import (
-    BaseDocTemplate, Frame, PageTemplate, Paragraph, Spacer,
-    FrameBreak, Image as RLImage, Table, TableStyle
+    BaseDocTemplate,
+    Frame,
+    PageTemplate,
+    Paragraph,
+    Spacer,
+    FrameBreak,
+    Image as RLImage,
+    Table,
+    TableStyle,
 )
 from reportlab.lib import colors
 from PIL import Image as PILImage, ImageDraw
@@ -21,7 +28,7 @@ from .pdf_styles import get_styles, html_to_flowables, strip_html_tags
 logger = logging.getLogger(__name__)
 
 # Unicode diamond character for achievements
-DIAMOND_CHAR = '◆'
+DIAMOND_CHAR = "◆"
 
 
 def create_circular_photo(image_path, size=100):
@@ -38,22 +45,22 @@ def create_circular_photo(image_path, size=100):
     try:
         # Open and resize image
         img = PILImage.open(image_path)
-        img = img.convert('RGB')
+        img = img.convert("RGB")
         img = img.resize((size, size), PILImage.LANCZOS)
 
         # Create circular mask
-        mask = PILImage.new('L', (size, size), 0)
+        mask = PILImage.new("L", (size, size), 0)
         draw = ImageDraw.Draw(mask)
         draw.ellipse((0, 0, size, size), fill=255)
 
         # Apply mask
-        output = PILImage.new('RGBA', (size, size))
+        output = PILImage.new("RGBA", (size, size))
         output.paste(img, (0, 0))
         output.putalpha(mask)
 
         # Save to buffer
         buffer = BytesIO()
-        output.save(buffer, format='PNG')
+        output.save(buffer, format="PNG")
         buffer.seek(0)
 
         return buffer
@@ -77,10 +84,10 @@ def generate_header_section(profile, styles):
     flowables = []
 
     # Name
-    flowables.append(Paragraph(profile.full_name, styles['name']))
+    flowables.append(Paragraph(profile.full_name, styles["name"]))
 
     # Professional title
-    flowables.append(Paragraph(profile.title, styles['professional_title']))
+    flowables.append(Paragraph(profile.title, styles["professional_title"]))
 
     # Contact information (email, LinkedIn, location)
     contact_parts = []
@@ -92,8 +99,8 @@ def generate_header_section(profile, styles):
         contact_parts.append(profile.location)
 
     if contact_parts:
-        contact_text = ' | '.join(contact_parts)
-        flowables.append(Paragraph(contact_text, styles['contact']))
+        contact_text = " | ".join(contact_parts)
+        flowables.append(Paragraph(contact_text, styles["contact"]))
 
     flowables.append(Spacer(1, 12))
 
@@ -117,38 +124,36 @@ def generate_experience_section(experiences, styles):
         return flowables
 
     # Section heading
-    flowables.append(Paragraph('EXPERIENCE', styles['section_heading']))
+    flowables.append(Paragraph("EXPERIENCE", styles["section_heading"]))
 
     for exp in experiences:
         # Job title
-        flowables.append(Paragraph(exp.position, styles['job_title']))
+        flowables.append(Paragraph(exp.position, styles["job_title"]))
 
         # Company name and location
         company_text = exp.company
         if exp.location:
-            company_text += f', {exp.location}'
-        flowables.append(Paragraph(company_text, styles['company']))
+            company_text += f", {exp.location}"
+        flowables.append(Paragraph(company_text, styles["company"]))
 
         # Date range
-        start_date_str = exp.start_date.strftime('%B %Y')
+        start_date_str = exp.start_date.strftime("%B %Y")
         if exp.is_current:
-            date_text = f'{start_date_str} - Present'
+            date_text = f"{start_date_str} - Present"
         else:
-            end_date_str = exp.end_date.strftime('%B %Y') if exp.end_date else ''
-            date_text = f'{start_date_str} - {end_date_str}'
+            end_date_str = exp.end_date.strftime("%B %Y") if exp.end_date else ""
+            date_text = f"{start_date_str} - {end_date_str}"
 
-        flowables.append(Paragraph(date_text, styles['date']))
+        flowables.append(Paragraph(date_text, styles["date"]))
 
         # Company description (if provided)
         if exp.company_description:
-            flowables.append(Paragraph(exp.company_description, styles['body']))
+            flowables.append(Paragraph(exp.company_description, styles["body"]))
 
         # Job description (convert HTML to flowables)
         if exp.description:
             description_flowables = html_to_flowables(
-                exp.description,
-                styles['body'],
-                styles['bullet']
+                exp.description, styles["body"], styles["bullet"]
             )
             flowables.extend(description_flowables)
 
@@ -174,11 +179,11 @@ def generate_summary_section(profile, styles):
         return flowables
 
     # Section heading
-    flowables.append(Paragraph('SUMMARY', styles['section_heading']))
+    flowables.append(Paragraph("SUMMARY", styles["section_heading"]))
 
     # Summary text (strip HTML for simplicity)
     summary_text = strip_html_tags(profile.summary)
-    flowables.append(Paragraph(summary_text, styles['body']))
+    flowables.append(Paragraph(summary_text, styles["body"]))
 
     flowables.append(Spacer(1, 12))
 
@@ -202,15 +207,15 @@ def generate_achievements_section(achievements, styles):
         return flowables
 
     # Section heading
-    flowables.append(Paragraph('KEY ACHIEVEMENTS', styles['section_heading']))
+    flowables.append(Paragraph("KEY ACHIEVEMENTS", styles["section_heading"]))
 
     for achievement in achievements:
         # Achievement title with diamond icon
-        title_text = f'{DIAMOND_CHAR} {achievement.title}'
-        flowables.append(Paragraph(title_text, styles['achievement']))
+        title_text = f"{DIAMOND_CHAR} {achievement.title}"
+        flowables.append(Paragraph(title_text, styles["achievement"]))
 
         # Achievement description
-        flowables.append(Paragraph(achievement.description, styles['achievement_desc']))
+        flowables.append(Paragraph(achievement.description, styles["achievement_desc"]))
 
     flowables.append(Spacer(1, 12))
 
@@ -234,18 +239,18 @@ def generate_certifications_section(certifications, styles):
         return flowables
 
     # Section heading
-    flowables.append(Paragraph('CERTIFICATIONS', styles['section_heading']))
+    flowables.append(Paragraph("CERTIFICATIONS", styles["section_heading"]))
 
     for cert in certifications:
         # Certification name and provider
-        cert_text = f'<b>{cert.name}</b>'
-        flowables.append(Paragraph(cert_text, styles['list_item']))
+        cert_text = f"<b>{cert.name}</b>"
+        flowables.append(Paragraph(cert_text, styles["list_item"]))
 
         provider_text = cert.provider
         if cert.date_obtained:
-            provider_text += f' - {cert.date_obtained.strftime("%Y")}'
+            provider_text += f" - {cert.date_obtained.strftime('%Y')}"
 
-        flowables.append(Paragraph(provider_text, styles['body']))
+        flowables.append(Paragraph(provider_text, styles["body"]))
         flowables.append(Spacer(1, 4))
 
     flowables.append(Spacer(1, 12))
@@ -270,24 +275,24 @@ def generate_skills_section(skills, styles):
         return flowables
 
     # Section heading
-    flowables.append(Paragraph('SKILLS', styles['section_heading']))
+    flowables.append(Paragraph("SKILLS", styles["section_heading"]))
 
     # Group skills by category
     skills_by_category = {}
     for skill in skills:
-        category = skill.category or 'Other'
+        category = skill.category or "Other"
         if category not in skills_by_category:
             skills_by_category[category] = []
         skills_by_category[category].append(skill.name)
 
     # Display skills by category
     for category, skill_names in skills_by_category.items():
-        if category and category != 'Other':
-            flowables.append(Paragraph(f'<b>{category}</b>', styles['list_item']))
+        if category and category != "Other":
+            flowables.append(Paragraph(f"<b>{category}</b>", styles["list_item"]))
 
         # List skills
-        skills_text = ', '.join(skill_names)
-        flowables.append(Paragraph(skills_text, styles['body']))
+        skills_text = ", ".join(skill_names)
+        flowables.append(Paragraph(skills_text, styles["body"]))
         flowables.append(Spacer(1, 6))
 
     return flowables
@@ -317,38 +322,35 @@ def generate_resume_pdf(profile):
         doc = BaseDocTemplate(
             buffer,
             pagesize=letter,
-            leftMargin=0.75*inch,
-            rightMargin=0.75*inch,
-            topMargin=0.5*inch,
-            bottomMargin=0.5*inch,
+            leftMargin=0.75 * inch,
+            rightMargin=0.75 * inch,
+            topMargin=0.5 * inch,
+            bottomMargin=0.5 * inch,
         )
 
         # Define frames
         # Main frame (left column) - 4.5 inches wide
         main_frame = Frame(
-            x1=0.75*inch,
-            y1=0.5*inch,
-            width=4.5*inch,
-            height=10*inch,
-            id='main',
-            showBoundary=0
+            x1=0.75 * inch,
+            y1=0.5 * inch,
+            width=4.5 * inch,
+            height=10 * inch,
+            id="main",
+            showBoundary=0,
         )
 
         # Sidebar frame (right column) - 2.5 inches wide
         sidebar_frame = Frame(
-            x1=5.55*inch,  # 0.75 + 4.5 + 0.3 (gutter)
-            y1=0.5*inch,
-            width=2.5*inch,
-            height=10*inch,
-            id='sidebar',
-            showBoundary=0
+            x1=5.55 * inch,  # 0.75 + 4.5 + 0.3 (gutter)
+            y1=0.5 * inch,
+            width=2.5 * inch,
+            height=10 * inch,
+            id="sidebar",
+            showBoundary=0,
         )
 
         # Create page template with both frames
-        page_template = PageTemplate(
-            id='TwoColumn',
-            frames=[main_frame, sidebar_frame]
-        )
+        page_template = PageTemplate(id="TwoColumn", frames=[main_frame, sidebar_frame])
 
         doc.addPageTemplates([page_template])
 
@@ -364,15 +366,15 @@ def generate_resume_pdf(profile):
         flowables.extend(generate_header_section(profile, styles))
 
         # Profile photo (if exists)
-        if profile.photo:
-            try:
-                photo_buffer = create_circular_photo(profile.photo.path, size=100)
-                if photo_buffer:
-                    photo_image = RLImage(photo_buffer, width=1.2*inch, height=1.2*inch)
-                    flowables.append(photo_image)
-                    flowables.append(Spacer(1, 12))
-            except Exception as e:
-                logger.warning(f"Could not add profile photo: {e}")
+        # if profile.photo:
+        #     try:
+        #         photo_buffer = create_circular_photo(profile.photo.path, size=100)
+        #         if photo_buffer:
+        #             photo_image = RLImage(photo_buffer, width=1.2*inch, height=1.2*inch)
+        #             flowables.append(photo_image)
+        #             flowables.append(Spacer(1, 12))
+        #     except Exception as e:
+        #         logger.warning(f"Could not add profile photo: {e}")
 
         # Experience section
         experiences = profile.experiences.all()

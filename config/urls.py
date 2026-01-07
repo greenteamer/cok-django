@@ -21,10 +21,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import home
 from blog.views import post_list, post_detail
-from resume.views import export_resume_pdf
+from resume.views import export_resume_pdf, resume_page
 
 urlpatterns = [
     path("", home, name="home"),
+    path("resume/", resume_page, name="resume"),
     path("resume/export/pdf/", export_resume_pdf, name="export_resume_pdf"),
     path("blog/", post_list, name="post_list"),
     path("blog/<slug:slug>/", post_detail, name="post_detail"),

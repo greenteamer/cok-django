@@ -13,43 +13,43 @@
 /* ============================================
    1. Base Layer - Foundation
    ============================================ */
-@import './base/reset.css';
-@import './base/variables.css';
-@import './base/typography.css';
-@import './base/sections.css';
+@import "./base/reset.css";
+@import "./base/variables.css";
+@import "./base/typography.css";
+@import "./base/sections.css";
 
 /* ============================================
    2. Layout Components - Page structure
    ============================================ */
-@import './layout/Container.css';
-@import './layout/Navbar.css';
-@import './layout/Footer.css';
+@import "./layout/Container.css";
+@import "./layout/Navbar.css";
+@import "./layout/Footer.css";
 
 /* ============================================
    3. Reusable Components - UI primitives
    ============================================ */
-@import './components/Button.css';
-@import './components/Card.css';
-@import './components/Tag.css';
-@import './components/StatusBadge.css';
-@import './components/PhoneMockup.css';
-@import './components/SectionHeader.css';
+@import "./components/Button.css";
+@import "./components/Card.css";
+@import "./components/Tag.css";
+@import "./components/StatusBadge.css";
+@import "./components/PhoneMockup.css";
+@import "./components/SectionHeader.css";
 
 /* ============================================
    4. Section Components - Composed sections
    ============================================ */
-@import './sections/Hero.css';
-@import './sections/TechGrid.css';
-@import './sections/ProjectCard.css';
-@import './sections/PostCard.css';
-@import './sections/Timeline.css';
-@import './sections/ResumeExport.css';
+@import "./sections/Hero.css";
+@import "./sections/TechGrid.css";
+@import "./sections/ProjectCard.css";
+@import "./sections/PostCard.css";
+@import "./sections/Timeline.css";
+@import "./sections/ResumeExport.css";
 
 /* ============================================
    5. Page-Specific Styles
    ============================================ */
-@import './pages/BlogDetail.css';
-@import './pages/BlogList.css';
+@import "./pages/BlogDetail.css";
+@import "./pages/BlogList.css";
 
 /* ============================================
    6. Responsive Utilities
@@ -114,5 +114,11 @@
 
   .SectionHeader__title {
     font-size: 2rem;
+  }
+}
+
+@media print {
+  .hide-on-print {
+    display: none !important;
   }
 }

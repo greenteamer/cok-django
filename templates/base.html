@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="Navbar">
+    <nav class="Navbar hide-on-print">
         <div class="Container">
             <div class="Navbar__brand">
                 <a href="/">ALEX<span class="Navbar__brandAccent"> K.</span></a>
@@ -21,6 +21,7 @@
                 <a href="#writing">Writing</a>
                 <a href="#stack">Stack</a>
                 <a href="#experience">Experience</a>
+                <a href="{% url 'resume' %}">Resume</a>
                 <a href="#contact">Contact</a>
             </div>
             <div>
@@ -35,7 +36,7 @@
     </main>
 
     <!-- Footer -->
-    <footer id="contact"  class="Footer">
+    <footer id="contact"  class="Footer hide-on-print">
         <div class="Container">
             <div class="Footer__content">
                 <div class="Footer__cta">
