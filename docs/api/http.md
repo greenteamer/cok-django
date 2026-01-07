@@ -274,9 +274,66 @@ When multiple API versions exist, document each version separately:
 
 ---
 
+## Resume Export
+
+### GET /resume/export/pdf/
+
+Export active resume profile as PDF with professional formatting.
+
+**URL**: `/resume/export/pdf/`
+
+**Method**: GET
+
+**Authentication**: None (public)
+
+**Permissions**: None
+
+**Description**: Generates and downloads a professional PDF resume from the active profile in the database. Uses ReportLab with two-column layout.
+
+**Query Parameters**: None
+
+**Request Example**:
+```bash
+curl -O http://localhost:8000/resume/export/pdf/
+# Downloads: Aleksandr_Korovkin_Resume.pdf
+```
+
+**Success Response** (200 OK):
+- **Content-Type**: `application/pdf`
+- **Content-Disposition**: `attachment; filename="<FullName>_Resume.pdf"`
+- **Body**: Binary PDF file
+
+**Error Responses**:
+
+404 Not Found - No active profile:
+```
+No active resume profile found.
+```
+
+404 Not Found - Generation failed:
+```
+Failed to generate PDF resume. Please try again later.
+```
+
+**Notes**:
+- Only the active profile (`is_active=True`) is exported
+- PDF includes: experiences, skills, certifications, achievements, profile photo
+- Layout: Two-column professional resume format (main content + sidebar)
+- Technology: ReportLab 4.0.9 with programmatic PDF generation
+- Generation time: ~500ms for typical resume
+
+**Implementation Details**:
+See [`docs/modules/resume-pdf-export.md`](../modules/resume-pdf-export.md) for architecture.
+
+---
+
 ## Changelog
 
 When endpoints change, document changes here:
+
+### 2026-01-07
+- Added PDF resume export endpoint (`GET /resume/export/pdf/`)
+- Implemented ReportLab-based PDF generation
 
 ### 2025-12-21
 - Initial documentation
@@ -284,4 +341,4 @@ When endpoints change, document changes here:
 
 ---
 
-Last Updated: 2025-12-21
+Last Updated: 2026-01-07

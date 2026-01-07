@@ -115,6 +115,9 @@ Read these documents to understand Django app responsibilities and interfaces.
 - 📄 [`modules/resume.md`](./modules/resume.md)
   Resume/CV application: professional profile, experience, skills, certifications, and achievements
 
+- 📄 [`modules/resume-pdf-export.md`](./modules/resume-pdf-export.md)
+  PDF resume export: ReportLab implementation, layout strategy, and generation pipeline
+
 ---
 
 ## 8. Security & Compliance

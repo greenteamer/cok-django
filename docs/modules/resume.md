@@ -626,21 +626,32 @@ Potential additions:
 
 ## API Endpoints
 
-**None currently implemented.**
+### PDF Export Endpoint
 
-Future considerations:
-- REST API via Django REST Framework
-- Public resume view
-- JSON export endpoint
-- PDF generation endpoint
+**Endpoint:** `GET /resume/export/pdf/`
 
-Suggested URL structure:
-```
-/resume/                        # Active profile view
-/resume/<id>/                   # Specific profile view
-/resume/<id>/export/pdf/        # PDF export
-/resume/<id>/export/json/       # JSON export
-```
+**Purpose:** Generate and download PDF version of active resume profile
+
+**Response:**
+- Content-Type: `application/pdf`
+- Content-Disposition: `attachment; filename="FirstName_LastName_Resume.pdf"`
+
+**Success (200):**
+- Returns PDF file with comprehensive resume layout
+
+**Error Cases:**
+- `404`: No active profile exists
+- `404`: PDF generation failed (check server logs)
+
+**Implementation Details:**
+See [`docs/modules/resume-pdf-export.md`](./resume-pdf-export.md) for complete architecture and technical details.
+
+**Technology:** ReportLab 4.0.9 with two-column layout
+
+**Related Code:**
+- View: `resume/views.py:export_resume_pdf()`
+- Generator: `resume/pdf_generator.py`
+- Styles: `resume/pdf_styles.py`
 
 ---
 
