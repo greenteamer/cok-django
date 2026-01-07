@@ -57,7 +57,7 @@
                     Get a comprehensive overview of my experience, skills, and achievements in PDF format.
                 </p>
             </div>
-            <a href="{% url 'export_resume_pdf' %}" class="Button Button--primary ResumeExport__button">
+            <a href="/resume" class="Button Button--primary ResumeExport__button">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -123,44 +123,32 @@
             <a href="#" class="SectionHeader__link">View all archives →</a>
         </div>
         <div class="ProjectCard__grid">
-            <div class="ProjectCard__card">
-                <div class="ProjectCard__image">
-                    <div class="ProjectCard__mockup ProjectCard__mockup--variant1"></div>
-                </div>
-                <div class="ProjectCard__content">
-                    <div class="ProjectCard__header">
-                        <h3>FinTrack Pro</h3>
-                        <div class="ProjectCard__tags">
-                            <span class="Tag">React Native</span>
-                            <span class="Tag">Skia</span>
+
+            {% if projects %}
+                {% for project in projects %}
+                    <div class="ProjectCard__card">
+                        <div class="ProjectCard__image">
+                            <div class="ProjectCard__mockup ProjectCard__mockup--variant1">
+                                <img src="/media/{{ project.image }}" alt="{{ project.title }}" loading="lazy" />
+                            </div>
+                        </div>
+                        <div class="ProjectCard__content">
+                            <div class="ProjectCard__header">
+                              <h3>{{ project.title }}</h3>
+                                <div class="ProjectCard__tags">
+                                    <span class="Tag">React Native</span>
+                                    <span class="Tag">Skia</span>
+                                </div>
+                            </div>
+                            <p class="ProjectCard__description">
+                              {{ project.description }}
+                            </p>
+                            <a href="#" class="ProjectCard__link">View Case Study →</a>
                         </div>
                     </div>
-                    <p class="ProjectCard__description">
-                        A high-performance financial tracking application featuring
-                        real-time charts using Skia and offline-first architecture via…
-                    </p>
-                    <a href="#" class="ProjectCard__link">View Case Study →</a>
-                </div>
-            </div>
-            <div class="ProjectCard__card">
-                <div class="ProjectCard__image">
-                    <div class="ProjectCard__mockup ProjectCard__mockup--variant2"></div>
-                </div>
-                <div class="ProjectCard__content">
-                    <div class="ProjectCard__header">
-                        <h3>Lens Social</h3>
-                        <div class="ProjectCard__tags">
-                            <span class="Tag">Expo</span>
-                            <span class="Tag">GraphQL</span>
-                        </div>
-                    </div>
-                    <p class="ProjectCard__description">
-                        Social media platform for photographers. Implements complex
-                        gestures using Reanimated and seamless media caching.
-                    </p>
-                    <a href="#" class="ProjectCard__link">App Store →</a>
-                </div>
-            </div>
+                {% endfor %}
+            {% endif %}
+
         </div>
     </div>
 </section>

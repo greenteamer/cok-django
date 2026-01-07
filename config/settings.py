@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "config",  # Our main config app
     "blog",  # Blog application
     "resume",  # Resume/CV application
+    "projects",  # Projects application
 ]
 
 MIDDLEWARE = [
@@ -221,6 +222,22 @@ UNFOLD = {
                         "title": "Groups",
                         "icon": "group",
                         "link": "/admin/auth/group/",
+                    },
+                ],
+            },
+            {
+                "title": "Projects",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Projects",
+                        "icon": "work",
+                        "link": "/admin/projects/project/",
+                    },
+                    {
+                        "title": "Tags",
+                        "icon": "label",
+                        "link": "/admin/projects/tag/",
                     },
                 ],
             },

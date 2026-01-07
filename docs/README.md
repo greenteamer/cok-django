@@ -112,6 +112,9 @@ Read these documents to understand Django app responsibilities and interfaces.
 - 📄 [`modules/blog.md`](./modules/blog.md)
   Blog application: models, admin interface, and content management
 
+- 📄 [`modules/projects.md`](./modules/projects.md)
+  Projects application: portfolio management, featured projects, and technology tags
+
 - 📄 [`modules/resume.md`](./modules/resume.md)
   Resume/CV application: professional profile, experience, skills, certifications, and achievements
 

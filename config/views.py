@@ -5,6 +5,7 @@ Views for the main config app.
 from django.shortcuts import render
 from blog.models import Post
 from resume.models import Profile
+from projects.models import Project
 
 
 def home(request):
@@ -18,7 +19,8 @@ def home(request):
     # Get active profile
     profile = Profile.objects.filter(is_active=True).first()
 
-    # Get recent blog posts (published ones)
+    projects = Project.objects.filter(is_featured=True).all()
+
     recent_posts = Post.objects.filter(status="published").order_by("-published_at")[:3]
 
     # Get experiences if profile exists
@@ -30,6 +32,7 @@ def home(request):
 
     context = {
         "profile": profile,
+        "projects": projects,
         "experiences": experiences,
         "skills": skills,
         "recent_posts": recent_posts,
