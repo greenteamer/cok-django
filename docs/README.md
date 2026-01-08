@@ -103,6 +103,9 @@ Read these documents to understand HOW to work with the codebase.
 - 📄 [`guides/deployment.md`](./guides/deployment.md)
   Production deployment on Ubuntu server
 
+- 📄 [`guides/caching.md`](./guides/caching.md)
+  Static file caching strategy and troubleshooting
+
 ---
 
 ## 7. Application Modules
