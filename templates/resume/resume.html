@@ -204,7 +204,7 @@
                 Interested in collaborating? Download my full resume or get in touch.
             </p>
             <div style="display: flex; gap: var(--spacing-sm); justify-content: center; flex-wrap: wrap;">
-                <a href="{% url 'export_resume_pdf' %}" class="Button Button--primary">Download PDF</a>
+                <button onclick="window.print()" class="Button Button--primary">Download PDF</button>
                 <a href="mailto:{{ profile.email }}" class="Button Button--secondary">Contact Me</a>
             </div>
         </div>
