@@ -25,3 +25,6 @@ RUN mkdir -p /app/staticfiles
 
 # Run entrypoint script
 ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Start web server (Railway provides PORT at runtime)
+CMD ["sh", "-c", "gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers ${WEB_CONCURRENCY:-3}"]
