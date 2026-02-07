@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from decouple import config
 
+
+def _parse_csv_env(value: str) -> list[str]:
+    return [item.strip().strip("'\"") for item in value.split(",") if item.strip()]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +30,8 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = _parse_csv_env(config("ALLOWED_HOSTS", default="localhost,127.0.0.1"))
+CSRF_TRUSTED_ORIGINS = _parse_csv_env(config("CSRF_TRUSTED_ORIGINS", default=""))
 
 
 # Application definition
