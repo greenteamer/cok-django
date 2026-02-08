@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} | Project | Alex Dev{% endblock %}
+{% block description %}{{ project.description|truncatechars:160 }}{% endblock %}
+{% block keywords %}{{ project.title }}, mobile app project, react native{% endblock %}
+{% block og_title %}{{ project.title }} | Project | Alex Dev{% endblock %}
+{% block og_description %}{{ project.description|truncatechars:160 }}{% endblock %}
+{% block twitter_title %}{{ project.title }} | Project | Alex Dev{% endblock %}
+{% block twitter_description %}{{ project.description|truncatechars:160 }}{% endblock %}
+
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}{% endblock %}
+{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}{% endblock %}
+
+{% block content %}
+<section class="BlogDetail__hero">
+    <div class="Container">
+        <div class="BlogDetail__heroContent">
+            <div class="StatusBadge">
+                <span class="StatusBadge__dot"></span>
+                Project
+            </div>
+            <h1 class="Hero__title">{{ project.title }}</h1>
+            <p class="Hero__description">{{ project.description }}</p>
+        </div>
+    </div>
+</section>
+
+<section class="BlogDetail__featuredImage">
+    <div class="Container">
+        <div class="BlogDetail__imageWrapper">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" fetchpriority="high">
+        </div>
+    </div>
+</section>
+
+<section class="BlogDetail__contentSection">
+    <div class="Container">
+        <article class="BlogDetail__article">
+            {% if project.tags.exists %}
+            <div class="BlogDetail__tags" style="margin-bottom: 1rem;">
+                {% for tag in project.tags.all %}
+                    <span class="Tag">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="Hero__cta">
+                {% if project.external_link %}
+                    <a href="{{ project.external_link }}" target="_blank" rel="noopener noreferrer" class="Button Button--primary">Live / Repository</a>
+                {% endif %}
+                {% if project.case_study_link %}
+                    <a href="{{ project.case_study_link }}" target="_blank" rel="noopener noreferrer" class="Button Button--secondary">Case Study</a>
+                {% endif %}
+                <a href="{% url 'project_list' %}" class="Button Button--secondary">All Projects</a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

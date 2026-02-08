@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
+from django.utils.html import strip_tags
 from ckeditor_uploader.fields import RichTextUploadingField
 
 
@@ -243,13 +244,24 @@ class Post(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
 
+        plain_text_content = " ".join(strip_tags(self.content or "").split())
+
         # Auto-generate excerpt if not provided
-        if not self.excerpt and self.content:
-            self.excerpt = self.content[:497] + "..."
+        if not self.excerpt and plain_text_content:
+            self.excerpt = (
+                f"{plain_text_content[:497]}..."
+                if len(plain_text_content) > 500
+                else plain_text_content
+            )
 
         # Auto-generate meta_description if not provided
         if not self.meta_description and self.excerpt:
-            self.meta_description = self.excerpt[:157] + "..."
+            clean_excerpt = " ".join(strip_tags(self.excerpt).split())
+            self.meta_description = (
+                f"{clean_excerpt[:157]}..."
+                if len(clean_excerpt) > 160
+                else clean_excerpt
+            )
 
         # Set published_at timestamp when first published
         if self.status == 'published' and not self.published_at:

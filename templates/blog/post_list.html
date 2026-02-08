@@ -4,6 +4,11 @@
 {% block title %}All Posts | Alex Dev{% endblock %}
 
 {% block description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
+{% block keywords %}react native blog, mobile development articles, expo tutorials{% endblock %}
+{% block og_title %}All Posts | Alex Dev{% endblock %}
+{% block og_description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
+{% block twitter_title %}All Posts | Alex Dev{% endblock %}
+{% block twitter_description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
 
 {% block content %}
 <!-- Blog Header Section -->
@@ -32,7 +37,7 @@
                     <article class="PostCard">
                         {% if post.featured_image %}
                         <div class="PostCard__image">
-                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy" decoding="async">
                         </div>
                         {% endif %}
                         <div class="PostCard__content">
@@ -63,4 +68,18 @@
         {% endif %}
     </div>
 </section>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<section class="BlogList__posts">
+    <div class="Container" style="display: flex; justify-content: center; gap: 0.5rem;">
+        {% if page_obj.has_previous %}
+            <a href="{% if page_obj.previous_page_number == 1 %}{% url 'post_list' %}{% else %}?page={{ page_obj.previous_page_number }}{% endif %}" class="Button Button--secondary">Previous</a>
+        {% endif %}
+        <span class="Tag">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="Button Button--secondary">Next</a>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
 {% endblock %}

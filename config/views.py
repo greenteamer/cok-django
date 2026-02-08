@@ -2,6 +2,9 @@
 Views for the main config app.
 """
 
+from django.http import HttpResponse
+from django.urls import reverse
+
 from django.shortcuts import render
 from blog.models import Post
 from resume.models import Profile
@@ -19,9 +22,14 @@ def home(request):
     # Get active profile
     profile = Profile.objects.filter(is_active=True).first()
 
-    projects = Project.objects.filter(is_featured=True).all()
+    projects = Project.objects.filter(is_featured=True).prefetch_related("tags")
 
-    recent_posts = Post.objects.filter(status="published").order_by("-published_at")[:3]
+    recent_posts = (
+        Post.objects.filter(status="published")
+        .select_related("author", "category")
+        .prefetch_related("tags")
+        .order_by("-published_at")[:3]
+    )
 
     # Get experiences if profile exists
     experiences = []
@@ -39,3 +47,15 @@ def home(request):
     }
 
     return render(request, "home.html", context)
+
+
+def robots_txt(request):
+    sitemap_url = request.build_absolute_uri(reverse("sitemap"))
+    content = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin/",
+        "Disallow: /ckeditor/",
+        f"Sitemap: {sitemap_url}",
+    ]
+    return HttpResponse("\n".join(content), content_type="text/plain")

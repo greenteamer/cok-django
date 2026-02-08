@@ -176,7 +176,7 @@
                 <h2 class="SectionHeader__title">Featured Projects</h2>
                 <p class="SectionHeader__description">A selection of mobile applications built for performance and user experience.</p>
             </div>
-            <a href="#" class="SectionHeader__link">View all archives →</a>
+            <a href="{% url 'project_list' %}" class="SectionHeader__link">View all archives →</a>
         </div>
         <div class="ProjectCard__grid">
 
@@ -185,7 +185,7 @@
                     <div class="ProjectCard__card">
                         <div class="ProjectCard__image">
                             <div class="ProjectCard__mockup ProjectCard__mockup--variant1">
-                                <img src="/media/{{ project.image }}" alt="{{ project.title }}" loading="lazy" />
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}" loading="lazy" />
                             </div>
                         </div>
                         <div class="ProjectCard__content">
@@ -199,7 +199,13 @@
                             <p class="ProjectCard__description">
                               {{ project.description }}
                             </p>
-                            <a href="#" class="ProjectCard__link">View Case Study →</a>
+                            {% if project.case_study_link %}
+                                <a href="{{ project.case_study_link }}" class="ProjectCard__link" target="_blank" rel="noopener noreferrer">View Case Study →</a>
+                            {% elif project.external_link %}
+                                <a href="{{ project.external_link }}" class="ProjectCard__link" target="_blank" rel="noopener noreferrer">Open Project →</a>
+                            {% else %}
+                                <a href="{% url 'project_detail' slug=project.slug %}" class="ProjectCard__link">View Project →</a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -223,7 +229,7 @@
                     <article class="PostCard">
                         {% if post.featured_image %}
                         <div class="PostCard__image">
-                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy" decoding="async">
                         </div>
                         {% endif %}
                         <div class="PostCard__content">

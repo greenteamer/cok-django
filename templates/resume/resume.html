@@ -3,6 +3,11 @@
 
 {% block title %}{{ profile.full_name }} - Resume{% endblock %}
 {% block description %}{{ profile.title }}{% endblock %}
+{% block keywords %}resume, {{ profile.full_name }}, {{ profile.title }}{% endblock %}
+{% block og_title %}{{ profile.full_name }} - Resume{% endblock %}
+{% block og_description %}{{ profile.title }}{% endblock %}
+{% block twitter_title %}{{ profile.full_name }} - Resume{% endblock %}
+{% block twitter_description %}{{ profile.title }}{% endblock %}
 
 {% block content %}
 <!-- Resume Hero Section -->

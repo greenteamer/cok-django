@@ -1,7 +1,17 @@
 # HTTP to HTTPS redirect
 server {
     listen 80;
-    server_name coreofkeen.com www.coreofkeen.com;
+    server_name www.coreofkeen.com;
+
+    location / {
+        return 301 https://coreofkeen.com$request_uri;
+    }
+}
+
+# HTTP to HTTPS redirect (primary host)
+server {
+    listen 80;
+    server_name coreofkeen.com;
 
     # Let certbot use this for verification
     location /.well-known/acme-challenge/ {
@@ -14,10 +24,23 @@ server {
     }
 }
 
+# HTTPS canonical redirect for www
+server {
+    listen 443 ssl http2;
+    server_name www.coreofkeen.com;
+
+    ssl_certificate /etc/letsencrypt/live/coreofkeen.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/coreofkeen.com/privkey.pem;
+
+    location / {
+        return 301 https://coreofkeen.com$request_uri;
+    }
+}
+
 # HTTPS server
 server {
     listen 443 ssl http2;
-    server_name coreofkeen.com www.coreofkeen.com;
+    server_name coreofkeen.com;
 
     # SSL certificates (certbot will add these lines)
     ssl_certificate /etc/letsencrypt/live/coreofkeen.com/fullchain.pem;

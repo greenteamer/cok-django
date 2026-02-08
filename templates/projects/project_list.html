@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Projects | Alex Dev{% endblock %}
+{% block description %}Portfolio projects focused on React Native, performance, and product delivery.{% endblock %}
+{% block keywords %}react native projects, mobile portfolio, app case studies{% endblock %}
+{% block og_title %}Projects | Alex Dev{% endblock %}
+{% block og_description %}Portfolio projects focused on React Native, performance, and product delivery.{% endblock %}
+{% block twitter_title %}Projects | Alex Dev{% endblock %}
+{% block twitter_description %}Portfolio projects focused on React Native, performance, and product delivery.{% endblock %}
+
+{% block content %}
+<section class="BlogList__header">
+    <div class="Container">
+        <div class="BlogList__headerContent">
+            <div class="StatusBadge">
+                <span class="StatusBadge__dot"></span>
+                Projects
+            </div>
+            <h1 class="Hero__title">Project Archive</h1>
+            <p class="Hero__description">
+                Selected mobile products with focus on UX, performance, and maintainable architecture.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="ProjectCard">
+    <div class="Container">
+        <div class="ProjectCard__grid">
+            {% for project in projects %}
+            <article class="ProjectCard__card">
+                <div class="ProjectCard__image">
+                    <div class="ProjectCard__mockup ProjectCard__mockup--variant1">
+                        <a href="{% url 'project_detail' slug=project.slug %}">
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" loading="lazy" />
+                        </a>
+                    </div>
+                </div>
+                <div class="ProjectCard__content">
+                    <div class="ProjectCard__header">
+                        <h2>{{ project.title }}</h2>
+                        {% if project.tags.exists %}
+                        <div class="ProjectCard__tags">
+                            {% for tag in project.tags.all %}
+                                <span class="Tag">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <p class="ProjectCard__description">{{ project.description }}</p>
+                    <a href="{% url 'project_detail' slug=project.slug %}" class="ProjectCard__link">View Project →</a>
+                </div>
+            </article>
+            {% empty %}
+            <p>No projects published yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

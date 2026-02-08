@@ -39,6 +39,7 @@ def export_resume_pdf(request):
         response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
         filename = f"{profile.full_name.replace(' ', '_')}_Resume.pdf"
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response["X-Robots-Tag"] = "noindex, nofollow"
 
         buffer.close()
 

@@ -1,12 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load static %}
+<html lang="{{ LANGUAGE_CODE|default:'en'|slice:':2' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Alex Dev | React Native Engineer{% endblock %}</title>
     <meta name="description" content="{% block description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
-    {% load static %}
+    <meta name="keywords" content="{% block keywords %}react native engineer, expo developer, mobile app developer{% endblock %}">
+    <meta name="robots" content="{% block robots %}index,follow,max-image-preview:large{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ canonical_url|default:request.build_absolute_uri }}{% endblock %}">
+
+    {% if prev_page_url %}
+    <link rel="prev" href="{{ prev_page_url }}">
+    {% endif %}
+    {% if next_page_url %}
+    <link rel="next" href="{{ next_page_url }}">
+    {% endif %}
+
+    <meta property="og:site_name" content="Coreofkeen">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Alex Dev | React Native Engineer{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ canonical_url|default:request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.png' %}{% endblock %}">
+
+    <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}Alex Dev | React Native Engineer{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.png' %}{% endblock %}">
+
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block structured_data %}{% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -17,15 +41,16 @@
                 <a href="/">ALEX<span class="Navbar__brandAccent"> K.</span></a>
             </div>
             <div class="Navbar__links">
-                <a href="#work">Work</a>
-                <a href="#writing">Writing</a>
-                <a href="#stack">Stack</a>
-                <a href="#experience">Experience</a>
+                <a href="/#work">Work</a>
+                <a href="/#writing">Writing</a>
+                <a href="/#stack">Stack</a>
+                <a href="/#experience">Experience</a>
+                <a href="{% url 'project_list' %}">Projects</a>
                 <a href="{% url 'resume' %}">Resume</a>
-                <a href="#contact">Contact</a>
+                <a href="/#contact">Contact</a>
             </div>
             <div>
-                <a href="#contact" class="Button Button--cta">Let's Talk →</a>
+                <a href="/#contact" class="Button Button--cta">Let's Talk →</a>
             </div>
         </div>
     </nav>
