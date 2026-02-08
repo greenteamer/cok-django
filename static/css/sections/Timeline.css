@@ -49,7 +49,7 @@
   content: "";
   position: absolute;
   left: calc(var(--tl-dot-size) / 2 - var(--tl-line-width) / 2);
-  top: calc(var(--tl-dot-size) + 4px);
+  top: 0;
   bottom: 0;
   width: var(--tl-line-width);
   background: linear-gradient(
