@@ -107,3 +107,24 @@ class PostImageVariantTests(TestCase):
 
         with Image.open(hero_path) as hero_image:
             self.assertEqual(hero_image.size, (1600, 900))
+
+    def test_featured_image_variant_url_changes_when_focus_changes(self):
+        post = Post.objects.create(
+            title="Post focus",
+            author=self.user,
+            content="<p>Image test</p>",
+            featured_image=self._make_upload(),
+        )
+
+        default_card_url = post.featured_image_card_url
+        self.assertIn("fx50_fy50", default_card_url)
+
+        post.featured_image_focus_x = 10
+        post.featured_image_focus_y = 90
+        post.save(update_fields=["featured_image_focus_x", "featured_image_focus_y", "updated_at"])
+
+        refreshed = Post.objects.get(pk=post.pk)
+        updated_card_url = refreshed.featured_image_card_url
+
+        self.assertIn("fx10_fy90", updated_card_url)
+        self.assertNotEqual(default_card_url, updated_card_url)

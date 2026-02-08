@@ -11,7 +11,13 @@ from PIL import Image, ImageOps
 JPEG_QUALITY = 88
 
 
-def get_cropped_image_variant(image_field_file, variant_name: str, size: tuple[int, int]) -> str:
+def get_cropped_image_variant(
+    image_field_file,
+    variant_name: str,
+    size: tuple[int, int],
+    centering: tuple[float, float] = (0.5, 0.5),
+    version_token: str = "",
+) -> str:
     """
     Return URL to a cropped image variant.
 
@@ -27,7 +33,13 @@ def get_cropped_image_variant(image_field_file, variant_name: str, size: tuple[i
 
     storage = image_field_file.storage
     width, height = size
-    variant_file_name = _variant_file_name(source_name, variant_name, width, height)
+    variant_file_name = _variant_file_name(
+        source_name,
+        variant_name,
+        width,
+        height,
+        version_token=version_token,
+    )
 
     needs_regeneration = not storage.exists(variant_file_name)
     if not needs_regeneration and _storage_supports_paths(storage):
@@ -35,7 +47,12 @@ def get_cropped_image_variant(image_field_file, variant_name: str, size: tuple[i
 
     if needs_regeneration:
         try:
-            variant_content = _build_variant_content(storage, source_name, (width, height))
+            variant_content = _build_variant_content(
+                storage,
+                source_name,
+                (width, height),
+                centering=centering,
+            )
             if storage.exists(variant_file_name):
                 storage.delete(variant_file_name)
             storage.save(variant_file_name, ContentFile(variant_content))
@@ -45,14 +62,28 @@ def get_cropped_image_variant(image_field_file, variant_name: str, size: tuple[i
     return storage.url(variant_file_name)
 
 
-def _variant_file_name(source_name: str, variant_name: str, width: int, height: int) -> str:
+def _variant_file_name(
+    source_name: str,
+    variant_name: str,
+    width: int,
+    height: int,
+    version_token: str = "",
+) -> str:
     source_path = Path(source_name)
+    token_suffix = f"__{version_token}" if version_token else ""
     return str(
-        source_path.parent / "_variants" / f"{source_path.stem}__{variant_name}_{width}x{height}.jpg"
+        source_path.parent / "_variants" / (
+            f"{source_path.stem}__{variant_name}_{width}x{height}{token_suffix}.jpg"
+        )
     )
 
 
-def _build_variant_content(storage, source_name: str, size: tuple[int, int]) -> bytes:
+def _build_variant_content(
+    storage,
+    source_name: str,
+    size: tuple[int, int],
+    centering: tuple[float, float] = (0.5, 0.5),
+) -> bytes:
     with storage.open(source_name, "rb") as source_file:
         with Image.open(source_file) as image:
             image = ImageOps.exif_transpose(image)
@@ -60,7 +91,7 @@ def _build_variant_content(storage, source_name: str, size: tuple[int, int]) -> 
                 image,
                 size,
                 method=Image.Resampling.LANCZOS,
-                centering=(0.5, 0.5),
+                centering=centering,
             )
             cropped = _convert_to_rgb(cropped)
             buffer = BytesIO()

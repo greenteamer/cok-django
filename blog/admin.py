@@ -111,7 +111,7 @@ class PostAdmin(ModelAdmin):
             'fields': ('category', 'tags')
         }),
         ('Media', {
-            'fields': ('featured_image',),
+            'fields': ('featured_image', 'featured_image_focus_x', 'featured_image_focus_y'),
             'classes': ('collapse',),
         }),
         ('SEO', {

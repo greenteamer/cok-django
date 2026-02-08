@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.text import slugify
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -28,6 +29,7 @@ ALLOWED_HTML_PROTOCOLS = ["http", "https", "mailto"]
 
 FEATURED_IMAGE_CARD_SIZE = (800, 450)
 FEATURED_IMAGE_HERO_SIZE = (1600, 900)
+FEATURED_IMAGE_FOCUS_VALIDATORS = [MinValueValidator(0), MaxValueValidator(100)]
 
 
 class Category(models.Model):
@@ -214,6 +216,18 @@ class Post(models.Model):
         verbose_name="Featured Image",
         help_text="Optional featured image (uploaded to media/blog/featured/YYYY/MM/)"
     )
+    featured_image_focus_x = models.PositiveSmallIntegerField(
+        default=50,
+        validators=FEATURED_IMAGE_FOCUS_VALIDATORS,
+        verbose_name="Image Focus X (%)",
+        help_text="Horizontal crop focus from left (0) to right (100)."
+    )
+    featured_image_focus_y = models.PositiveSmallIntegerField(
+        default=50,
+        validators=FEATURED_IMAGE_FOCUS_VALIDATORS,
+        verbose_name="Image Focus Y (%)",
+        help_text="Vertical crop focus from top (0) to bottom (100)."
+    )
 
     # SEO fields
     meta_description = models.CharField(
@@ -358,10 +372,13 @@ class Post(models.Model):
         """Return cropped featured image URL for blog card previews."""
         if not self.featured_image:
             return ""
+        crop_centering = self._featured_image_crop_centering()
         return get_cropped_image_variant(
             self.featured_image,
             variant_name="card",
             size=FEATURED_IMAGE_CARD_SIZE,
+            centering=crop_centering,
+            version_token=self._featured_image_focus_token(),
         )
 
     @cached_property
@@ -369,11 +386,24 @@ class Post(models.Model):
         """Return cropped featured image URL for blog post detail pages."""
         if not self.featured_image:
             return ""
+        crop_centering = self._featured_image_crop_centering()
         return get_cropped_image_variant(
             self.featured_image,
             variant_name="hero",
             size=FEATURED_IMAGE_HERO_SIZE,
+            centering=crop_centering,
+            version_token=self._featured_image_focus_token(),
         )
+
+    def _featured_image_crop_centering(self):
+        x = max(0, min(100, self.featured_image_focus_x or 50)) / 100
+        y = max(0, min(100, self.featured_image_focus_y or 50)) / 100
+        return (x, y)
+
+    def _featured_image_focus_token(self):
+        x = max(0, min(100, self.featured_image_focus_x or 50))
+        y = max(0, min(100, self.featured_image_focus_y or 50))
+        return f"fx{x}_fy{y}"
 
 
 class Comment(models.Model):
