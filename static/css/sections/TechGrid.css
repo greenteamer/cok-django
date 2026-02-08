@@ -1,7 +1,7 @@
 /**
  * TechGrid Section
  *
- * Grid display of technologies/skills.
+ * Compact grid display of technologies/skills.
  * Usage:
  *   <section class="TechGrid">
  *     <div class="TechGrid__item">...</div>
@@ -14,36 +14,44 @@
 
 /* Technology grid container */
 .TechGrid__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--spacing-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
   max-width: 900px;
   margin: 0 auto;
+  justify-content: center;
 }
 
-/* Individual tech item card */
+/* Individual tech item — compact pill */
 .TechGrid__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   background-color: var(--color-bg-secondary);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius);
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
   border: 1px solid var(--color-border);
   transition: all 0.2s;
 }
 
 .TechGrid__item:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-text-tertiary);
 }
 
-/* Technology icon */
+/* Technology icon — small inline */
 .TechGrid__icon {
-  font-size: 2rem;
-  margin-bottom: var(--spacing-xs);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  line-height: 1;
 }
 
 /* Technology name */
 .TechGrid__name {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
   font-weight: 500;
+  white-space: nowrap;
 }

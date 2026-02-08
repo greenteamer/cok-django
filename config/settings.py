@@ -154,8 +154,9 @@ STORAGES = {
 }
 
 # Media files
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = config("MEDIA_URL", default="/media/")
+MEDIA_ROOT = Path(config("MEDIA_ROOT", default=str(BASE_DIR / "media")))
+SERVE_MEDIA = config("SERVE_MEDIA", default=DEBUG, cast=bool)
 
 # Site metadata
 SITE_NAME = config("SITE_NAME", default="Coreofkeen")

@@ -85,10 +85,6 @@
     height: 480px;
   }
 
-  .TechGrid__grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  }
-
   .ProjectCard__grid {
     grid-template-columns: 1fr;
   }
