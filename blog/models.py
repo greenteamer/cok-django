@@ -1,9 +1,12 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from markdown import markdown as render_markdown
 import bleach
+
+from .image_variants import get_cropped_image_variant
 
 
 ALLOWED_HTML_TAGS = [
@@ -22,6 +25,9 @@ ALLOWED_HTML_ATTRIBUTES = {
 }
 
 ALLOWED_HTML_PROTOCOLS = ["http", "https", "mailto"]
+
+FEATURED_IMAGE_CARD_SIZE = (800, 450)
+FEATURED_IMAGE_HERO_SIZE = (1600, 900)
 
 
 class Category(models.Model):
@@ -346,6 +352,28 @@ class Post(models.Model):
             status='published',
             published_at__lt=self.published_at
         ).order_by('-published_at').first()
+
+    @cached_property
+    def featured_image_card_url(self):
+        """Return cropped featured image URL for blog card previews."""
+        if not self.featured_image:
+            return ""
+        return get_cropped_image_variant(
+            self.featured_image,
+            variant_name="card",
+            size=FEATURED_IMAGE_CARD_SIZE,
+        )
+
+    @cached_property
+    def featured_image_hero_url(self):
+        """Return cropped featured image URL for blog post detail pages."""
+        if not self.featured_image:
+            return ""
+        return get_cropped_image_variant(
+            self.featured_image,
+            variant_name="hero",
+            size=FEATURED_IMAGE_HERO_SIZE,
+        )
 
 
 class Comment(models.Model):
