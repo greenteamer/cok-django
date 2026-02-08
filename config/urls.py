@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
+from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from .sitemaps import BlogPostSitemap, ProjectSitemap, StaticViewSitemap
@@ -41,6 +42,16 @@ urlpatterns = [
     path("blog/", post_list, name="post_list"),
     path("blog/<slug:slug>/", post_detail, name="post_detail"),
     path("robots.txt", robots_txt, name="robots_txt"),
+    path("robots", RedirectView.as_view(pattern_name="robots_txt", permanent=True)),
+    path("robots/", RedirectView.as_view(pattern_name="robots_txt", permanent=True)),
+    path("robots.txt/", RedirectView.as_view(pattern_name="robots_txt", permanent=True)),
+    path(
+        "sitemap",
+        RedirectView.as_view(pattern_name="sitemap", permanent=True),
+        name="sitemap_compat",
+    ),
+    path("sitemap/", RedirectView.as_view(pattern_name="sitemap", permanent=True)),
+    path("sitemap.xml/", RedirectView.as_view(pattern_name="sitemap", permanent=True)),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path("admin/", admin.site.urls),
     path("ckeditor/", include("ckeditor_uploader.urls")),
