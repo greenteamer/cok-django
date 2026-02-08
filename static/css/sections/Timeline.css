@@ -78,10 +78,9 @@
   transition: all 0.3s ease;
 }
 
-/* ── Current / active item ── */
-.Timeline__item--current .Timeline__dot {
-  width: 12px;
-  height: 12px;
+/* ── Current / active item (explicit modifier OR first item) ── */
+.Timeline__item--current .Timeline__dot,
+.Timeline__item:first-child .Timeline__dot {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
   animation: timelinePulse 2.5s ease-in-out infinite;
