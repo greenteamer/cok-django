@@ -22,7 +22,7 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from .sitemaps import BlogPostSitemap, ProjectSitemap, StaticViewSitemap
-from .views import home, robots_txt
+from .views import home, robots_txt, custom_404
 from blog.views import post_list, post_detail
 from resume.views import export_resume_pdf, resume_page
 from projects.views import project_detail, project_list
@@ -56,6 +56,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("ckeditor/", include("ckeditor_uploader.urls")),
 ]
+
+handler404 = custom_404
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

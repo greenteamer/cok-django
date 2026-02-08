@@ -50,6 +50,7 @@
    ============================================ */
 @import "./pages/BlogDetail.css";
 @import "./pages/BlogList.css";
+@import "./pages/Error404.css";
 
 /* ============================================
    6. Responsive Utilities

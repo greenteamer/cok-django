@@ -1,0 +1,72 @@
+/**
+ * 404 Error Page
+ *
+ * Centered error page with large 404 number, message, and CTA button.
+ * Usage: <section class="Error404">...</section>
+ */
+
+.Error404 {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--color-bg-secondary);
+}
+
+.Error404__content {
+  max-width: 560px;
+}
+
+/* Large 404 number */
+.Error404__code {
+  font-size: 8rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.Error404__codeFade {
+  color: var(--color-text-tertiary);
+  font-weight: 300;
+}
+
+/* Title */
+.Error404__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Description text */
+.Error404__description {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-md);
+}
+
+/* CTA buttons row */
+.Error404__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .Error404__code {
+    font-size: 5rem;
+  }
+
+  .Error404__title {
+    font-size: 1.375rem;
+  }
+
+  .Error404__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}

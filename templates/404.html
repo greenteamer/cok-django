@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}404 — Page Not Found{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="Error404">
+    <div class="Container">
+        <div class="Error404__content">
+            <div class="Error404__code">4<span class="Error404__codeFade">0</span>4</div>
+            <h1 class="Error404__title">Page not found</h1>
+            <p class="Error404__description">
+                The page you're looking for doesn't exist or has been moved.
+                Let's get you back on track.
+            </p>
+            <div class="Error404__actions">
+                <a href="/" class="Button Button--primary">Go Home</a>
+                <a href="/#work" class="Button Button--secondary">View Projects</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
