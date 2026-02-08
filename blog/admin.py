@@ -94,7 +94,7 @@ class PostAdmin(ModelAdmin):
         'published_at',
         'author'
     ]
-    search_fields = ['title', 'content', 'excerpt']
+    search_fields = ['title', 'content_markdown', 'content', 'excerpt', 'meta_title', 'meta_description']
     prepopulated_fields = {'slug': ('title',)}
     readonly_fields = ['created_at', 'updated_at', 'published_at']
     date_hierarchy = 'published_at'
@@ -102,7 +102,7 @@ class PostAdmin(ModelAdmin):
 
     fieldsets = (
         ('Post Content', {
-            'fields': ('title', 'slug', 'content', 'excerpt')
+            'fields': ('title', 'slug', 'content_markdown', 'content', 'excerpt')
         }),
         ('Publishing', {
             'fields': ('status', 'author', 'published_at')
@@ -115,7 +115,7 @@ class PostAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('SEO', {
-            'fields': ('meta_description', 'meta_keywords'),
+            'fields': ('meta_title', 'meta_description', 'meta_keywords'),
             'classes': ('collapse',),
         }),
         ('Metadata', {

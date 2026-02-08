@@ -1,8 +1,19 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
-from django.utils.html import strip_tags
-from ckeditor_uploader.fields import RichTextUploadingField
+from django.utils.html import strip_tags, escape
+from markdown import markdown as render_markdown
+import re
+
+
+UNSAFE_LINK_RE = re.compile(
+    r"""(?i)\b(href|src)\s*=\s*(['"])\s*(javascript:|data:)[^'"]*\2"""
+)
+
+
+def _sanitize_html_links(html: str) -> str:
+    """Block unsafe URL schemes inside rendered HTML attributes."""
+    return UNSAFE_LINK_RE.sub(r'\1=\2#\2', html)
 
 
 class Category(models.Model):
@@ -128,9 +139,16 @@ class Post(models.Model):
         help_text="URL-friendly version of title (must be unique)"
     )
 
-    content = RichTextUploadingField(
+    content_markdown = models.TextField(
+        blank=True,
+        verbose_name="Post Content (Markdown)",
+        help_text="Primary authoring field. Markdown will be converted to sanitized HTML automatically."
+    )
+
+    content = models.TextField(
+        blank=True,
         verbose_name="Post Content",
-        help_text="Main post content with rich text editor"
+        help_text="Rendered/sanitized HTML for frontend output. Filled automatically from Markdown when provided."
     )
 
     excerpt = models.TextField(
@@ -191,6 +209,13 @@ class Post(models.Model):
         help_text="SEO meta description (max 160 characters, auto-generated if empty)"
     )
 
+    meta_title = models.CharField(
+        max_length=60,
+        blank=True,
+        verbose_name="Meta Title",
+        help_text="SEO title (recommended up to 60 characters, auto-generated from title if empty)"
+    )
+
     meta_keywords = models.CharField(
         max_length=255,
         blank=True,
@@ -244,6 +269,14 @@ class Post(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
 
+        markdown_content = (self.content_markdown or "").strip()
+        if markdown_content:
+            rendered_html = render_markdown(
+                escape(markdown_content),
+                extensions=["extra", "sane_lists", "nl2br"],
+            )
+            self.content = _sanitize_html_links(rendered_html)
+
         plain_text_content = " ".join(strip_tags(self.content or "").split())
 
         # Auto-generate excerpt if not provided
@@ -261,6 +294,13 @@ class Post(models.Model):
                 f"{clean_excerpt[:157]}..."
                 if len(clean_excerpt) > 160
                 else clean_excerpt
+            )
+
+        if not self.meta_title:
+            self.meta_title = (
+                f"{self.title[:57]}..."
+                if len(self.title) > 60
+                else self.title
             )
 
         # Set published_at timestamp when first published
