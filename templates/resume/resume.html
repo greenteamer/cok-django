@@ -93,7 +93,7 @@
         <h2 class="SectionHeader__title">Experience</h2>
         <div class="Timeline">
             {% for exp in experiences %}
-            <div class="Timeline__item">
+            <div class="Timeline__item{% if exp.is_current %} Timeline__item--current{% endif %}">
                 <div class="Timeline__dot"></div>
                 <div class="Timeline__content">
                     <h3 class="Timeline__position">{{ exp.position }}</h3>
