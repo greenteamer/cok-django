@@ -1,19 +1,27 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
-from django.utils.html import strip_tags, escape
+from django.utils.html import strip_tags
 from markdown import markdown as render_markdown
-import re
+import bleach
 
 
-UNSAFE_LINK_RE = re.compile(
-    r"""(?i)\b(href|src)\s*=\s*(['"])\s*(javascript:|data:)[^'"]*\2"""
-)
+ALLOWED_HTML_TAGS = [
+    "p", "br", "hr",
+    "h1", "h2", "h3", "h4", "h5", "h6",
+    "strong", "em", "b", "i", "u", "s", "mark",
+    "ul", "ol", "li", "blockquote",
+    "pre", "code",
+    "a", "img",
+    "table", "thead", "tbody", "tr", "th", "td",
+]
 
+ALLOWED_HTML_ATTRIBUTES = {
+    "a": ["href", "title", "target", "rel"],
+    "img": ["src", "alt", "title", "width", "height", "loading", "decoding"],
+}
 
-def _sanitize_html_links(html: str) -> str:
-    """Block unsafe URL schemes inside rendered HTML attributes."""
-    return UNSAFE_LINK_RE.sub(r'\1=\2#\2', html)
+ALLOWED_HTML_PROTOCOLS = ["http", "https", "mailto"]
 
 
 class Category(models.Model):
@@ -272,10 +280,16 @@ class Post(models.Model):
         markdown_content = (self.content_markdown or "").strip()
         if markdown_content:
             rendered_html = render_markdown(
-                escape(markdown_content),
+                markdown_content,
                 extensions=["extra", "sane_lists", "nl2br"],
             )
-            self.content = _sanitize_html_links(rendered_html)
+            self.content = bleach.clean(
+                rendered_html,
+                tags=ALLOWED_HTML_TAGS,
+                attributes=ALLOWED_HTML_ATTRIBUTES,
+                protocols=ALLOWED_HTML_PROTOCOLS,
+                strip=True,
+            )
 
         plain_text_content = " ".join(strip_tags(self.content or "").split())
 

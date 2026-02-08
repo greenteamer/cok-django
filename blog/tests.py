@@ -43,3 +43,12 @@ class PostMarkdownTests(TestCase):
 
         self.assertIn('href="#"', post.content)
         self.assertIn('src="#"', post.content)
+
+    def test_code_quotes_are_not_double_escaped(self):
+        post = Post.objects.create(
+            title="Code quotes",
+            author=self.user,
+            content_markdown='and `@tag("_tag")`',
+        )
+
+        self.assertIn('<code>@tag("_tag")</code>', post.content)
