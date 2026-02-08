@@ -2,6 +2,8 @@
  * Timeline Section
  *
  * Vertical timeline for experience/history.
+ * Ring-style dots with gradient line and pulsing glow on the active item.
+ *
  * Usage:
  *   <div class="Timeline">
  *     <div class="Timeline__item Timeline__item--current">...</div>
@@ -9,22 +11,28 @@
  *   </div>
  */
 
-/* ── Pulsing glow keyframes ── */
+/* ── Design tokens (local) ── */
+.Timeline {
+  --tl-accent: #667eea;
+  --tl-accent-rgb: 102, 126, 234;
+  --tl-gray: #d1d5db;
+  --tl-gray-rgb: 209, 213, 219;
+  --tl-dot-size: 22px;
+  --tl-inner-dot: 8px;
+  --tl-line-width: 3px;
+}
+
+/* ── Pulsing glow ── */
 @keyframes timelinePulse {
-  0% {
+  0%, 100% {
     box-shadow:
-      0 0 0 0 rgba(10, 10, 10, 0.35),
-      0 0 0 0 rgba(10, 10, 10, 0.15);
+      0 0 0 0 rgba(var(--tl-accent-rgb), 0.4),
+      0 0 0 0 rgba(var(--tl-accent-rgb), 0.15);
   }
   50% {
     box-shadow:
-      0 0 6px 3px rgba(10, 10, 10, 0.18),
-      0 0 14px 7px rgba(10, 10, 10, 0.06);
-  }
-  100% {
-    box-shadow:
-      0 0 0 0 rgba(10, 10, 10, 0.35),
-      0 0 0 0 rgba(10, 10, 10, 0.15);
+      0 0 10px 4px rgba(var(--tl-accent-rgb), 0.25),
+      0 0 20px 10px rgba(var(--tl-accent-rgb), 0.08);
   }
 }
 
@@ -33,24 +41,25 @@
   max-width: 800px;
   margin: var(--spacing-lg) 0;
   position: relative;
-  padding-left: 28px;
+  padding-left: 36px;
 }
 
-/* Continuous vertical line running the full height */
+/* Gradient vertical line */
 .Timeline::before {
   content: "";
   position: absolute;
-  left: 6px;
-  top: 8px;
+  left: calc(var(--tl-dot-size) / 2 - var(--tl-line-width) / 2);
+  top: calc(var(--tl-dot-size) + 4px);
   bottom: 0;
-  width: 2px;
+  width: var(--tl-line-width);
   background: linear-gradient(
     to bottom,
-    var(--color-accent) 0%,
-    var(--color-border) 40%,
-    var(--color-border) 100%
+    var(--tl-accent) 0%,
+    rgba(var(--tl-accent-rgb), 0.4) 35%,
+    var(--tl-gray) 70%,
+    var(--tl-gray) 100%
   );
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 /* ── Individual item ── */
@@ -64,26 +73,46 @@
   margin-bottom: 0;
 }
 
-/* ── Dot indicator ── */
+/* ── Ring-style dot ── */
 .Timeline__dot {
   position: absolute;
-  left: calc(-28px + 1px);
-  top: 6px;
-  width: 12px;
-  height: 12px;
+  left: calc(-36px);
+  top: 4px;
+  width: var(--tl-dot-size);
+  height: var(--tl-dot-size);
   border-radius: 50%;
   background-color: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
+  border: 3px solid var(--tl-gray);
   z-index: 2;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ── Current / active item (explicit modifier OR first item) ── */
+/* Inner centre dot via ::after */
+.Timeline__dot::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tl-inner-dot);
+  height: var(--tl-inner-dot);
+  border-radius: 50%;
+  background-color: var(--tl-accent);
+  transform: translate(-50%, -50%);
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+/* ── Active dot (first item OR explicit --current) ── */
 .Timeline__item--current .Timeline__dot,
 .Timeline__item:first-child .Timeline__dot {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
-  animation: timelinePulse 2.5s ease-in-out infinite;
+  border-color: var(--tl-accent);
+  background-color: var(--color-bg-secondary);
+  animation: timelinePulse 2.8s ease-in-out infinite;
+}
+
+.Timeline__item--current .Timeline__dot::after,
+.Timeline__item:first-child .Timeline__dot::after {
+  opacity: 1;
 }
 
 /* ── Content block ── */
