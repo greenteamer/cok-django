@@ -200,6 +200,32 @@ DB_PORT=5432
 
 ---
 
+### Startup Settings
+
+#### DB_WAIT_TIMEOUT
+
+**Type**: Integer (seconds)
+
+**Required**: No
+
+**Default**: `30`
+
+**Purpose**: Maximum time (in seconds) the entrypoint script waits for PostgreSQL to become available before exiting with an error. Prevents infinite container hang when the database is unreachable.
+
+**Example**:
+```bash
+DB_WAIT_TIMEOUT=30
+```
+
+**Behavior**:
+- If PostgreSQL responds within the timeout, startup continues normally
+- If PostgreSQL does not respond, the container exits with code 1 and logs a clear error message
+- On Railway, this allows the orchestrator to detect the failure and restart the container
+
+**When to adjust**: Increase if your database takes longer to start (e.g., after large migrations or restores). Decrease for faster failure detection.
+
+---
+
 ## Environment Profiles
 
 ### Development Environment
@@ -463,4 +489,4 @@ When adding these, update this document and `docs/README.md`.
 
 ---
 
-Last Updated: 2025-12-21
+Last Updated: 2026-02-12

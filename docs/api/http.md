@@ -151,46 +151,44 @@ curl https://api.example.com/api/v1/resource/?page=1&search=test \
 
 ## Health Check Endpoint
 
-**Recommendation**: Add a health check endpoint for monitoring.
+### GET /health/
 
-**Example Implementation**:
+Application health check for Railway and external monitoring.
 
-```python
-# config/urls.py
-from django.http import JsonResponse
+**URL**: `/health/`
 
-def health_check(request):
-    # Optional: check database connectivity
-    from django.db import connection
-    try:
-        connection.ensure_connection()
-        db_status = "ok"
-    except Exception as e:
-        db_status = f"error: {str(e)}"
+**Method**: GET
 
-    return JsonResponse({
-        "status": "ok",
-        "database": db_status,
-    })
+**Authentication**: None (public)
 
-urlpatterns = [
-    path('health/', health_check),
-    # ...
-]
-```
+**Permissions**: None
 
-**Usage**:
+**Description**: Returns application and database status. Used by Railway's health check system (`railway.toml`) to verify the service is running and responsive. Returns HTTP 200 when healthy, HTTP 503 when database is unreachable.
+
+**Request Example**:
 ```bash
-curl https://example.com/health/
+curl https://coreofkeen.com/health/
 ```
 
-**Response**:
+**Success Response** (200 OK):
 ```json
 {
   "status": "ok",
   "database": "ok"
 }
 ```
+
+**Error Response** (503 Service Unavailable):
+```json
+{
+  "status": "ok",
+  "database": "error: OperationalError"
+}
+```
+
+**Implementation**: `config/views.py` → `health_check()` view, registered in `config/urls.py`.
+
+**Railway Integration**: The `railway.toml` file configures Railway to use this endpoint for health checks with a 120-second timeout.
 
 ---
 
@@ -331,6 +329,10 @@ See [`docs/modules/resume-pdf-export.md`](../modules/resume-pdf-export.md) for a
 
 When endpoints change, document changes here:
 
+### 2026-02-12
+- Added health check endpoint (`GET /health/`)
+- Health check verifies database connectivity, returns JSON status
+
 ### 2026-01-07
 - Added PDF resume export endpoint (`GET /resume/export/pdf/`)
 - Implemented ReportLab-based PDF generation
@@ -341,4 +343,4 @@ When endpoints change, document changes here:
 
 ---
 
-Last Updated: 2026-01-07
+Last Updated: 2026-02-12

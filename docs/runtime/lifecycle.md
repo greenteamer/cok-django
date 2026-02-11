@@ -75,12 +75,24 @@ LOG: database system is ready to accept connections
 ```bash
 #!/bin/bash
 
-# 1. Wait for PostgreSQL to be ready
+# 1. Wait for PostgreSQL to be ready (with timeout)
 echo "Waiting for PostgreSQL..."
-while ! nc -z db 5432; do
-  sleep 0.1
+DB_HOST="${DB_HOST:-${PGHOST:-db}}"
+DB_PORT="${DB_PORT:-${PGPORT:-5432}}"
+DB_WAIT_TIMEOUT="${DB_WAIT_TIMEOUT:-30}"
+
+echo "Connecting to ${DB_HOST}:${DB_PORT} (timeout: ${DB_WAIT_TIMEOUT}s)..."
+
+SECONDS=0
+while ! nc -z "$DB_HOST" "$DB_PORT" 2>/dev/null; do
+  if [ "$SECONDS" -ge "$DB_WAIT_TIMEOUT" ]; then
+    echo "ERROR: PostgreSQL not available at ${DB_HOST}:${DB_PORT} after ${DB_WAIT_TIMEOUT}s"
+    echo "Check DB_HOST/DB_PORT environment variables and database service status"
+    exit 1
+  fi
+  sleep 0.5
 done
-echo "PostgreSQL started"
+echo "PostgreSQL started on ${DB_HOST}:${DB_PORT} (waited ${SECONDS}s)"
 
 # 2. Apply database migrations
 python manage.py migrate --noinput
@@ -96,11 +108,15 @@ exec "$@"
 
 #### 4.1 Database Wait Loop
 
-Checks if PostgreSQL is accepting connections using `netcat`.
+Checks if PostgreSQL is accepting connections using `netcat` with a configurable timeout.
 
 **Why**: PostgreSQL container may start before it's ready to accept connections.
 
-**Retry**: Every 0.1 seconds until success.
+**Retry**: Every 0.5 seconds until success or timeout.
+
+**Timeout**: Controlled by `DB_WAIT_TIMEOUT` environment variable (default: 30 seconds). If PostgreSQL is not available within the timeout, the container exits with error code 1, allowing the orchestrator (Docker/Railway) to restart it or report the failure.
+
+**Host resolution**: Uses `DB_HOST` → `PGHOST` → `db` fallback chain. On Railway, `PGHOST` is typically set automatically by the PostgreSQL addon.
 
 **Typical duration**: 1-3 seconds.
 
@@ -305,9 +321,11 @@ docker-compose down -v
 
 ## Health Checks
 
-Currently, no health checks are configured.
+A health check endpoint is available at `/health/` that verifies application and database status.
 
-**Recommendation**: Add health check to `docker-compose.yml`:
+**Railway**: Configured via `railway.toml` with `/health/` as the health check path and 120-second timeout.
+
+**Docker Compose**: Can be configured with:
 
 ```yaml
 services:
@@ -321,7 +339,7 @@ services:
       start_period: 40s
 ```
 
-This allows Docker to monitor application health and restart if unhealthy.
+See `api/http.md` for endpoint details.
 
 ---
 
@@ -476,4 +494,4 @@ For production zero-downtime deployments:
 
 ---
 
-Last Updated: 2025-12-21
+Last Updated: 2026-02-12

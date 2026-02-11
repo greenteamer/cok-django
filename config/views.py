@@ -2,8 +2,9 @@
 Views for the main config app.
 """
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from django.db import connection
 
 from django.shortcuts import render
 from blog.models import Post
@@ -47,6 +48,26 @@ def home(request):
     }
 
     return render(request, "home.html", context)
+
+
+def health_check(request):
+    """
+    Health check endpoint for Railway and monitoring.
+
+    Returns 200 with DB status. Does not require authentication.
+    Used by Railway to verify the service is running.
+    """
+    status = {"status": "ok", "database": "ok"}
+    http_status = 200
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+    except Exception as e:
+        status["database"] = f"error: {type(e).__name__}"
+        http_status = 503
+
+    return JsonResponse(status, status=http_status)
 
 
 def custom_404(request, exception):
