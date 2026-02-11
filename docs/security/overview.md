@@ -29,13 +29,15 @@ Internet → Cloudflare → Nginx → Django → PostgreSQL
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
+    SECURE_REDIRECT_EXEMPT = [r"^health/$"]
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 ```
 
 **What this does**:
-- `SECURE_PROXY_SSL_HEADER`: Trust `X-Forwarded-Proto` header from Nginx
+- `SECURE_PROXY_SSL_HEADER`: Trust `X-Forwarded-Proto` header from Nginx/Railway
 - `SECURE_SSL_REDIRECT`: Redirect all HTTP requests to HTTPS
+- `SECURE_REDIRECT_EXEMPT`: Skip SSL redirect for `/health/` (required for Railway health checks which use internal HTTP)
 - `SESSION_COOKIE_SECURE`: Session cookies only sent over HTTPS
 - `CSRF_COOKIE_SECURE`: CSRF cookies only sent over HTTPS
 
@@ -47,6 +49,15 @@ if not DEBUG:
 - Man-in-the-middle attacks
 - Session hijacking
 - Cookie theft
+
+**Middleware Exemptions**:
+
+The `/health/` endpoint is exempt from SSL redirect and canonical host redirect. Railway (and other orchestrators) send internal health check requests over HTTP with internal hostnames. Without exemptions, these requests receive 301 redirects instead of 200 OK, causing health checks to fail.
+
+- `SECURE_REDIRECT_EXEMPT = [r"^health/$"]` — skips SSL redirect for `/health/`
+- `CanonicalHostMiddleware.EXEMPT_PATHS = ["/health/"]` — skips host redirect for `/health/`
+
+This is safe because the health check endpoint returns only application status (no sensitive data).
 
 ---
 

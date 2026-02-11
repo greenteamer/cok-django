@@ -331,6 +331,7 @@ if not DEBUG:
     # Trust X-Forwarded-Proto header from nginx
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True
+    SECURE_REDIRECT_EXEMPT = [r"^health/$"]
     SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=31536000, cast=int)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
         "SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True, cast=bool
