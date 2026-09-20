@@ -226,6 +226,122 @@ DB_WAIT_TIMEOUT=30
 
 ---
 
+### Cloudflare R2 Storage Settings
+
+Media files (uploaded images, CKEditor uploads) can be stored in Cloudflare R2 instead of the local filesystem. This is required for platforms with ephemeral filesystems (Railway, Heroku, etc.).
+
+#### USE_R2
+
+**Type**: Boolean
+
+**Required**: No
+
+**Default**: `False`
+
+**Purpose**: Enable Cloudflare R2 as the media storage backend. When `False`, media files are stored on the local filesystem.
+
+**Example**:
+```bash
+USE_R2=True
+```
+
+---
+
+#### R2_ACCESS_KEY_ID
+
+**Type**: String
+
+**Required**: Yes (when `USE_R2=True`)
+
+**Default**: None
+
+**Purpose**: Cloudflare R2 API access key ID. Generated in Cloudflare Dashboard → R2 → Manage R2 API Tokens.
+
+**Example**:
+```bash
+R2_ACCESS_KEY_ID=abcdef1234567890
+```
+
+**Security**: Treat as a password. NEVER commit to version control.
+
+---
+
+#### R2_SECRET_ACCESS_KEY
+
+**Type**: String
+
+**Required**: Yes (when `USE_R2=True`)
+
+**Default**: None
+
+**Purpose**: Cloudflare R2 API secret access key. Paired with `R2_ACCESS_KEY_ID`.
+
+**Example**:
+```bash
+R2_SECRET_ACCESS_KEY=your-secret-key-here
+```
+
+**Security**: Treat as a password. NEVER commit to version control.
+
+---
+
+#### R2_BUCKET_NAME
+
+**Type**: String
+
+**Required**: Yes (when `USE_R2=True`)
+
+**Default**: None
+
+**Purpose**: Name of the R2 bucket where media files are stored.
+
+**Example**:
+```bash
+R2_BUCKET_NAME=coreofkeen-media
+```
+
+---
+
+#### R2_ENDPOINT_URL
+
+**Type**: String (URL)
+
+**Required**: Yes (when `USE_R2=True`)
+
+**Default**: None
+
+**Purpose**: S3-compatible endpoint URL for R2. Format: `https://<account-id>.r2.cloudflarestorage.com`
+
+**Example**:
+```bash
+R2_ENDPOINT_URL=https://abc123def456.r2.cloudflarestorage.com
+```
+
+**Where to find**: Cloudflare Dashboard → R2 → Overview → Account ID is shown in the sidebar.
+
+---
+
+#### R2_CUSTOM_DOMAIN
+
+**Type**: String (hostname)
+
+**Required**: No
+
+**Default**: `""` (empty — uses R2 endpoint URL directly)
+
+**Purpose**: Custom domain for serving media files via Cloudflare CDN. Requires configuring a custom domain on the R2 bucket in Cloudflare Dashboard.
+
+**Example**:
+```bash
+R2_CUSTOM_DOMAIN=media.coreofkeen.com
+```
+
+**Behavior**:
+- If set: media URLs become `https://media.coreofkeen.com/path/to/file.jpg`
+- If empty: media URLs use the R2 public endpoint
+
+---
+
 ## Environment Profiles
 
 ### Development Environment
@@ -270,6 +386,14 @@ DB_USER=django_user
 DB_PASSWORD=<generate-strong-random-password>
 DB_HOST=db
 DB_PORT=5432
+
+# Cloudflare R2 Storage (required on Railway / ephemeral platforms)
+USE_R2=True
+R2_ACCESS_KEY_ID=<your-r2-access-key>
+R2_SECRET_ACCESS_KEY=<your-r2-secret-key>
+R2_BUCKET_NAME=coreofkeen-media
+R2_ENDPOINT_URL=https://<account-id>.r2.cloudflarestorage.com
+R2_CUSTOM_DOMAIN=media.coreofkeen.com
 ```
 
 **Characteristics**:
@@ -285,6 +409,8 @@ DB_PORT=5432
 - [ ] Correct `ALLOWED_HOSTS` (no wildcards)
 - [ ] `.env` file not in version control
 - [ ] `.env` file permissions: `chmod 600 .env`
+- [ ] R2 credentials set (if using cloud storage)
+- [ ] R2 bucket has appropriate access policy
 
 ---
 
@@ -481,7 +607,7 @@ These variables may be added in the future:
 
 - `REDIS_URL` - Redis connection string (for caching)
 - `CELERY_BROKER_URL` - Message broker for background tasks
-- `AWS_ACCESS_KEY_ID` - AWS credentials for S3 storage
+- ~~`AWS_ACCESS_KEY_ID` - AWS credentials for S3 storage~~ (implemented as R2 storage, see Cloudflare R2 section)
 - `SENTRY_DSN` - Error tracking with Sentry
 - `EMAIL_HOST`, `EMAIL_PORT` - Email configuration
 
@@ -489,4 +615,4 @@ When adding these, update this document and `docs/README.md`.
 
 ---
 
-Last Updated: 2026-02-12
+Last Updated: 2026-02-17

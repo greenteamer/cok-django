@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "blog",  # Blog application
     "resume",  # Resume/CV application
     "projects",  # Projects application
+    "storages",  # Cloud storage backends (S3, R2, etc.)
 ]
 
 MIDDLEWARE = [
@@ -144,17 +145,48 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-    },
-}
+# Cloud storage (Cloudflare R2)
+USE_R2 = config("USE_R2", default=False, cast=bool)
 
-# Media files
-MEDIA_URL = config("MEDIA_URL", default="/media/")
+if USE_R2:
+    # Cloudflare R2 configuration (S3-compatible)
+    AWS_ACCESS_KEY_ID = config("R2_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = config("R2_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("R2_BUCKET_NAME")
+    AWS_S3_ENDPOINT_URL = config("R2_ENDPOINT_URL")
+    AWS_S3_CUSTOM_DOMAIN = config("R2_CUSTOM_DOMAIN", default="")
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+        },
+    }
+
+    if AWS_S3_CUSTOM_DOMAIN:
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+    else:
+        MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+        },
+    }
+    MEDIA_URL = config("MEDIA_URL", default="/media/")
+
+# Media files (local filesystem fallback)
 MEDIA_ROOT = Path(config("MEDIA_ROOT", default=str(BASE_DIR / "media")))
 SERVE_MEDIA = config("SERVE_MEDIA", default=DEBUG, cast=bool)
 

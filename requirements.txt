@@ -9,3 +9,5 @@ django-ckeditor==6.7.3
 Markdown==3.7
 bleach==6.2.0
 reportlab==4.0.9
+django-storages[s3]==1.14.4
+boto3==1.35.0
