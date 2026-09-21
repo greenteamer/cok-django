@@ -198,6 +198,42 @@ DB_HOST=db
 DB_PORT=5432
 ```
 
+**Note**: This is the port used **inside** the Docker network (container-to-container).
+To change the port exposed on the host machine, use `DB_HOST_PORT`.
+
+---
+
+#### DB_HOST_PORT
+
+**Type**: Integer
+
+**Required**: No
+
+**Default**: `5433`
+
+**Purpose**: Host port that maps to the PostgreSQL container's port 5432
+(`docker-compose.yml` → `db.ports`). Used only for connecting to the database
+from the host machine (psql, DBeaver, DataGrip). The Django container does NOT
+use this variable — it connects over the Docker network via `DB_HOST`/`DB_PORT`.
+
+**Example**:
+```bash
+DB_HOST_PORT=5433
+```
+
+**Why not 5432**: Port 5432 is frequently occupied on developer machines by a
+local PostgreSQL installation or another project's container. If that happens,
+the `db` container fails to start with
+`Bind for 0.0.0.0:5432 failed: port is already allocated` and ends up detached
+from the Compose network, which makes `web` fail with
+`PostgreSQL not available at db:5432`. Defaulting to `5433` avoids this class
+of conflict.
+
+**Connecting from host**:
+```bash
+psql -h localhost -p 5433 -U django_user -d django_db
+```
+
 ---
 
 ### Startup Settings
@@ -615,4 +651,4 @@ When adding these, update this document and `docs/README.md`.
 
 ---
 
-Last Updated: 2026-02-17
+Last Updated: 2026-09-21

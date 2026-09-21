@@ -157,9 +157,13 @@ DB_USER=django_user
 DB_PASSWORD=password
 DB_HOST=db
 DB_PORT=5432
+DB_HOST_PORT=5433
 ```
 
 **For development**: These defaults are fine. No changes needed.
+
+`DB_HOST_PORT` is the host-side port for the database container (default `5433`).
+Change it only if 5433 is also taken on your machine.
 
 See `config/environment.md` for detailed explanation of each variable.
 
@@ -280,7 +284,7 @@ Superuser created successfully.
    Expected output:
    ```
    NAME                 STATUS    PORTS
-   cokdjango-db-1       Up        0.0.0.0:5432->5432/tcp
+   cokdjango-db-1       Up        0.0.0.0:5433->5432/tcp
    cokdjango-web-1      Up        0.0.0.0:8000->8000/tcp
    ```
 
@@ -579,6 +583,46 @@ ports:
   - "8001:8000"
 ```
 
+**Error**: `Bind for 0.0.0.0:5433 failed: port is already allocated`
+
+The database container publishes port `DB_HOST_PORT` (default `5433`) on the host.
+If that port is taken by a local PostgreSQL or another project's container, set a
+free port in `.env` and recreate the container:
+
+```bash
+echo "DB_HOST_PORT=5434" >> .env
+make down
+make up
+```
+
+**Important**: if the `db` container fails to bind its host port, Docker leaves it
+detached from the Compose network. The `web` container then cannot resolve the
+`db` hostname and loops with
+`ERROR: PostgreSQL not available at db:5432 after 30s`, even though the database
+logs show `database system is ready to accept connections`. Fixing the port
+conflict and recreating both containers resolves it:
+
+```bash
+make down
+make up
+```
+
+---
+
+### ModuleNotFoundError After Changing requirements.txt
+
+**Error**: `ModuleNotFoundError: No module named '<package>'` and gunicorn exits
+with `Worker failed to boot`.
+
+**Cause**: Python dependencies are installed into the Docker image at build time.
+The source tree is bind-mounted into the container, but `site-packages` is not —
+editing `requirements.txt` has no effect until the image is rebuilt.
+
+**Solution**:
+```bash
+make build
+```
+
 ---
 
 ### Database Connection Refused
@@ -727,4 +771,4 @@ For production deployment, see `guides/deployment.md`.
 
 ---
 
-Last Updated: 2025-12-21
+Last Updated: 2026-09-21
