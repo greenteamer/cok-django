@@ -124,6 +124,9 @@ Read these documents to understand Django app responsibilities and interfaces.
 - 📄 [`modules/resume-pdf-export.md`](./modules/resume-pdf-export.md)
   PDF resume export: ReportLab implementation, layout strategy, and generation pipeline
 
+- 📄 [`modules/text-utils.md`](./modules/text-utils.md)
+  Shared plain-text normalization helpers (`config/text.py`) for summary fields like excerpts and meta descriptions
+
 ---
 
 ## 8. Security & Compliance
@@ -203,7 +206,7 @@ When evolving the API or architecture:
 
 ## Last Updated
 
-2025-12-23
+2026-09-21
 
 This file MUST be updated whenever:
 

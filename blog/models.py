@@ -3,9 +3,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.text import slugify
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.html import strip_tags
 from markdown import markdown as render_markdown
 import bleach
+
+from config.text import html_to_text, markup_to_text, truncate_text
 
 from .image_variants import get_cropped_image_variant
 
@@ -171,7 +172,7 @@ class Post(models.Model):
         blank=True,
         max_length=500,
         verbose_name="Excerpt",
-        help_text="Short summary (max 500 characters, auto-generated if empty)"
+        help_text="Plain-text summary for cards (max 500 characters). HTML/Markdown is stripped on save; auto-generated from content if empty."
     )
 
     # Publishing workflow
@@ -234,7 +235,7 @@ class Post(models.Model):
         max_length=160,
         blank=True,
         verbose_name="Meta Description",
-        help_text="SEO meta description (max 160 characters, auto-generated if empty)"
+        help_text="SEO meta description, plain text (max 160 characters). HTML/Markdown is stripped on save; auto-generated from excerpt if empty."
     )
 
     meta_title = models.CharField(
@@ -311,24 +312,16 @@ class Post(models.Model):
                 strip=True,
             )
 
-        plain_text_content = " ".join(strip_tags(self.content or "").split())
-
-        # Auto-generate excerpt if not provided
-        if not self.excerpt and plain_text_content:
-            self.excerpt = (
-                f"{plain_text_content[:497]}..."
-                if len(plain_text_content) > 500
-                else plain_text_content
-            )
-
-        # Auto-generate meta_description if not provided
-        if not self.meta_description and self.excerpt:
-            clean_excerpt = " ".join(strip_tags(self.excerpt).split())
-            self.meta_description = (
-                f"{clean_excerpt[:157]}..."
-                if len(clean_excerpt) > 160
-                else clean_excerpt
-            )
+        # excerpt and meta_description are plain text (rendered autoescaped):
+        # normalize manual input, auto-generate from content when empty
+        self.excerpt = truncate_text(
+            markup_to_text(self.excerpt) or html_to_text(self.content),
+            500,
+        )
+        self.meta_description = truncate_text(
+            markup_to_text(self.meta_description) or self.excerpt,
+            160,
+        )
 
         if not self.meta_title:
             self.meta_title = (

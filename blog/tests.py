@@ -62,6 +62,63 @@ class PostMarkdownTests(TestCase):
         self.assertIn('<code>@tag("_tag")</code>', post.content)
 
 
+class PostPlainTextSummaryTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="summary-editor",
+            password="test-password-123",
+        )
+
+    def test_manual_excerpt_with_html_markdown_and_entities_is_plain_text(self):
+        post = Post.objects.create(
+            title="Lexer",
+            author=self.user,
+            content_markdown="Body",
+            excerpt=(
+                'If you missed it, <a href="https://example.com/part-1/">part 1 '
+                'covers why</a>. When you write `let temp = 500`, you see three '
+                "things &mdash; a keyword &amp; a name."
+            ),
+        )
+
+        self.assertEqual(
+            post.excerpt,
+            "If you missed it, part 1 covers why. When you write let temp = 500, "
+            "you see three things \u2014 a keyword & a name.",
+        )
+
+    def test_auto_excerpt_decodes_entities(self):
+        post = Post.objects.create(
+            title="Entities",
+            author=self.user,
+            content_markdown="Tom & Jerry <3",
+        )
+
+        self.assertEqual(post.excerpt, "Tom & Jerry <3")
+
+    def test_manual_meta_description_is_plain_text_and_truncated(self):
+        post = Post.objects.create(
+            title="Meta",
+            author=self.user,
+            content_markdown="Body",
+            meta_description="**Bold** &mdash; " + "x" * 200,
+        )
+
+        self.assertTrue(post.meta_description.startswith("Bold \u2014 x"))
+        self.assertEqual(len(post.meta_description), 160)
+        self.assertTrue(post.meta_description.endswith("..."))
+
+    def test_meta_description_falls_back_to_excerpt(self):
+        post = Post.objects.create(
+            title="Fallback",
+            author=self.user,
+            content_markdown="Body",
+            excerpt="<em>Short</em> summary",
+        )
+
+        self.assertEqual(post.meta_description, "Short summary")
+
+
 class PostImageVariantTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(

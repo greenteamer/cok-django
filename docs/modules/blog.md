@@ -22,7 +22,7 @@ The `blog` Django app provides complete blogging functionality including posts, 
 - `title`: CharField(max_length=200) - Post title
 - `slug`: SlugField(max_length=200, unique=True) - URL-friendly identifier (auto-generated from title)
 - `content`: RichTextUploadingField - Full post content with **WYSIWYG editor** (CKEditor) supporting rich text formatting and image uploads
-- `excerpt`: TextField(max_length=500, blank=True) - Short summary (auto-generated from content if empty)
+- `excerpt`: TextField(max_length=500, blank=True) - **Plain-text** summary shown on post cards. Manual input is normalized on save (HTML tags, Markdown syntax and HTML entities removed/decoded); auto-generated from content if empty. See [Plain-Text Summary Fields](#plain-text-summary-fields)
 - `status`: CharField(max_length=10, choices=['draft', 'published'], default='draft') - Publication status
 - `author`: ForeignKey('auth.User', on_delete=PROTECT) - Post author
 - `category`: ForeignKey('Category', on_delete=SET_NULL, null=True, blank=True) - Post category
@@ -30,7 +30,7 @@ The `blog` Django app provides complete blogging functionality including posts, 
 - `featured_image`: ImageField(upload_to='blog/featured/%Y/%m/', blank=True, null=True) - Featured image
 
 **SEO Fields**:
-- `meta_description`: CharField(max_length=160, blank=True) - SEO meta description (auto-generated from excerpt)
+- `meta_description`: CharField(max_length=160, blank=True) - **Plain-text** SEO meta description. Manual input is normalized on save; auto-generated from excerpt if empty
 - `meta_keywords`: CharField(max_length=255, blank=True) - Comma-separated keywords
 
 **Timestamps**:
@@ -43,7 +43,7 @@ The `blog` Django app provides complete blogging functionality including posts, 
 - Has many: Tags (ManyToMany), Comments (reverse relation)
 
 **Model Methods**:
-- `save()`: Auto-generates slug from title, excerpt from content, meta_description from excerpt, and sets published_at on first publish
+- `save()`: Auto-generates slug from title; normalizes `excerpt` and `meta_description` to plain text (generating them from content/excerpt when empty); sets published_at on first publish
 - `is_published` (property): Returns True if status is 'published'
 - `comment_count` (property): Returns count of approved comments
 - `get_next_post()`: Returns next published post by published_at date
@@ -496,8 +496,9 @@ blog_tag ←──[M2M]──── blog_post
 
 **Auto-generation behavior**:
 - Slug: generated from title if empty
-- Excerpt: first 497 characters of content if empty
-- Meta description: first 157 characters of excerpt if empty
+- Excerpt: first 497 characters of content (plain text) + `...` if empty
+- Meta description: first 157 characters of excerpt + `...` if empty
+- Manually entered excerpt / meta description: HTML, Markdown and entities are stripped/decoded on save (e.g. `<a href="…">part 1</a> &mdash;` → `part 1 —`)
 - Published_at: set to current time when first published (not updated on subsequent saves)
 
 ### Moderating Comments
@@ -830,6 +831,38 @@ Not yet implemented:
 - Added CKEditor WYSIWYG editor support for post content
 - Enabled image uploads directly in the editor
 
+### 0005_post_plain_text_summaries
+
+**Created**: 2026-09-21
+
+**Changes**:
+- Updated `help_text` of `Post.excerpt` and `Post.meta_description` (plain-text contract)
+- Data migration: rewrites existing `excerpt` / `meta_description` values as plain text using `config/text.py` (fixes cards that displayed raw `<a href>` / `&mdash;`)
+- Reverse operation is a no-op (original markup is not restored)
+
+---
+
+## Plain-Text Summary Fields
+
+**Invariant**: `Post.excerpt` and `Post.meta_description` always contain plain text.
+
+**Why**: these fields are rendered with Django autoescaping — on post cards
+(`home.html`, `blog/post_list.html`), in `<meta>`/OpenGraph tags and in JSON-LD.
+Any markup stored in them is shown to readers literally. Previously, an excerpt
+pasted with HTML (`<a href="…">`) or entities (`&mdash;`) appeared as raw text
+on the Writing cards.
+
+**How it is enforced**:
+- `Post.save()` runs manual input through `markup_to_text()` and truncates
+  (500 / 160 chars) with `truncate_text()`
+- Auto-generated values come from `html_to_text(content)`
+- Existing rows were normalized by migration `0005_post_plain_text_summaries`
+
+**Rules for templates**: render these fields with autoescaping only. Never add
+`|safe` to them, and never store pre-escaped text.
+
+Shared helpers: [`docs/modules/text-utils.md`](./text-utils.md).
+
 ---
 
 ## Related Documentation
@@ -840,4 +873,4 @@ Not yet implemented:
 
 ---
 
-**Last Updated**: 2025-12-31
+**Last Updated**: 2026-09-21
