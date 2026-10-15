@@ -71,7 +71,8 @@ See `Makefile` for all available commands.
 
 - **[Project Overview](./docs/overview.md)** - Purpose, goals, and technology stack
 - **[Local Setup Guide](./docs/guides/setup.md)** - Detailed development setup
-- **[Deployment Guide](./docs/guides/deployment.md)** - Production deployment on Ubuntu
+- **[Railway Deployment](./docs/guides/deployment-railway.md)** - Current production deployment
+- **[Self-Hosted Deployment](./docs/guides/deployment.md)** - Alternative: Ubuntu + Nginx
 - **[Architecture](./docs/architecture/system.md)** - System architecture and components
 - **[Configuration](./docs/config/environment.md)** - Environment variables reference
 - **[Security](./docs/security/overview.md)** - Security model and best practices
@@ -112,7 +113,9 @@ See [Development Guide](./docs/guides/setup.md) for details.
 
 ## Production Deployment
 
-**Quick summary** (see [full deployment guide](./docs/guides/deployment.md)):
+Production (`coreofkeen.com`) runs on **Railway** behind Cloudflare: push to the connected branch → automatic build from `Dockerfile`, migrations and `collectstatic` on start. Media lives on a Railway volume (`MEDIA_ROOT=/data/media`). See [Railway deployment guide](./docs/guides/deployment-railway.md).
+
+**Self-hosted alternative** (see [full guide](./docs/guides/deployment.md)):
 
 1. **Server**: Ubuntu 20.04+ with Docker installed
 2. **Environment**: Configure `.env` with production secrets

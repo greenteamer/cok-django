@@ -4,7 +4,32 @@ This document lists all HTTP endpoints in the application.
 
 ## Current Endpoints
 
-Currently, the application provides only the Django Admin interface.
+### Public Pages
+
+| URL | Name | View | Description |
+|-----|------|------|-------------|
+| `/` | `home` | `config.views.home` | Home page: profile, featured projects, recent posts |
+| `/blog/` | `post_list` | `blog.views.post_list` | Published posts, paginated (`?page=`) |
+| `/blog/<slug>/` | `post_detail` | `blog.views.post_detail` | Published post (404 for drafts) |
+| `/projects/` | `project_list` | `projects.views.project_list` | Projects list |
+| `/projects/<slug>/` | `project_detail` | `projects.views.project_detail` | Project page |
+| `/resume/` | `resume` | `resume.views.resume_page` | Resume page |
+| `/resume/export/pdf/` | `export_resume_pdf` | `resume.views.export_resume_pdf` | Resume as PDF |
+| `/sitemap.xml` | `sitemap` | Django sitemaps | Blog, projects, static pages |
+| `/robots.txt` | `robots_txt` | `config.views.robots_txt` | Disallows `/admin/`, `/ckeditor/` |
+
+`/robots`, `/robots/`, `/robots.txt/`, `/sitemap`, `/sitemap/`, `/sitemap.xml/` permanently redirect to the canonical URLs.
+
+### Staff / Internal
+
+| URL | Description |
+|-----|-------------|
+| `/admin/` | Django Admin (Unfold) |
+| `/admin/tools/cover/` | Blog cover generator (see below) |
+| `/ckeditor/` | CKEditor upload endpoints (staff) |
+| `/health/` | Health check (see below) |
+
+Source of truth: `config/urls.py`.
 
 ### Django Admin
 
@@ -16,7 +41,7 @@ Currently, the application provides only the Django Admin interface.
 
 **Methods**: GET, POST (via admin interface)
 
-**Access**: Superuser accounts only
+**Access**: Staff accounts (`is_staff`)
 
 **Features**:
 - User management
@@ -132,7 +157,7 @@ curl https://api.example.com/api/v1/resource/?page=1&search=test \
 
 **Authentication**: None (public)
 
-**Handler**: Nginx (production), WhiteNoise (development)
+**Handler**: WhiteNoise (Railway production), Nginx (self-hosted)
 
 **Purpose**: Serve CSS, JavaScript, images for Django admin and apps
 
@@ -154,7 +179,7 @@ curl https://api.example.com/api/v1/resource/?page=1&search=test \
 
 **Authentication**: None (public by default, can be protected)
 
-**Handler**: Nginx (production), Django (development)
+**Handler**: Django when `DEBUG=True` or `SERVE_MEDIA=True` (Railway production), Nginx (self-hosted), or R2 public domain when `USE_R2=True`
 
 **Purpose**: Serve user-uploaded files
 
@@ -182,7 +207,7 @@ Application health check for Railway and external monitoring.
 
 **Permissions**: None
 
-**Description**: Returns application and database status. Used by Railway's health check system (`railway.toml`) to verify the service is running and responsive. Returns HTTP 200 when healthy, HTTP 503 when database is unreachable.
+**Description**: Returns application and database status. Used by Railway's health check (configured in Railway service settings) to verify the service is running and responsive. Returns HTTP 200 when healthy, HTTP 503 when database is unreachable.
 
 **Request Example**:
 ```bash
@@ -207,31 +232,18 @@ curl https://coreofkeen.com/health/
 
 **Implementation**: `config/views.py` → `health_check()` view, registered in `config/urls.py`.
 
-**Railway Integration**: The `railway.toml` file configures Railway to use this endpoint for health checks with a 120-second timeout.
+**Railway Integration**: Set as Healthcheck Path in Railway service settings (timeout 120 s). See [`guides/deployment-railway.md`](../guides/deployment-railway.md).
 
 ---
 
 ## URL Routing
 
-Current URL configuration is in `config/urls.py`:
+URL configuration lives in `config/urls.py` (see [Current Endpoints](#current-endpoints) for the full list).
 
-```python
-from django.contrib import admin
-from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
+Static and media routes appended at the end:
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
-
-# In development, serve media files
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-```
-
-**Note**: In production, Nginx handles static and media files (see `architecture/system.md`).
+- `/static/` — Django serves it only when `DEBUG=True`; in production WhiteNoise middleware serves collected files from `STATIC_ROOT`
+- `/media/` — Django serves `MEDIA_ROOT` when `DEBUG=True` or `SERVE_MEDIA=True` (Railway production); self-hosted setups serve it from Nginx
 
 ---
 

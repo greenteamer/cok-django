@@ -198,9 +198,11 @@ Response: 200 OK with CSS content
 ```
 
 **File Storage**:
-- Files are stored in `/app/media/` inside container
-- File paths are stored in database
-- For production, should use object storage (S3, etc.)
+- Files are written to `MEDIA_ROOT` (default `/app/media/`); file paths are stored in the database
+- Railway production: `MEDIA_ROOT=/data/media` on a persistent volume, served by Django (`SERVE_MEDIA=True`) behind Cloudflare
+- Self-hosted: served by Nginx
+- Optional: Cloudflare R2 object storage (`USE_R2=True`)
+- See [`config/environment.md`](../config/environment.md#media-storage-settings-local-filesystem)
 
 ## Database Query Flow
 

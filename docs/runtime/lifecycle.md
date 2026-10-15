@@ -116,7 +116,7 @@ Checks if PostgreSQL is accepting connections using `netcat` with a configurable
 
 **Timeout**: Controlled by `DB_WAIT_TIMEOUT` environment variable (default: 30 seconds). If PostgreSQL is not available within the timeout, the container exits with error code 1, allowing the orchestrator (Docker/Railway) to restart it or report the failure.
 
-**Host resolution**: Uses `DB_HOST` → `PGHOST` → `db` fallback chain. On Railway, `PGHOST` is typically set automatically by the PostgreSQL addon.
+**Host resolution**: Uses `DB_HOST` → `PGHOST` → `db` fallback chain (port: `DB_PORT` → `PGPORT` → `5432`). This fallback applies only to the wait loop — Django itself reads only `DB_*` variables, so they must be set explicitly on Railway (see [`guides/deployment-railway.md`](../guides/deployment-railway.md)).
 
 **Typical duration**: 1-3 seconds.
 
@@ -323,7 +323,7 @@ docker-compose down -v
 
 A health check endpoint is available at `/health/` that verifies application and database status.
 
-**Railway**: Configured via `railway.toml` with `/health/` as the health check path and 120-second timeout.
+**Railway**: Configured in the Railway service settings (Healthcheck Path `/health/`, timeout 120 s). Not stored in the repository — see [`guides/deployment-railway.md`](../guides/deployment-railway.md).
 
 **Docker Compose**: Can be configured with:
 

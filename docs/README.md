@@ -100,8 +100,11 @@ Read these documents to understand HOW to work with the codebase.
 - 📄 [`guides/testing.md`](./guides/testing.md)
   Testing strategy and tooling (framework for future tests)
 
+- 📄 [`guides/deployment-railway.md`](./guides/deployment-railway.md)
+  Current production deployment on Railway: services, volume-backed media, variables, health check
+
 - 📄 [`guides/deployment.md`](./guides/deployment.md)
-  Production deployment on Ubuntu server
+  Self-hosted deployment on Ubuntu server with Nginx (alternative)
 
 - 📄 [`guides/caching.md`](./guides/caching.md)
   Static file caching strategy and troubleshooting

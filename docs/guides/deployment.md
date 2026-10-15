@@ -1,6 +1,10 @@
-# Production Deployment Guide
+# Self-Hosted Deployment Guide (Ubuntu + Nginx)
 
-This guide covers deploying the application to production on an Ubuntu server.
+This guide covers deploying the application on a self-managed Ubuntu server.
+
+> **Current production (`coreofkeen.com`) runs on Railway**, not on this setup.
+> See [`deployment-railway.md`](./deployment-railway.md). This guide remains
+> valid as a self-hosted alternative.
 
 ## Prerequisites
 

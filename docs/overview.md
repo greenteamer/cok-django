@@ -139,7 +139,7 @@ For developers new to the project:
 1. Read `guides/setup.md` for local development setup
 2. Read `architecture/system.md` to understand component structure
 3. Read `config/environment.md` for configuration options
-4. Read `guides/deployment.md` for production deployment
+4. Read `guides/deployment-railway.md` for current production (Railway) or `guides/deployment.md` for self-hosted
 
 ## Assumptions and Constraints
 
@@ -176,7 +176,7 @@ Navigate to specific documentation files to answer:
 - **"How do I set up local development?"** → `guides/setup.md`
 - **"What environment variables are required?"** → `config/environment.md`
 - **"How do components interact?"** → `architecture/data-flow.md`
-- **"How do I deploy to production?"** → `guides/deployment.md`
+- **"How do I deploy to production?"** → `guides/deployment-railway.md` (Railway, current) / `guides/deployment.md` (self-hosted)
 - **"What security features are enabled?"** → `security/overview.md`
 - **"How does the application start?"** → `runtime/lifecycle.md`
 

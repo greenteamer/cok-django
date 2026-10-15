@@ -1,5 +1,10 @@
 # System Architecture
 
+> **Deployment variants**: the diagrams below describe the self-hosted setup
+> (Nginx on the host + Docker Compose). Current production runs on Railway
+> without Nginx (WhiteNoise for static, Django for media from a persistent
+> volume) — see [`guides/deployment-railway.md`](../guides/deployment-railway.md).
+
 ## High-Level Architecture
 
 The system follows a classic 3-tier web application architecture:
