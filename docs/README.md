@@ -118,6 +118,9 @@ Read these documents to understand Django app responsibilities and interfaces.
 - 📄 [`modules/projects.md`](./modules/projects.md)
   Projects application: portfolio management, featured projects, and technology tags
 
+- 📄 [`modules/cover-generator.md`](./modules/cover-generator.md)
+  Blog cover image generator: staff-only editable HTML/CSS layout exported to PNG/JPEG
+
 - 📄 [`modules/resume.md`](./modules/resume.md)
   Resume/CV application: professional profile, experience, skills, certifications, and achievements
 
@@ -206,7 +209,7 @@ When evolving the API or architecture:
 
 ## Last Updated
 
-2026-09-21
+2026-10-15
 
 This file MUST be updated whenever:
 

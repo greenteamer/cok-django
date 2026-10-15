@@ -24,7 +24,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .sitemaps import BlogPostSitemap, ProjectSitemap, StaticViewSitemap
 from .views import home, robots_txt, custom_404, health_check
-from blog.views import post_list, post_detail
+from blog.views import cover_generator, post_list, post_detail
 from resume.views import export_resume_pdf, resume_page
 from projects.views import project_detail, project_list
 
@@ -55,6 +55,7 @@ urlpatterns = [
     path("sitemap.xml/", RedirectView.as_view(pattern_name="sitemap", permanent=True)),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path("health/", health_check, name="health_check"),
+    path("admin/tools/cover/", cover_generator, name="cover_generator"),
     path("admin/", admin.site.urls),
     path("ckeditor/", include("ckeditor_uploader.urls")),
 ]

@@ -321,6 +321,11 @@ UNFOLD = {
                         "icon": "comment",
                         "link": "/admin/blog/comment/",
                     },
+                    {
+                        "title": "Cover generator",
+                        "icon": "image",
+                        "link": "/admin/tools/cover/",
+                    },
                 ],
             },
             {

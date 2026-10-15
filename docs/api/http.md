@@ -24,6 +24,25 @@ Currently, the application provides only the Django Admin interface.
 - Database browsing and editing
 - Model history and audit log
 
+### Blog Cover Generator
+
+**URL**: `/admin/tools/cover/`
+
+**Method**: GET
+
+**Authentication**: Django admin session
+
+**Permissions**: Staff users (`is_staff`); anonymous users are redirected to `/admin/login/`
+
+**Query Parameters**:
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `post` | integer | No | Post ID to prefill title, tags and category; unknown IDs fall back to defaults |
+
+**Response**: HTML editor page. Images are generated in the browser, not on the server.
+
+See [`modules/cover-generator.md`](../modules/cover-generator.md).
+
 ---
 
 ## Future API Endpoints

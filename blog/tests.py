@@ -185,3 +185,51 @@ class PostImageVariantTests(TestCase):
 
         self.assertIn("fx10_fy90", updated_card_url)
         self.assertNotEqual(default_card_url, updated_card_url)
+
+
+@override_settings(CANONICAL_HOST="", SECURE_SSL_REDIRECT=False)
+class CoverGeneratorViewTests(TestCase):
+    url = "/admin/tools/cover/"
+
+    def setUp(self):
+        self.staff = get_user_model().objects.create_user(
+            username="staff",
+            password="test-password-123",
+            is_staff=True,
+        )
+
+    def test_anonymous_user_is_redirected_to_admin_login(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/admin/login/", response["Location"])
+
+    def test_staff_user_gets_default_layout(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="cover"')
+        self.assertContains(response, "OpenAPI")
+
+    def test_post_prefills_title_tags_and_slug(self):
+        from .models import Tag
+
+        post = Post.objects.create(title="Cover <b>title</b>", author=self.staff)
+        post.tags.add(Tag.objects.create(name="Django"))
+        self.client.force_login(self.staff)
+
+        response = self.client.get(self.url, {"post": post.pk})
+
+        self.assertContains(response, "Cover &lt;b&gt;title&lt;/b&gt;")
+        self.assertContains(response, ">Django</div>")
+        self.assertContains(response, f'value="{post.slug}-cover"')
+
+    def test_unknown_post_falls_back_to_default_layout(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.get(self.url, {"post": "999999"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "OpenAPI")

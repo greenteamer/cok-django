@@ -5,8 +5,10 @@ URL Structure:
 - /blog/ - All posts list page
 - /blog/<slug>/ - Individual post detail page
 - Reserved paths: 'category', 'tag', 'archive', 'author' for future features
+- /admin/tools/cover/ - Staff-only cover image generator (see docs/modules/cover-generator.md)
 """
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from .models import Post
@@ -84,3 +86,31 @@ def post_detail(request, slug):
     }
 
     return render(request, "blog/post_detail.html", context)
+
+
+@staff_member_required
+def cover_generator(request):
+    """
+    Blog cover image generator (staff only).
+
+    URL: /admin/tools/cover/?post=<id>
+
+    Renders an editable 1600x900 HTML/CSS cover layout that is exported
+    to PNG/JPEG in the browser. When `post` is given, the title and tags
+    of that post prefill the layout.
+    """
+    post = None
+    post_id = request.GET.get("post", "")
+    if post_id.isdigit():
+        post = (
+            Post.objects.select_related("category")
+            .prefetch_related("tags")
+            .filter(pk=int(post_id))
+            .first()
+        )
+
+    context = {
+        "post": post,
+        "tags": list(post.tags.all()[:3]) if post else [],
+    }
+    return render(request, "blog/cover_generator.html", context)

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+{% comment %}
+Blog cover image generator (staff only).
+Layout is a fixed 1600x900 HTML/CSS canvas (#cover). Every text node on the
+canvas is contenteditable; export to PNG/JPEG happens in the browser via
+html-to-image. See docs/modules/cover-generator.md.
+{% endcomment %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cover generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" crossorigin="anonymous"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap">
+  <style>
+    /* ---------- Tool chrome (not exported) ---------- */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 14px/1.4 system-ui, -apple-system, sans-serif;
+      background: #e9ebef;
+      color: #1f2328;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      padding: 12px 16px;
+      background: #fff; border-bottom: 1px solid #d5d8de;
+    }
+    .toolbar__group { display: flex; gap: 6px; align-items: center; }
+    .toolbar__label { font-size: 12px; color: #6b7280; margin-right: 2px; }
+    .toolbar button, .toolbar select, .toolbar input[type=text] {
+      font: inherit; height: 32px; padding: 0 10px;
+      border: 1px solid #c9cdd4; border-radius: 6px; background: #fff; cursor: pointer;
+    }
+    .toolbar input[type=text] { cursor: text; width: 220px; }
+    .toolbar button:hover { background: #f3f4f6; }
+    .toolbar button.primary { background: #6c5ce7; border-color: #6c5ce7; color: #fff; }
+    .toolbar button.primary:hover { background: #5b4bd6; }
+    .swatch { width: 32px; padding: 0 !important; font-weight: 700; }
+    .toolbar a { color: #6c5ce7; }
+    .hint { padding: 8px 16px 0; font-size: 12px; color: #6b7280; }
+    .stage { padding: 16px; }
+    .stage__frame { position: relative; width: 100%; max-width: 1600px; margin: 0 auto; }
+    .stage__scaler { transform-origin: 0 0; }
+    .status { font-size: 12px; color: #6b7280; }
+
+    /* ---------- Exported canvas ---------- */
+    #cover {
+      --bg: #f6f7f9;
+      --dot: #d3d6dd;
+      --ink: #16181d;
+      --accent: #6c5ce7;
+      --bracket: #c9c3f3;
+      --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+      --sans: "Plus Jakarta Sans", system-ui, sans-serif;
+
+      position: relative;
+      width: 1600px; height: 900px;
+      overflow: hidden;
+      background-color: var(--bg);
+      background-image: radial-gradient(var(--dot) 1.4px, transparent 1.6px);
+      background-size: 28px 28px;
+      background-position: 6px 6px;
+      font-family: var(--sans);
+      color: var(--ink);
+    }
+    #cover [contenteditable] { outline: none; }
+    #cover [contenteditable]:hover { box-shadow: 0 0 0 2px rgba(108, 92, 231, .25); border-radius: 4px; }
+    #cover [contenteditable]:focus { box-shadow: 0 0 0 2px rgba(108, 92, 231, .6); border-radius: 4px; }
+    #cover.is-exporting [contenteditable] { box-shadow: none !important; }
+
+    .bracket { position: absolute; width: 86px; height: 86px; border-color: var(--bracket); border-style: solid; }
+    .bracket--tl { left: 14px; top: 26px; border-width: 4px 0 0 4px; }
+    .bracket--br { right: 14px; bottom: 60px; border-width: 0 4px 4px 0; }
+
+    .chips { position: absolute; left: 56px; top: 54px; display: flex; gap: 14px; }
+    .chip {
+      padding: 8px 20px;
+      font: 500 18px/24px var(--mono);
+      letter-spacing: .02em;
+      color: #c4553f;
+      background: #fcefeb;
+      border: 1.5px solid #f1d3c9;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+    .chip:nth-child(3n) { color: #b0662f; background: #fcf3ea; border-color: #f0dcc7; }
+
+    .term {
+      position: absolute; left: 170px; top: 174px;
+      width: 1260px; height: 492px;
+      background: #1b1d24;
+      border-radius: 20px;
+      box-shadow: 0 30px 60px -20px rgba(16, 18, 27, .45), 0 8px 18px rgba(16, 18, 27, .12);
+      overflow: hidden;
+    }
+    .term__bar {
+      display: flex; align-items: center; gap: 12px;
+      height: 74px; padding: 0 24px;
+      background: #15171d;
+      border-bottom: 1px solid #23262f;
+    }
+    .term__dot { width: 17px; height: 17px; border-radius: 50%; }
+    .term__tab {
+      margin-left: 28px; padding: 10px 22px;
+      font: 400 17px/22px var(--mono); color: #c8ccd6;
+      background: #1c1f26; border-radius: 8px;
+    }
+    .term__body {
+      padding: 36px 40px;
+      font: 400 20px/39.5px var(--mono);
+      color: #e6e8ee;
+      white-space: pre-wrap;
+      min-height: 380px;
+    }
+
+    /* Terminal token colors (applied with the toolbar) */
+    .t-muted  { color: #858a97; }
+    .t-dim    { color: #4c5160; }
+    .t-white  { color: #e6e8ee; }
+    .t-accent { color: #a48bff; }
+    .t-blue   { color: #6f8dff; }
+    .t-yellow { color: #f5c542; }
+    .t-green  { color: #4ade80; }
+    .t-red    { color: #f26b5b; }
+    .t-cursor { display: inline-block; width: 13px; height: 26px; vertical-align: -5px; background: #6f6cf0; }
+
+    .title {
+      position: absolute; left: 56px; top: 738px;
+      width: 1000px;
+      font: 700 35px/44px var(--sans);
+      letter-spacing: -.01em;
+    }
+    .title .accent { color: var(--accent); }
+
+    .badge {
+      position: absolute; right: 56px; bottom: 98px;
+      padding: 5px 16px;
+      font: 500 17px/24px var(--mono); color: #4b47c9;
+      background: #eceaff; border: 1.5px solid #c9c4f5; border-radius: 9px;
+    }
+
+    #cover.no-term .term { display: none; }
+    #cover.no-brackets .bracket { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar__group">
+    <a href="{% if post %}{% url 'admin:blog_post_change' post.pk %}{% else %}{% url 'admin:index' %}{% endif %}">← Admin</a>
+  </div>
+
+  <div class="toolbar__group" title="Select text in the terminal or title, then pick a color">
+    <span class="toolbar__label">Color selection</span>
+    <button class="swatch" data-color="t-white"  style="color:#1f2328">A</button>
+    <button class="swatch" data-color="t-muted"  style="color:#858a97">A</button>
+    <button class="swatch" data-color="t-accent" style="color:#a48bff">A</button>
+    <button class="swatch" data-color="t-blue"   style="color:#6f8dff">A</button>
+    <button class="swatch" data-color="t-yellow" style="color:#d9a917">A</button>
+    <button class="swatch" data-color="t-green"  style="color:#22b35b">A</button>
+    <button class="swatch" data-color="t-red"    style="color:#f26b5b">A</button>
+    <button data-color="accent" title="Title accent color">Accent</button>
+    <button data-color="" title="Remove color from selection">Clear</button>
+  </div>
+
+  <div class="toolbar__group">
+    <span class="toolbar__label">Chips</span>
+    <button id="chip-add">+</button>
+    <button id="chip-remove">−</button>
+  </div>
+
+  <div class="toolbar__group">
+    <label><input type="checkbox" id="toggle-term" checked> Terminal</label>
+    <label><input type="checkbox" id="toggle-brackets" checked> Brackets</label>
+  </div>
+
+  <div class="toolbar__group">
+    <input type="text" id="filename" value="{% if post %}{{ post.slug }}-cover{% else %}blog-cover{% endif %}" aria-label="File name">
+    <select id="format" aria-label="Format">
+      <option value="png">PNG</option>
+      <option value="jpeg">JPEG</option>
+    </select>
+    <select id="scale" aria-label="Scale">
+      <option value="1">1600×900</option>
+      <option value="2">3200×1800 (@2x)</option>
+    </select>
+    <button class="primary" id="export">Download</button>
+    <button id="reset" title="Discard local draft and restore defaults">Reset</button>
+    <span class="status" id="status"></span>
+  </div>
+</div>
+
+<div class="hint">Click any text on the image to edit it. Edits are kept as a draft in this browser until you press Reset.</div>
+
+<div class="stage">
+  <div class="stage__frame" id="frame">
+    <div class="stage__scaler" id="scaler">
+
+      <div id="cover">
+        <div class="bracket bracket--tl"></div>
+        <div class="bracket bracket--br"></div>
+
+        <div class="chips" id="chips" data-draft="chips">
+          {% if tags %}
+            {% for tag in tags %}<div class="chip" contenteditable="true" spellcheck="false">{{ tag.name }}</div>{% endfor %}
+          {% else %}
+            <div class="chip" contenteditable="true" spellcheck="false">Decode</div><div class="chip" contenteditable="true" spellcheck="false">Encode</div><div class="chip" contenteditable="true" spellcheck="false">OpenAPI</div>
+          {% endif %}
+        </div>
+
+        <div class="term">
+          <div class="term__bar">
+            <span class="term__dot" style="background:#f0564a"></span>
+            <span class="term__dot" style="background:#f4b32a"></span>
+            <span class="term__dot" style="background:#3bc65a"></span>
+            <span class="term__tab" contenteditable="true" spellcheck="false" data-draft="tab">~/project</span>
+          </div>
+<div class="term__body" contenteditable="true" spellcheck="false" data-draft="term"><div><span class="t-blue">$</span> npx osury <span class="t-accent">generate</span> <span class="t-blue">--input</span> <span class="t-yellow">openapi.yaml</span></div><div style="height:10px"></div><div><span class="t-dim">●</span> <span class="t-muted">Reading OpenAPI 3.1 spec...</span> <span class="t-blue">24 endpoints</span><span class="t-muted">,</span> <span class="t-blue">18 schemas</span></div><div><span class="t-dim">●</span> <span class="t-muted">Generating</span> <span class="t-red">ReScript</span> <span class="t-muted">bindings...</span>  <span class="t-green">done</span></div><div><span class="t-dim">●</span> <span class="t-muted">Generating</span> <span class="t-blue">TypeScript</span> <span class="t-muted">types...</span>  <span class="t-green">done</span></div><div style="height:12px"></div><div><span class="t-green">✓</span> 42 type-safe modules generated</div><div><span class="t-dim">└─</span> <span class="t-green">src/api/</span><span class="t-red">Users.res</span> <span class="t-dim">+</span> <span class="t-blue">Users.ts</span></div><div><span class="t-dim">└─</span> <span class="t-green">src/api/</span><span class="t-red">Orders.res</span> <span class="t-dim">+</span> <span class="t-blue">Orders.ts</span></div><div style="height:12px"></div><div><span class="t-blue">$</span> <span class="t-cursor" contenteditable="false"></span></div></div>
+        </div>
+
+        <div class="title" contenteditable="true" spellcheck="false" data-draft="title">{% if post %}{{ post.title }}{% else %}Building <span class="accent">osury</span>: Bridging the Gap Between OpenAPI, Type-Safe ReScript, and TypeScript{% endif %}</div>
+
+        <div class="badge" contenteditable="true" spellcheck="false" data-draft="badge">{% if post and post.category %}{{ post.category.name }}{% else %}npm{% endif %}</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var COVER_W = 1600, COVER_H = 900;
+  var DRAFT_KEY = "cover-draft:{% if post %}{{ post.pk }}{% else %}default{% endif %}";
+  var COLOR_CLASSES = ["t-white", "t-muted", "t-dim", "t-accent", "t-blue", "t-yellow", "t-green", "t-red", "accent"];
+
+  var cover = document.getElementById("cover");
+  var frame = document.getElementById("frame");
+  var scaler = document.getElementById("scaler");
+  var chips = document.getElementById("chips");
+  var statusEl = document.getElementById("status");
+
+  // ---- Preview scaling: canvas stays 1600x900, only the preview is scaled.
+  function fit() {
+    var scale = Math.min(1, frame.clientWidth / COVER_W);
+    scaler.style.transform = "scale(" + scale + ")";
+    frame.style.height = (COVER_H * scale) + "px";
+  }
+  window.addEventListener("resize", fit);
+  fit();
+
+  // ---- Draft persistence (per post, this browser only).
+  function storage(fn) { try { return fn(window.localStorage); } catch (e) { return null; } }
+
+  function saveDraft() {
+    var draft = {
+      noTerm: cover.classList.contains("no-term"),
+      noBrackets: cover.classList.contains("no-brackets"),
+      parts: {}
+    };
+    cover.querySelectorAll("[data-draft]").forEach(function (el) {
+      draft.parts[el.dataset.draft] = el.innerHTML;
+    });
+    storage(function (s) { s.setItem(DRAFT_KEY, JSON.stringify(draft)); });
+  }
+
+  function loadDraft() {
+    var raw = storage(function (s) { return s.getItem(DRAFT_KEY); });
+    if (!raw) return;
+    try {
+      var draft = JSON.parse(raw);
+      cover.querySelectorAll("[data-draft]").forEach(function (el) {
+        if (typeof draft.parts[el.dataset.draft] === "string") el.innerHTML = draft.parts[el.dataset.draft];
+      });
+      cover.classList.toggle("no-term", !!draft.noTerm);
+      cover.classList.toggle("no-brackets", !!draft.noBrackets);
+    } catch (e) { /* corrupted draft: ignore */ }
+  }
+
+  loadDraft();
+  document.getElementById("toggle-term").checked = !cover.classList.contains("no-term");
+  document.getElementById("toggle-brackets").checked = !cover.classList.contains("no-brackets");
+
+  var saveTimer;
+  cover.addEventListener("input", function () {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 300);
+  });
+
+  // Paste as plain text so foreign styles never leak into the canvas.
+  cover.addEventListener("paste", function (e) {
+    e.preventDefault();
+    var text = (e.clipboardData || window.clipboardData).getData("text/plain");
+    document.execCommand("insertText", false, text);
+  });
+
+  // Single-line fields: Enter finishes editing instead of inserting a line break.
+  cover.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.target.closest(".term__body")) {
+      e.preventDefault();
+      e.target.blur();
+    }
+  });
+
+  // ---- Color the current selection.
+  function unwrapColors(root) {
+    root.querySelectorAll("span").forEach(function (span) {
+      if (!COLOR_CLASSES.some(function (c) { return span.classList.contains(c); })) return;
+      while (span.firstChild) span.parentNode.insertBefore(span.firstChild, span);
+      span.remove();
+    });
+  }
+
+  function colorSelection(cls) {
+    var sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) { flash("Select text first"); return; }
+    var range = sel.getRangeAt(0);
+    var host = range.commonAncestorContainer;
+    host = host.nodeType === 1 ? host : host.parentElement;
+    if (!host || !host.closest("#cover [contenteditable=true]")) { flash("Select text on the image"); return; }
+
+    var fragment = range.extractContents();
+    unwrapColors(fragment);
+    var node = fragment;
+    if (cls) {
+      node = document.createElement("span");
+      node.className = cls;
+      node.appendChild(fragment);
+    }
+    range.insertNode(node);
+    sel.removeAllRanges();
+    saveDraft();
+  }
+
+  document.querySelectorAll("[data-color]").forEach(function (btn) {
+    // mousedown + preventDefault keeps the text selection alive.
+    btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    btn.addEventListener("click", function () { colorSelection(btn.dataset.color); });
+  });
+
+  // ---- Chips.
+  document.getElementById("chip-add").addEventListener("click", function () {
+    var chip = document.createElement("div");
+    chip.className = "chip";
+    chip.contentEditable = "true";
+    chip.spellcheck = false;
+    chip.textContent = "Tag";
+    chips.appendChild(chip);
+    saveDraft();
+  });
+  document.getElementById("chip-remove").addEventListener("click", function () {
+    if (chips.lastElementChild) chips.lastElementChild.remove();
+    saveDraft();
+  });
+
+  // ---- Toggles.
+  document.getElementById("toggle-term").addEventListener("change", function (e) {
+    cover.classList.toggle("no-term", !e.target.checked); saveDraft();
+  });
+  document.getElementById("toggle-brackets").addEventListener("change", function (e) {
+    cover.classList.toggle("no-brackets", !e.target.checked); saveDraft();
+  });
+
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("Discard the draft and restore defaults?")) return;
+    storage(function (s) { s.removeItem(DRAFT_KEY); });
+    location.reload();
+  });
+
+  // ---- Export.
+  function flash(msg) {
+    statusEl.textContent = msg;
+    clearTimeout(flash.t);
+    flash.t = setTimeout(function () { statusEl.textContent = ""; }, 3000);
+  }
+
+  document.getElementById("export").addEventListener("click", function () {
+    if (!window.htmlToImage) { flash("Export library failed to load"); return; }
+    var format = document.getElementById("format").value;
+    var scale = Number(document.getElementById("scale").value);
+    var name = (document.getElementById("filename").value || "blog-cover").replace(/[^\w.-]+/g, "-");
+
+    if (document.activeElement) document.activeElement.blur();
+    window.getSelection().removeAllRanges();
+    cover.classList.add("is-exporting");
+    flash("Rendering…");
+
+    var options = { width: COVER_W, height: COVER_H, pixelRatio: scale, cacheBust: true };
+    document.fonts.ready
+      .then(function () {
+        return format === "jpeg"
+          ? window.htmlToImage.toJpeg(cover, Object.assign({ quality: 0.92, backgroundColor: "#f6f7f9" }, options))
+          : window.htmlToImage.toPng(cover, options);
+      })
+      .then(function (dataUrl) {
+        var link = document.createElement("a");
+        link.download = name + "." + (format === "jpeg" ? "jpg" : "png");
+        link.href = dataUrl;
+        link.click();
+        flash("Saved " + link.download);
+      })
+      .catch(function (err) { console.error(err); flash("Export failed: " + err); })
+      .finally(function () { cover.classList.remove("is-exporting"); });
+  });
+})();
+</script>
+</body>
+</html>

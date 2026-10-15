@@ -8,6 +8,8 @@ The `blog` Django app provides complete blogging functionality including posts, 
 
 **Entry Point**: `blog/models.py` for data models, `blog/admin.py` for admin interface
 
+**Related tool**: cover images for `featured_image` can be produced with the [Cover Generator](./cover-generator.md)
+
 ---
 
 ## Models
