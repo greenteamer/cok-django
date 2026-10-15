@@ -262,9 +262,54 @@ DB_WAIT_TIMEOUT=30
 
 ---
 
+### Media Storage Settings (local filesystem)
+
+Used when `USE_R2=False` (default). Uploaded files (featured images, project images, CKEditor uploads) are stored under `MEDIA_ROOT` and served by Django at `MEDIA_URL`.
+
+**Persistence requirement**: on platforms with ephemeral container filesystems (Railway, Heroku), `MEDIA_ROOT` MUST point inside a persistent volume. Otherwise uploads are lost on every redeploy while their database records remain, producing 404 images.
+
+**Current production (Railway)**: volume `cok-django-volume` mounted at `/data`, `MEDIA_ROOT=/data/media`, Cloudflare proxies and caches `/media/*`.
+
+#### MEDIA_ROOT
+
+**Type**: String (absolute path)
+
+**Required**: No
+
+**Default**: `<BASE_DIR>/media` (`/app/media` in the Docker image)
+
+**Purpose**: Directory where uploaded media files are written.
+
+**Example**:
+```bash
+MEDIA_ROOT=/data/media
+```
+
+#### MEDIA_URL
+
+**Type**: String (URL path)
+
+**Required**: No
+
+**Default**: `/media/`
+
+**Purpose**: URL prefix for media files. Ignored when `USE_R2=True` (derived from R2 settings).
+
+#### SERVE_MEDIA
+
+**Type**: Boolean
+
+**Required**: No
+
+**Default**: value of `DEBUG`
+
+**Purpose**: Let Django serve files from `MEDIA_ROOT` when `DEBUG=False`. Must be `True` in production when there is no web server (e.g. Nginx) serving `MEDIA_ROOT` — the case on Railway.
+
+---
+
 ### Cloudflare R2 Storage Settings
 
-Media files (uploaded images, CKEditor uploads) can be stored in Cloudflare R2 instead of the local filesystem. This is required for platforms with ephemeral filesystems (Railway, Heroku, etc.).
+Media files (uploaded images, CKEditor uploads) can be stored in Cloudflare R2 instead of the local filesystem. Optional alternative to a persistent volume (see [Media Storage Settings](#media-storage-settings-local-filesystem)); useful for multiple replicas or offloading media traffic from the app. Switching an existing deployment to R2 requires moving existing files into the bucket (or re-uploading them).
 
 #### USE_R2
 
@@ -361,11 +406,11 @@ R2_ENDPOINT_URL=https://abc123def456.r2.cloudflarestorage.com
 
 **Type**: String (hostname)
 
-**Required**: No
+**Required**: Effectively yes (when `USE_R2=True`) — see Behavior
 
 **Default**: `""` (empty — uses R2 endpoint URL directly)
 
-**Purpose**: Custom domain for serving media files via Cloudflare CDN. Requires configuring a custom domain on the R2 bucket in Cloudflare Dashboard.
+**Purpose**: Public hostname media files are served from. Either a custom domain connected to the bucket (Cloudflare Dashboard → R2 → bucket → Settings → Custom Domains) or the bucket's `pub-<hash>.r2.dev` public development URL.
 
 **Example**:
 ```bash
@@ -374,7 +419,7 @@ R2_CUSTOM_DOMAIN=media.coreofkeen.com
 
 **Behavior**:
 - If set: media URLs become `https://media.coreofkeen.com/path/to/file.jpg`
-- If empty: media URLs use the R2 public endpoint
+- If empty: media URLs become `<R2_ENDPOINT_URL>/<R2_BUCKET_NAME>/path/to/file.jpg`. This is the S3 API endpoint, which requires signed requests (`AWS_QUERYSTRING_AUTH = False` disables signing), so browsers cannot load the images. Always set this variable in production.
 
 ---
 
@@ -423,7 +468,11 @@ DB_PASSWORD=<generate-strong-random-password>
 DB_HOST=db
 DB_PORT=5432
 
-# Cloudflare R2 Storage (required on Railway / ephemeral platforms)
+# Media: persistent volume (ephemeral platforms like Railway)
+MEDIA_ROOT=/data/media
+SERVE_MEDIA=True
+
+# OR Cloudflare R2 Storage (alternative to a volume)
 USE_R2=True
 R2_ACCESS_KEY_ID=<your-r2-access-key>
 R2_SECRET_ACCESS_KEY=<your-r2-secret-key>
