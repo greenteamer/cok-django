@@ -122,6 +122,23 @@
   max-width: 600px;
 }
 
+/* Title links to the project page without looking like a link */
+.ProjectCard__titleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ProjectCard__titleLink:hover {
+  text-decoration: underline;
+}
+
+/* Every available link of the project, in one row */
+.ProjectCard__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-lg);
+}
+
 /* Project link */
 .ProjectCard__link {
   color: var(--color-primary);

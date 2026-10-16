@@ -20,8 +20,9 @@ The core model representing a portfolio project.
 | `slug` | SlugField | URL-friendly identifier. |
 | `description` | TextField | Short description displayed on cards. |
 | `image` | ImageField | Project screenshot or mockup. |
-| `external_link` | URLField | Link to the live project or repo. |
-| `case_study_link` | URLField | Link to a detailed case study (internal or external). |
+| `live_url` | URLField | The running product: App Store page, website or demo. Shown as “Live ↗”. |
+| `source_url` | URLField | Source code repository. Shown as “Source ↗”. |
+| `case_study_url` | URLField | A write-up about the project (article or blog post). Shown as “Case study ↗”. |
 | `is_featured` | BooleanField | Whether to show on the homepage. |
 | `order` | IntegerField | Display order. |
 | `tags` | ManyToMany | Relation to `Tag` model. |
@@ -37,4 +38,7 @@ Represents technologies used in the project (e.g., "React Native", "Python").
 ## Integration
 
 - **Homepage**: Featured projects are displayed in the "Work" section of `home.html`.
+- **Cards** (homepage and `/projects/`) share `projects/_tags.html` and `projects/_links.html`:
+  tags come from the database, and every filled link is shown, plus “Details →” to the project page.
+  Title and image also lead to the project page.
 - **Admin**: Managed via the Django Admin interface using `unfold`.

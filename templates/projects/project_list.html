@@ -38,17 +38,11 @@
                 </div>
                 <div class="ProjectCard__content">
                     <div class="ProjectCard__header">
-                        <h2>{{ project.title }}</h2>
-                        {% if project.tags.exists %}
-                        <div class="ProjectCard__tags">
-                            {% for tag in project.tags.all %}
-                                <span class="Tag">{{ tag.name }}</span>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <h2><a href="{% url 'project_detail' slug=project.slug %}" class="ProjectCard__titleLink">{{ project.title }}</a></h2>
+                        {% include "projects/_tags.html" %}
                     </div>
                     <p class="ProjectCard__description">{{ project.description }}</p>
-                    <a href="{% url 'project_detail' slug=project.slug %}" class="ProjectCard__link">View Project →</a>
+                    {% include "projects/_links.html" %}
                 </div>
             </article>
             {% empty %}

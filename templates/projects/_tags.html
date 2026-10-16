@@ -1,0 +1,7 @@
+{% if project.tags.all %}
+<div class="ProjectCard__tags">
+    {% for tag in project.tags.all %}
+        <span class="Tag">{{ tag.name }}</span>
+    {% endfor %}
+</div>
+{% endif %}

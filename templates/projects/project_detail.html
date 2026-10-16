@@ -45,11 +45,14 @@
             {% endif %}
 
             <div class="Hero__cta">
-                {% if project.external_link %}
-                    <a href="{{ project.external_link }}" target="_blank" rel="noopener noreferrer" class="Button Button--primary">Live / Repository</a>
+                {% if project.live_url %}
+                    <a href="{{ project.live_url }}" target="_blank" rel="noopener noreferrer" class="Button Button--primary">Live ↗</a>
                 {% endif %}
-                {% if project.case_study_link %}
-                    <a href="{{ project.case_study_link }}" target="_blank" rel="noopener noreferrer" class="Button Button--secondary">Case Study</a>
+                {% if project.source_url %}
+                    <a href="{{ project.source_url }}" target="_blank" rel="noopener noreferrer" class="Button {% if project.live_url %}Button--secondary{% else %}Button--primary{% endif %}">Source ↗</a>
+                {% endif %}
+                {% if project.case_study_url %}
+                    <a href="{{ project.case_study_url }}" target="_blank" rel="noopener noreferrer" class="Button Button--secondary">Case study ↗</a>
                 {% endif %}
                 <a href="{% url 'project_list' %}" class="Button Button--secondary">All Projects</a>
             </div>

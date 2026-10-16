@@ -1,0 +1,16 @@
+{% comment %}
+Every link the project has, with one label per field everywhere on the site:
+external links get ↗, the internal details page gets →.
+{% endcomment %}
+<div class="ProjectCard__links">
+    {% if project.live_url %}
+        <a href="{{ project.live_url }}" class="ProjectCard__link" target="_blank" rel="noopener noreferrer">Live ↗</a>
+    {% endif %}
+    {% if project.source_url %}
+        <a href="{{ project.source_url }}" class="ProjectCard__link" target="_blank" rel="noopener noreferrer">Source ↗</a>
+    {% endif %}
+    {% if project.case_study_url %}
+        <a href="{{ project.case_study_url }}" class="ProjectCard__link" target="_blank" rel="noopener noreferrer">Case study ↗</a>
+    {% endif %}
+    <a href="{% url 'project_detail' slug=project.slug %}" class="ProjectCard__link">Details →</a>
+</div>

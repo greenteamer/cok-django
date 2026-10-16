@@ -31,8 +31,13 @@ class Project(models.Model):
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     description = models.TextField(help_text="Short description displayed on cards.")
     image = models.ImageField(upload_to="projects/", help_text="Project screenshot or mockup.")
-    external_link = models.URLField(blank=True, help_text="Link to the live project or repo.")
-    case_study_link = models.URLField(blank=True, help_text="Link to a detailed case study.")
+    live_url = models.URLField(
+        blank=True, help_text="The running product: App Store page, website or demo. Shown as “Live ↗”."
+    )
+    source_url = models.URLField(blank=True, help_text="Source code repository. Shown as “Source ↗”.")
+    case_study_url = models.URLField(
+        blank=True, help_text="A write-up about the project (article or blog post). Shown as “Case study ↗”."
+    )
     
     tags = models.ManyToManyField(Tag, related_name="projects", blank=True)
     
