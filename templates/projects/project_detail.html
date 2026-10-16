@@ -2,7 +2,7 @@
 
 {% block title %}{{ project.title }} | Project | Alex Dev{% endblock %}
 {% block description %}{{ project.description|truncatechars:160 }}{% endblock %}
-{% block keywords %}{{ project.title }}, mobile app project, react native{% endblock %}
+{% block keywords %}{{ project.title }}{% for tag in project.tags.all %}, {{ tag.name }}{% endfor %}, portfolio project{% endblock %}
 {% block og_title %}{{ project.title }} | Project | Alex Dev{% endblock %}
 {% block og_description %}{{ project.description|truncatechars:160 }}{% endblock %}
 {% block twitter_title %}{{ project.title }} | Project | Alex Dev{% endblock %}
