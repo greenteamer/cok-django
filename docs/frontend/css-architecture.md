@@ -63,11 +63,11 @@ static/css/
 │   ├── Card.css               # Generic card
 │   ├── Tag.css                # Tags/labels
 │   ├── StatusBadge.css        # Status indicator
-│   ├── PhoneMockup.css        # Phone device mockup
 │   └── SectionHeader.css      # Section headers
 │
 ├── sections/                   # Page sections
-│   ├── Hero.css               # Hero section
+│   ├── Hero.css               # Hero section (title, CTA, proof strip)
+│   ├── HeroWork.css           # Hero fan of real project covers
 │   ├── TechGrid.css           # Technologies grid
 │   ├── ProjectCard.css        # Project cards
 │   ├── PostCard.css           # Blog post cards

@@ -1,7 +1,8 @@
 /**
  * Hero Section
  *
- * Main hero section with title, description, CTA buttons, and phone mockup.
+ * Main hero section with title, description, CTA buttons, project list
+ * ("proof strip") and a fan of real project covers (see HeroWork.css).
  * Usage: <section class="Hero">...</section>
  */
 
@@ -43,7 +44,44 @@
 /* CTA buttons container */
 .Hero__cta {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--spacing-sm);
+}
+
+/* Tertiary CTA rendered as a text link */
+.Hero__textLink {
+  padding: 0 var(--spacing-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.Hero__textLink:hover {
+  color: var(--color-text-primary);
+}
+
+/* Proof strip: names of featured projects, each links to its page */
+.Hero__proof {
+  margin-top: var(--spacing-md);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-tertiary);
+}
+
+.Hero__proofLabel {
+  margin-right: 0.25rem;
+}
+
+.Hero__proof a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.Hero__proof a:hover {
+  color: var(--color-text-primary);
+  border-bottom-color: currentColor;
 }
 
 /* Hero image/mockup container */

@@ -12,92 +12,36 @@
                     Available for new projects
                 </div>
                 <h1 class="Hero__title">
-                    Crafting fluid
-                    <span class="Hero__titleFade">mobile<br>experiences</span>
+                    Mobile apps
+                    <span class="Hero__titleFade">and the tooling<br>behind them.</span>
                 </h1>
                 <p class="Hero__description">
-                    Specialized in React Native and Expo. I build
-                    performant, cross-platform applications with pixel-perfect design and native-like feel.
+                    React Native &amp; Expo apps with a native feel.
+                    Type-safe developer tooling like osury for the teams that ship them.
                 </p>
                 <div class="Hero__cta">
                     <a href="#work" class="Button Button--primary">View Projects</a>
-                    <a href="https://github.com/greenteamer" class="Button Button--secondary">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"></path>
-                        </svg>
-                        GitHub
-                    </a>
+                    <a href="{% url 'resume' %}" class="Button Button--secondary">Resume</a>
+                    <a href="https://github.com/greenteamer" class="Hero__textLink">GitHub ↗</a>
                 </div>
+                {% if projects %}
+                <p class="Hero__proof">
+                    <span class="Hero__proofLabel">Shipped:</span>
+                    {% for project in projects %}<a href="{% url 'project_detail' slug=project.slug %}">{{ project.title }}</a>{% if not forloop.last %}<span class="Hero__proofSep" aria-hidden="true"> · </span>{% endif %}{% endfor %}
+                </p>
+                {% endif %}
             </div>
+            {% if projects %}
             <div class="Hero__image">
-                <div class="PhoneMockup">
-                    <div class="PhoneMockup__screen">
-                        <div class="PhoneMockup__notch"></div>
-                        <div class="PhoneMockup__content">
-                            <!-- App Header -->
-                            <div class="AppHeader">
-                                <div class="AppHeader__avatar">AD</div>
-                                <div class="AppHeader__info">
-                                    <div class="AppHeader__greeting">Hello there! 👋</div>
-                                    <div class="AppHeader__name">Alex Dev</div>
-                                </div>
-                                <div class="AppHeader__action">🔔</div>
-                            </div>
-
-                            <!-- App Stats -->
-                            <div class="AppStats">
-                                <div class="AppStats__card AppStats__card--blue">
-                                    <div class="AppStats__value">50+</div>
-                                    <div class="AppStats__label">Projects</div>
-                                </div>
-                                <div class="AppStats__card AppStats__card--orange">
-                                    <div class="AppStats__value">5y</div>
-                                    <div class="AppStats__label">Exp</div>
-                                </div>
-                            </div>
-
-                            <!-- App List -->
-                            <div class="AppList">
-                                <div class="AppList__title">Recent Activity</div>
-                                <div class="AppList__item">
-                                    <div class="AppList__icon AppList__icon--purple">🚀</div>
-                                    <div class="AppList__info">
-                                        <div class="AppList__label">Launched New App</div>
-                                        <div class="AppList__sub">2 days ago</div>
-                                    </div>
-                                </div>
-                                <div class="AppList__item">
-                                    <div class="AppList__icon AppList__icon--green">📝</div>
-                                    <div class="AppList__info">
-                                        <div class="AppList__label">Wrote Blog Post</div>
-                                        <div class="AppList__sub">1 week ago</div>
-                                    </div>
-                                </div>
-                                <div class="AppList__item">
-                                    <div class="AppList__icon AppList__icon--blue">💻</div>
-                                    <div class="AppList__info">
-                                        <div class="AppList__label">Merged PR #42</div>
-                                        <div class="AppList__sub">2 weeks ago</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Bottom Nav -->
-                            <div class="AppNav">
-                                <div class="AppNav__item AppNav__item--active">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                                </div>
-                                <div class="AppNav__item">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                </div>
-                                <div class="AppNav__item">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="HeroWork">
+                    {% for project in projects|slice:":3" %}
+                    <a href="{% url 'project_detail' slug=project.slug %}" class="HeroWork__item" aria-label="{{ project.title }}">
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}" width="1242" height="2688" fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}">
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>

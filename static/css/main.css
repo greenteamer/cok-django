@@ -32,13 +32,13 @@
 @import "./components/Card.css";
 @import "./components/Tag.css";
 @import "./components/StatusBadge.css";
-@import "./components/PhoneMockup.css";
 @import "./components/SectionHeader.css";
 
 /* ============================================
    4. Section Components - Composed sections
    ============================================ */
 @import "./sections/Hero.css";
+@import "./sections/HeroWork.css";
 @import "./sections/TechGrid.css";
 @import "./sections/ProjectCard.css";
 @import "./sections/PostCard.css";
@@ -74,15 +74,6 @@
 
   .Hero__title {
     font-size: 2.5rem;
-  }
-
-  .Hero__image {
-    order: -1;
-  }
-
-  .PhoneMockup {
-    width: 240px;
-    height: 480px;
   }
 
   .ProjectCard__grid {

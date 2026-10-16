@@ -1,0 +1,81 @@
+/**
+ * HeroWork
+ *
+ * Fan of real project covers in the hero (first 3 featured projects).
+ * Deliberately different from ProjectCard below: larger, overlapping,
+ * tilted, no captions — a teaser, not a second project list.
+ * Usage:
+ *   <div class="HeroWork">
+ *     <a class="HeroWork__item" href="..."><img src="..." alt="..."></a>
+ *   </div>
+ */
+
+.HeroWork {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+}
+
+/* Phone-shaped cover with device bezel */
+.HeroWork__item {
+  position: relative;
+  flex: 0 0 auto;
+  width: 200px;
+  aspect-ratio: 9 / 19.5;
+  margin: 0 -28px;
+  border: 6px solid #111111;
+  border-radius: 32px;
+  overflow: hidden;
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.HeroWork__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Fan layout: side covers tilted back, middle one in front */
+.HeroWork__item:nth-child(1) {
+  transform: rotate(-8deg) translateY(24px);
+  z-index: 1;
+}
+
+.HeroWork__item:nth-child(2) {
+  transform: translateY(-12px);
+  z-index: 2;
+}
+
+.HeroWork__item:nth-child(3) {
+  transform: rotate(8deg) translateY(24px);
+  z-index: 1;
+}
+
+.HeroWork__item:hover,
+.HeroWork__item:focus-visible {
+  transform: rotate(0deg) translateY(-24px) scale(1.04);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18);
+  z-index: 3;
+}
+
+/* Single or two covers: no overlap needed */
+.HeroWork__item:only-child {
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .HeroWork {
+    padding: var(--spacing-sm) 0 var(--spacing-md);
+  }
+
+  .HeroWork__item {
+    width: 120px;
+    margin: 0 -14px;
+    border-width: 4px;
+    border-radius: 20px;
+  }
+}
