@@ -62,18 +62,18 @@
     padding: 0 var(--spacing-sm);
   }
 
-  .Navbar__links {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
   .Hero__content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--spacing-md);
   }
 
   .Hero__title {
     font-size: 2.5rem;
+  }
+
+  /* Let the faded part of the title flow naturally on narrow screens */
+  .Hero__titleFade br {
+    display: none;
   }
 
   .ProjectCard__grid {

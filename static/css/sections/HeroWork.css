@@ -17,13 +17,14 @@
   padding: var(--spacing-md) 0;
 }
 
-/* Phone-shaped cover with device bezel */
+/* Phone-shaped cover with device bezel; size scales with the viewport */
 .HeroWork__item {
+  --cover-width: clamp(120px, 14vw, 200px);
   position: relative;
   flex: 0 0 auto;
-  width: 200px;
+  width: var(--cover-width);
   aspect-ratio: 9 / 19.5;
-  margin: 0 -28px;
+  margin: 0 calc(var(--cover-width) * -0.14);
   border: 6px solid #111111;
   border-radius: 32px;
   overflow: hidden;
@@ -67,14 +68,18 @@
   transform: none;
 }
 
+/* Tilted side covers must never widen the page */
+.Hero__image {
+  overflow-x: clip;
+}
+
 @media (max-width: 768px) {
   .HeroWork {
     padding: var(--spacing-sm) 0 var(--spacing-md);
   }
 
   .HeroWork__item {
-    width: 120px;
-    margin: 0 -14px;
+    --cover-width: clamp(96px, 30vw, 120px);
     border-width: 4px;
     border-radius: 20px;
   }

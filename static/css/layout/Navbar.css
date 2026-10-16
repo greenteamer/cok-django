@@ -1,8 +1,13 @@
 /**
  * Navbar Component
  *
- * Sticky navigation bar with logo and navigation links.
+ * Sticky navigation bar with logo, navigation links, CTA and a mobile menu toggle.
  * Usage: <nav class="Navbar"><div class="Container">...</div></nav>
+ *
+ * Mobile (<= 768px):
+ * - .Navbar--js (added by the inline script in base.html): links are hidden
+ *   behind .Navbar__toggle; .Navbar--open shows them as a full-width list.
+ * - Without JS: links wrap onto a second row, the toggle stays hidden.
  */
 
 .Navbar {
@@ -50,20 +55,80 @@
   color: var(--color-text-primary);
 }
 
-/* CTA Button (will be extracted to Button component later) */
-.btn-cta {
-  padding: 0.5rem 1.25rem;
-  background-color: var(--color-bg-card);
-  color: var(--color-text-primary);
-  text-decoration: none;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.95rem;
-  transition: all 0.2s;
-  border: 1px solid var(--color-border);
+/* CTA + mobile toggle */
+.Navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
 
-  &:hover {
-    background-color: var(--color-accent);
-    color: white;
-    transform: translateX(2px);
+/* Hamburger button: only visible on mobile with JS */
+.Navbar__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+}
+
+.Navbar__toggleBar {
+  display: block;
+  height: 2px;
+  background-color: var(--color-text-primary);
+  border-radius: 1px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* Bars turn into a cross when open */
+.Navbar--open .Navbar__toggleBar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.Navbar--open .Navbar__toggleBar:nth-child(2) {
+  opacity: 0;
+}
+
+.Navbar--open .Navbar__toggleBar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .Navbar .Container {
+    flex-wrap: wrap;
+    row-gap: var(--spacing-xs);
+  }
+
+  /* No-JS fallback: links wrap onto their own row */
+  .Navbar__links {
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .Navbar--js .Navbar__toggle {
+    display: inline-flex;
+  }
+
+  .Navbar--js .Navbar__links {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .Navbar--js.Navbar--open .Navbar__links {
+    display: flex;
+  }
+
+  .Navbar--js .Navbar__links a {
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    border-top: 1px solid var(--color-border);
   }
 }

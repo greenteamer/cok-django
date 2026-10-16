@@ -13,7 +13,8 @@
 /* Two-column grid layout */
 .Hero__content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, ...) keeps wide content (cover fan) from stretching the grid */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--spacing-lg);
   align-items: center;
 }

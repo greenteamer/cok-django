@@ -40,7 +40,7 @@
             <div class="Navbar__brand">
                 <a href="/">ALEX<span class="Navbar__brandAccent"> K.</span></a>
             </div>
-            <div class="Navbar__links">
+            <div class="Navbar__links" id="navbar-links">
                 <a href="/#work">Work</a>
                 <a href="/#writing">Writing</a>
                 <a href="/#stack">Stack</a>
@@ -49,11 +49,39 @@
                 <a href="{% url 'resume' %}">Resume</a>
                 <a href="/#contact">Contact</a>
             </div>
-            <div>
+            <div class="Navbar__actions">
                 <a href="/#contact" class="Button Button--cta">Let's Talk →</a>
+                <button type="button" class="Navbar__toggle" aria-controls="navbar-links" aria-expanded="false" aria-label="Open menu">
+                    <span class="Navbar__toggleBar"></span>
+                    <span class="Navbar__toggleBar"></span>
+                    <span class="Navbar__toggleBar"></span>
+                </button>
             </div>
         </div>
     </nav>
+    <script>
+    /* Mobile menu: without JS the links simply wrap (see Navbar.css). */
+    (function () {
+        var nav = document.querySelector(".Navbar");
+        var toggle = nav && nav.querySelector(".Navbar__toggle");
+        if (!toggle) return;
+        nav.classList.add("Navbar--js");
+        function setOpen(open) {
+            nav.classList.toggle("Navbar--open", open);
+            toggle.setAttribute("aria-expanded", String(open));
+            toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        }
+        toggle.addEventListener("click", function () {
+            setOpen(!nav.classList.contains("Navbar--open"));
+        });
+        nav.querySelectorAll(".Navbar__links a").forEach(function (link) {
+            link.addEventListener("click", function () { setOpen(false); });
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") setOpen(false);
+        });
+    })();
+    </script>
 
     <!-- Main Content -->
     <main>

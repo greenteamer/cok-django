@@ -55,7 +55,7 @@ static/css/
 │
 ├── layout/                     # Layout components
 │   ├── Container.css          # Max-width container
-│   ├── Navbar.css             # Site navigation
+│   ├── Navbar.css             # Site navigation + mobile menu
 │   └── Footer.css             # Site footer
 │
 ├── components/                 # Reusable UI components
@@ -179,6 +179,30 @@ All design values are centralized in `base/variables.css`:
   color: var(--color-text-primary);
 }
 ```
+
+## Responsive Behavior
+
+**Breakpoint**: single mobile breakpoint `@media (max-width: 768px)`.
+Component-specific mobile rules live in the component file (`Navbar.css`,
+`HeroWork.css`); shared overrides live in the `@media` block at the end of `main.css`.
+
+**Invariant**: no horizontal page scroll at any width from 320px up.
+Check it after layout changes: `document.documentElement.scrollWidth` must equal
+`clientWidth` at 320, 390, 768, 1024 and 1440px.
+
+Rules that keep it true:
+- Grid columns that hold wide content use `minmax(0, 1fr)`, not `1fr`
+  (a `1fr` column grows to its content's min width and pushes the page wider).
+- Decorative overflow (tilted covers in `.HeroWork`) is clipped with `overflow-x: clip`
+  on its container, and sizes scale with `clamp()`.
+
+**Mobile navigation** (`Navbar.css` + inline script in `templates/base.html`):
+- The script adds `.Navbar--js` and toggles `.Navbar--open` on `.Navbar__toggle`
+  click (also updates `aria-expanded` / `aria-label`); a link click or `Escape` closes the menu.
+- With `.Navbar--js` on mobile, links are hidden until opened and then shown as a full-width list.
+- Without JavaScript the toggle stays hidden and links wrap onto a second row.
+
+---
 
 ## Development Workflow
 
