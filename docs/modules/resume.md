@@ -21,7 +21,7 @@ The `resume` Django app provides complete resume/CV management functionality inc
 **Key Fields**:
 - `full_name`: CharField(max_length=200) - Full name
 - `title`: CharField(max_length=300) - Professional title/headline
-- `email`: EmailField - Contact email address
+- `email`: EmailField - Contact email address shown on the resume page and in the PDF export. The site-wide contact link in the footer (`templates/base.html`) is separate and hardcoded (`hello@coreofkeen.com`, a Cloudflare Email Routing forward) — change both when the address changes
 - `linkedin_url`: URLField(blank=True) - LinkedIn profile URL (optional)
 - `location`: CharField(max_length=200, blank=True) - Current location (city, country)
 - `summary`: RichTextUploadingField - Professional summary and key highlights with **WYSIWYG editor** (CKEditor)
