@@ -2,324 +2,118 @@
 
 ## Overview
 
-**Purpose:** Generate professional PDF resumes from database content using ReportLab
+**Purpose:** Generate an ATS-friendly PDF resume from the active profile using ReportLab
 
 **Technology:** ReportLab 4.0.9 (pure Python PDF generation)
 
-**Entry Point:** `GET /resume/export/pdf/`
+**Entry Point:** `GET /resume.pdf` (URL name `export_resume_pdf`; the old `/resume/export/pdf/` permanently redirects here)
+
+**Links to it:** home hero "Resume (PDF)", home "Download PDF Resume" band, `/resume/` buttons, the site-wide Contact block and the footer.
 
 ---
 
-## Architecture
+## Why ATS-friendly
 
-### Components
+Recruiters' applicant-tracking systems parse PDFs as text and rank by exact skill names and
+standard section headings. Two-column layouts, tables, icons and photos break that parsing.
+The PDF is therefore deliberately plain:
 
-**PDF Generation Pipeline:**
-```
-User Request → View → PDF Generator → ReportLab → PDF Response
-```
-
-**Files:**
-- `resume/views.py` - HTTP view handler (`export_resume_pdf`)
-- `resume/pdf_generator.py` - Core PDF generation logic
-- `resume/pdf_styles.py` - ReportLab styles (colors, fonts, paragraph styles)
-- `config/urls.py` - URL routing
-
-### Data Flow
-
-1. User clicks "Download PDF Resume" button on home page
-2. Request sent to `/resume/export/pdf/`
-3. View retrieves active Profile with related data (experiences, skills, certifications, achievements)
-4. PDF generator creates two-column layout with ReportLab
-5. HTTP response with `Content-Disposition: attachment` triggers download
+- one column, US Letter, 0.7" margins
+- standard PDF fonts (Helvetica family), black / dark-gray text
+- no photo, icons, tables or images; plain "•" bullets; thin rules under headings only
+- standard headings: **SUMMARY, SKILLS, EXPERIENCE, EDUCATION, LANGUAGES, CERTIFICATIONS, KEY ACHIEVEMENTS**
+- links are written out as visible text (`linkedin.com/in/...`), because ATS read text, not hrefs
+- PDF metadata: title "<Name> — Resume", author, subject (headline), keywords
 
 ---
 
-## PDF Layout
+## Data Sources
 
-### Two-Column Design
+| Part | Source |
+|------|--------|
+| Name, headline, engagement, contacts, availability, summary text | `config/identity.py` (same as the site hero — see [`site-identity.md`](./site-identity.md)) |
+| Skills | `profile.skills` grouped with `group_skills_by_category()` (advanced / type-level last) |
+| Experience | `profile.experiences` (position, company, location, dates, `company_description`, `description` HTML) |
+| Education, Languages | `profile.education`, `profile.languages` |
+| Certifications, Key Achievements | `profile.certifications`, `profile.achievements` |
 
-**Page Size:** US Letter (8.5" × 11")
+The profile's `title`, `summary` (rich text) and `email` are **not** used by the PDF; the summary
+is the short value proposition from `config/identity.py`. Empty sections are omitted.
 
-**Left Column (Main - 4.5"):**
-- Header (name, title, contacts, photo)
-- Experience section with job history
+---
 
-**Right Column (Sidebar - 2.5"):**
-- Professional summary
-- Key achievements with diamond icons
-- Certifications
-- Skills grouped by category
+## Layout (top to bottom)
 
-**Implementation:**
-```python
-# Two frames for two-column layout
-main_frame = Frame(x1=0.75*inch, y1=0.5*inch, width=4.5*inch, height=10*inch)
-sidebar_frame = Frame(x1=5.55*inch, y1=0.5*inch, width=2.5*inch, height=10*inch)
-```
+1. Name (20pt bold)
+2. `HEADLINE | ENGAGEMENT`
+3. Contact line: email | location | site | LinkedIn | GitHub (| Telegram when set)
+4. Availability line
+5. SUMMARY — `VALUE_PROP` + `TOOLING_LINE`
+6. SKILLS — one `Category: a, b, c` line per category
+7. EXPERIENCE — "Position — Company", "Location | Mon YYYY – Present", optional italic company note, then bullets. Each `<p>`/`<li>` of the CKEditor HTML becomes one bullet. The job header is kept together with its first bullet (`KeepTogether`).
+8. EDUCATION, LANGUAGES, CERTIFICATIONS, KEY ACHIEVEMENTS (when present)
 
-Frames switch via `FrameBreak()` flowable.
+The current content renders to about 3 pages.
 
 ---
 
 ## Technical Implementation
 
-### HTML to PDF Conversion
+### Files
 
-**Challenge:** Experience descriptions contain HTML from CKEditor
+- `resume/views.py` — `export_resume_pdf()`: active profile → PDF, `Content-Disposition: inline; filename="<Full_Name>_Resume.pdf"`, `X-Robots-Tag: noindex, nofollow`
+- `resume/pdf_generator.py` — `generate_resume_pdf(profile)` and one `generate_*_section()` per section; builds with `SimpleDocTemplate`
+- `resume/pdf_styles.py` — `get_styles()`, `pdf_text()` / `pdf_markup()`, `HTMLToParagraphs`, `html_to_flowables()`
 
-**Solution:** Custom HTML parser converts to ReportLab Paragraph flowables
+### Text sanitizing (`pdf_text`, `pdf_markup`)
 
-**Supported Tags:** `<p>`, `<ul>`, `<li>`, `<strong>`, `<b>`, `<em>`, `<i>`, `<br>`
+The standard fonts only cover WinAnsi (cp1252). `pdf_text()` maps the characters the content
+uses (`→` → `->`, drops `↗`, `◆`, `✓`, emoji) and removes anything else outside cp1252, so no
+blank boxes appear and copy/paste stays clean. `pdf_markup()` additionally XML-escapes the text
+for ReportLab paragraph markup (e.g. `P&L`). All database and identity text goes through these.
 
-**Example:**
-```html
-<ul>
-  <li>Increased efficiency by <strong>30%</strong></li>
-  <li>Led team of 5 developers</li>
-</ul>
-```
+### HTML to PDF
 
-Converts to:
-```
-• Increased efficiency by 30%
-• Led team of 5 developers
-```
-
-### Profile Photo Processing
-
-**Steps:**
-1. Open image with Pillow
-2. Resize to 100×100px
-3. Create circular mask with ImageDraw
-4. Convert to ReportLab Image flowable
-5. Place in header section
-
-**Error Handling:** If photo processing fails, continue without photo (logged as warning)
-
-### Styling
-
-**Color Palette:**
-- Primary Blue (#2563eb) - Name, titles
-- Dark Gray (#1f2937) - Body text
-- Light Gray (#6b7280) - Meta information
-- Accent Blue (#3b82f6) - Achievements, links
-
-**Fonts:**
-- Helvetica (regular)
-- Helvetica-Bold (headings, job titles)
-
-**Font Sizes:**
-- Name: 24pt
-- Professional Title: 11pt
-- Section Headings: 14pt
-- Body Text: 10pt
-
----
-
-## API
-
-### Endpoint
-
-**URL:** `GET /resume/export/pdf/`
-
-**Authentication:** None (public endpoint)
-
-**Parameters:** None
-
-**Response:**
-- **Content-Type:** `application/pdf`
-- **Content-Disposition:** `attachment; filename="<FullName>_Resume.pdf"`
-- **Status Codes:**
-  - `200 OK` - PDF generated successfully
-  - `404 Not Found` - No active profile or generation failed
-
-**Example:**
-```bash
-curl -O http://localhost:8000/resume/export/pdf/
-# Downloads: Aleksandr_Korovkin_Resume.pdf
-```
-
----
-
-## Usage
-
-### User Flow
-
-1. Visit home page
-2. Scroll to "Download My Resume" section (between Hero and Technologies)
-3. Click "Download PDF Resume" button
-4. PDF downloads automatically with filename: `{FirstName}_{LastName}_Resume.pdf`
-
-### Admin Configuration
-
-**Prerequisites:**
-1. Create active Profile (`is_active=True`) via Django Admin
-2. Add experiences, skills, certifications, achievements
-3. Optionally upload profile photo
-
-**Only ONE profile can be active** - this determines which resume is exported
+`HTMLToParagraphs` (an `HTMLParser`) supports `<p>`, `<ul>/<ol>`, `<li>`, `<strong>/<b>`,
+`<em>/<i>`, `<br>`. With `paragraphs_as_bullets=True` (used for experience) every `<p>` is a
+bullet too. Other tags are ignored; their text is kept.
 
 ---
 
 ## Error Handling
 
-### Error Scenarios
-
-1. **No Active Profile**
-   - Returns 404: "No active resume profile found."
-   - Logged as warning
-
-2. **PDF Generation Failure**
-   - Returns 404: "Failed to generate PDF resume."
-   - Logged as error with full traceback
-
-3. **Missing Profile Photo**
-   - Skips photo, continues generation
-   - No error to user
-
-4. **Corrupted Image File**
-   - Catches exception during Pillow processing
-   - Skips photo, continues generation
-   - Logged as warning
-
-5. **HTML Parsing Errors**
-   - Fallback: strip all HTML tags, use plain text
-   - Continues generation
-
-### Logging
-
-**Logger:** `resume.pdf_generator`
-
-**Log Levels:**
-- `INFO` - Successful PDF generation
-- `WARNING` - Non-critical issues (missing photo, etc.)
-- `ERROR` - PDF generation failures
-
----
-
-## Code Structure
-
-### pdf_generator.py Functions
-
-**Main Function:**
-- `generate_resume_pdf(profile)` - Orchestrates PDF generation, returns BytesIO buffer
-
-**Section Generators:**
-- `generate_header_section()` - Name, title, contacts
-- `generate_experience_section()` - Job history with HTML conversion
-- `generate_summary_section()` - Professional summary
-- `generate_achievements_section()` - Achievements with diamond icons
-- `generate_certifications_section()` - Certifications list
-- `generate_skills_section()` - Skills grouped by category
-
-**Helper Functions:**
-- `create_circular_photo()` - Photo processing with Pillow
-
-### pdf_styles.py
-
-**Exports:**
-- `get_styles()` - Returns dictionary of all ParagraphStyle objects
-- `html_to_flowables()` - Converts HTML to list of Paragraph flowables
-- `strip_html_tags()` - Strips HTML, returns plain text
-- `HTMLToParagraphs` class - Custom HTML parser
+| Case | Result |
+|------|--------|
+| No active profile | 404 "No active resume profile found." (logged as warning) |
+| Generation error | 404 "Failed to generate PDF resume. Please try again later." (logged with traceback, logger `resume.views` / `resume.pdf_generator`) |
 
 ---
 
 ## Performance
 
-**Generation Time:** ~500ms for typical resume (5 experiences, 20 skills)
-
-**Memory Usage:** Minimal (operates in-memory with BytesIO buffer)
-
-**Database Queries:** Optimized with `select_related` and `prefetch_related`
+Generated on every request (~500ms, in-memory `BytesIO`), no caching. Fine for current traffic;
+cache the bytes keyed on profile `updated_at` if it ever matters.
 
 ---
 
-## Security
+## Checking the output locally
 
-**Public Access:** No authentication required (resume is public information)
+```bash
+make up
+curl -o /tmp/resume.pdf http://localhost:8000/resume.pdf
+pdftotext -layout /tmp/resume.pdf - | head -40   # what an ATS will "see"
+```
 
-**Input Validation:** None needed (generates from trusted database content)
-
-**XSS Protection:** HTML content from CKEditor is trusted (admin-only input)
-
-**File Upload:** Profile photos validated by Django and Pillow
-
----
-
-## Dependencies
-
-**Required Packages:**
-- `reportlab==4.0.9` - PDF generation
-- `Pillow==10.1.0` - Image processing (already installed)
-
-**System Dependencies:** None (pure Python)
-
----
-
-## Troubleshooting
-
-### PDF Not Downloading
-
-**Symptom:** 404 error when clicking button
-
-**Solutions:**
-1. Check active profile exists: `Profile.objects.filter(is_active=True).count()`
-2. Check server logs: `make logs`
-3. Verify URL pattern in `config/urls.py`
-
-### PDF Layout Issues
-
-**Symptom:** Content overflow or incorrect spacing
-
-**Solutions:**
-1. Check `pdf_styles.py` for spacing constants
-2. Adjust Frame dimensions in `pdf_generator.py`
-3. Test with different content lengths
-
-### Photo Not Rendering
-
-**Symptom:** PDF generates but no photo appears
-
-**Solutions:**
-1. Check photo file exists: `profile.photo.path`
-2. Check file permissions
-3. Verify image format (JPEG, PNG supported)
-4. Check server logs for Pillow errors
-
-### Unicode/Encoding Errors
-
-**Symptom:** Special characters render incorrectly
-
-**Solutions:**
-1. Helvetica font supports Western European characters
-2. For Cyrillic/Asian: add custom fonts to ReportLab
-3. Update `pdf_styles.py` font definitions
-
----
-
-## Future Enhancements
-
-**Potential additions:**
-
-1. **Multiple Templates** - Different visual styles
-2. **Custom PDF Configuration** - User selects sections to include
-3. **Internationalization** - Multi-language support
-4. **PDF Caching** - Cache generated PDFs for performance
-5. **Custom Fonts** - Support for non-Latin scripts
-6. **A4 Page Size Option** - Toggle between US Letter and A4
-7. **Color Themes** - Different color schemes
-8. **QR Code** - Add QR code linking to online portfolio
+`pdftotext` (poppler) is optional; any PDF viewer's "select all + copy" works too.
 
 ---
 
 ## Related Documentation
 
-- **Resume Models:** See `docs/modules/resume.md` for data structure
-- **API Reference:** See `docs/api/http.md` for endpoint details
-- **Configuration:** See `docs/config/environment.md` for settings
+- **Resume Models:** [`resume.md`](./resume.md)
+- **Site identity / contacts:** [`site-identity.md`](./site-identity.md)
+- **API Reference:** [`../api/http.md`](../api/http.md)
 
 ---
 
-**Last Updated:** 2026-01-07
+**Last Updated:** 2026-10-19

@@ -128,7 +128,10 @@ Read these documents to understand Django app responsibilities and interfaces.
   Resume/CV application: professional profile, experience, skills, certifications, and achievements
 
 - 📄 [`modules/resume-pdf-export.md`](./modules/resume-pdf-export.md)
-  PDF resume export: ReportLab implementation, layout strategy, and generation pipeline
+  ATS-friendly PDF resume at `/resume.pdf`: ReportLab one-column layout, data sources, text sanitizing
+
+- 📄 [`modules/site-identity.md`](./modules/site-identity.md)
+  Site identity (`config/identity.py`): name, positioning, contacts, availability; site-wide Contact block, testimonials, Cloudflare email handling
 
 - 📄 [`modules/text-utils.md`](./modules/text-utils.md)
   Shared plain-text normalization helpers (`config/text.py`) for summary fields like excerpts and meta descriptions
@@ -212,7 +215,7 @@ When evolving the API or architecture:
 
 ## Last Updated
 
-2026-10-15
+2026-10-19
 
 This file MUST be updated whenever:
 

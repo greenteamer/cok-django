@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Alex Dev | React Native Engineer{% endblock %}</title>
-    <meta name="description" content="{% block description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
-    <meta name="keywords" content="{% block keywords %}react native engineer, expo developer, mobile app developer{% endblock %}">
+    <title>{% block title %}{{ identity.name }} | {{ identity.headline }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ identity.meta_description }}{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}react native contractor, remote react native engineer, expo developer, fractional mobile lead, senior react engineer{% endblock %}">
     <meta name="robots" content="{% block robots %}index,follow,max-image-preview:large{% endblock %}">
     <link rel="canonical" href="{% block canonical %}{{ canonical_url|default:request.build_absolute_uri }}{% endblock %}">
 
@@ -17,16 +17,16 @@
     <link rel="next" href="{{ next_page_url }}">
     {% endif %}
 
-    <meta property="og:site_name" content="Coreofkeen">
+    <meta property="og:site_name" content="{{ identity.name }}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:title" content="{% block og_title %}Alex Dev | React Native Engineer{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{{ identity.name }} | {{ identity.headline }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ identity.meta_description }}{% endblock %}">
     <meta property="og:url" content="{% block og_url %}{{ canonical_url|default:request.build_absolute_uri }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.png' %}{% endblock %}">
 
     <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
-    <meta name="twitter:title" content="{% block twitter_title %}Alex Dev | React Native Engineer{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Specialized in React Native and Expo. I build performant, cross-platform applications with pixel-perfect design and native-like feel.{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ identity.name }} | {{ identity.headline }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ identity.meta_description }}{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.png' %}{% endblock %}">
 
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
@@ -38,7 +38,7 @@
     <nav class="Navbar hide-on-print">
         <div class="Container">
             <div class="Navbar__brand">
-                <a href="/">ALEX<span class="Navbar__brandAccent"> K.</span></a>
+                <a href="/">Aleksander<span class="Navbar__brandAccent"> Korovkin</span></a>
             </div>
             <div class="Navbar__links" id="navbar-links">
                 <a href="/#work">Work</a>
@@ -47,10 +47,10 @@
                 <a href="/#experience">Experience</a>
                 <a href="{% url 'project_list' %}">Projects</a>
                 <a href="{% url 'resume' %}">Resume</a>
-                <a href="/#contact">Contact</a>
+                <a href="#contact">Contact</a>
             </div>
             <div class="Navbar__actions">
-                <a href="/#contact" class="Button Button--cta">Let's Talk →</a>
+                <a href="#contact" class="Button Button--cta">Let's Talk →</a>
                 <button type="button" class="Navbar__toggle" aria-controls="navbar-links" aria-expanded="false" aria-label="Open menu">
                     <span class="Navbar__toggleBar"></span>
                     <span class="Navbar__toggleBar"></span>
@@ -88,37 +88,15 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Contact (site-wide; every "Let's Talk" / "Contact" link points here) -->
+    {% include "_contact.html" %}
+
     <!-- Footer -->
-    <footer id="contact"  class="Footer hide-on-print">
+    <footer class="Footer hide-on-print">
         <div class="Container">
-            <div class="Footer__content">
-                <div class="Footer__cta">
-                    <h2>Let's build something great.</h2>
-                    <p>Based in Batumi, Georgia. Remote available.</p>
-                </div>
-                <div class="Footer__social">
-                    <a href="https://www.linkedin.com/in/aleksandr-korovkin/" aria-label="LinkedIn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
-                            <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                    </a>
-                    <a href="https://github.com/greenteamer" aria-label="GitHub">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"></path>
-                        </svg>
-                    </a>
-                    <a href="mailto:hello@coreofkeen.com" aria-label="Email">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-                    </a>
-                </div>
-            </div>
             <div class="Footer__bottom">
-                <p>&copy; 2024 Coreofkeen. All rights reserved.</p>
-                <p>Designed with Tailwind.</p>
+                <p>&copy; {% now "Y" %} {{ identity.name }}. All rights reserved.</p>
+                <p><a href="{% url 'export_resume_pdf' %}">Resume (PDF)</a> · <a href="{{ identity.linkedin_url }}" rel="me noopener">LinkedIn</a> · <a href="{{ identity.github_url }}" rel="me noopener">GitHub</a></p>
             </div>
         </div>
     </footer>

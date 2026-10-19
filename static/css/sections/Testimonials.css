@@ -1,0 +1,42 @@
+/**
+ * Testimonials Section
+ *
+ * Quotes from former leads and clients (templates/_testimonials.html).
+ * Rendered only when config/identity.py TESTIMONIALS is non-empty.
+ * Usage: <section class="Testimonials">...</section>
+ */
+
+.Testimonials__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--spacing-md);
+}
+
+.Testimonials__card {
+  margin: 0;
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.Testimonials__quote {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.Testimonials__author {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.Testimonials__author a {
+  color: inherit;
+}
+
+.Testimonials__name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}

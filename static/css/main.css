@@ -44,6 +44,9 @@
 @import "./sections/PostCard.css";
 @import "./sections/Timeline.css";
 @import "./sections/ResumeExport.css";
+@import "./sections/Contact.css";
+@import "./sections/Testimonials.css";
+@import "./sections/ProjectImpact.css";
 
 /* ============================================
    5. Page-Specific Styles
@@ -67,7 +70,8 @@
     gap: var(--spacing-md);
   }
 
-  .Hero__title {
+  .Hero__title,
+  .Hero__title--home {
     font-size: 2.5rem;
   }
 
@@ -82,11 +86,6 @@
 
   .PostCard__grid {
     grid-template-columns: 1fr;
-  }
-
-  .Footer__content {
-    flex-direction: column;
-    gap: var(--spacing-lg);
   }
 
   .Footer__bottom {

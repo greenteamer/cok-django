@@ -34,6 +34,13 @@
   line-height: 1.6;
 }
 
+.ResumeExport__link {
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
 .ResumeExport__button {
   display: inline-flex;
   align-items: center;

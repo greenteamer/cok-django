@@ -55,3 +55,18 @@
   font-weight: 500;
   white-space: nowrap;
 }
+
+/* "Advanced / type-level" skills: one quiet line under the mainstream grid */
+.TechGrid__advanced {
+  max-width: 900px;
+  margin: var(--spacing-md) auto 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.TechGrid__advancedLabel {
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  margin-right: 0.25rem;
+}

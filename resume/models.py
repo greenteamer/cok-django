@@ -189,6 +189,29 @@ class Experience(models.Model):
         return " ".join(parts) if parts else "Less than a month"
 
 
+# Skills in this category are "niche depth" (ReScript, Effect, OCaml, ...):
+# the home page shows them as one line under the mainstream grid and the
+# resume page / PDF list them last. See docs/modules/resume.md.
+ADVANCED_SKILL_CATEGORY = "Advanced / type-level"
+
+
+def split_skills(skills):
+    """Split skills into (mainstream, advanced) lists, keeping their order."""
+    mainstream, advanced = [], []
+    for skill in skills:
+        (advanced if skill.category == ADVANCED_SKILL_CATEGORY else mainstream).append(skill)
+    return mainstream, advanced
+
+
+def group_skills_by_category(skills):
+    """Group skills into an ordered {category: [skills]} dict, advanced last."""
+    mainstream, advanced = split_skills(skills)
+    groups = {}
+    for skill in mainstream + advanced:
+        groups.setdefault(skill.category or "Other", []).append(skill)
+    return groups
+
+
 class Skill(models.Model):
     """Technical or professional skill."""
 
@@ -351,3 +374,114 @@ class Achievement(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Education(models.Model):
+    """Degree, school or long-form course (resume "Education" section)."""
+
+    profile = models.ForeignKey(
+        'Profile',
+        on_delete=models.CASCADE,
+        related_name='education',
+        verbose_name="Profile"
+    )
+
+    institution = models.CharField(
+        max_length=200,
+        verbose_name="Institution",
+        help_text="University, school or programme (max 200 characters)"
+    )
+
+    degree = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Degree / Field",
+        help_text="e.g. 'BSc, Computer Science' (optional)"
+    )
+
+    location = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Location",
+        help_text="City, country (optional)"
+    )
+
+    start_year = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Start Year"
+    )
+
+    end_year = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="End Year",
+        help_text="Leave empty if ongoing"
+    )
+
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Display Order",
+        help_text="Order for display (lower numbers first)"
+    )
+
+    class Meta:
+        verbose_name = "Education"
+        verbose_name_plural = "Education"
+        ordering = ['order', '-end_year']
+
+    def __str__(self):
+        return f"{self.degree} - {self.institution}" if self.degree else self.institution
+
+    @property
+    def years(self):
+        """'2008 – 2013', '2008 – present', '2013' or ''."""
+        if self.start_year and self.end_year:
+            return f"{self.start_year} – {self.end_year}"
+        if self.start_year:
+            return f"{self.start_year} – present"
+        return str(self.end_year) if self.end_year else ""
+
+
+class Language(models.Model):
+    """Spoken language with proficiency (resume "Languages" section)."""
+
+    profile = models.ForeignKey(
+        'Profile',
+        on_delete=models.CASCADE,
+        related_name='languages',
+        verbose_name="Profile"
+    )
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Language",
+        help_text="e.g. 'English'"
+    )
+
+    proficiency = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Proficiency",
+        help_text="e.g. 'Native', 'Professional working (C1)'"
+    )
+
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Display Order",
+        help_text="Order for display (lower numbers first)"
+    )
+
+    class Meta:
+        verbose_name = "Language"
+        verbose_name_plural = "Languages"
+        ordering = ['order', 'name']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['profile', 'name'],
+                name='unique_language_per_profile'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.proficiency})" if self.proficiency else self.name

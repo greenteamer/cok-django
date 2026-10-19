@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404
 import logging
 
-from .models import Profile
+from .models import Profile, group_skills_by_category
 from .pdf_generator import generate_resume_pdf
 
 logger = logging.getLogger(__name__)
@@ -14,12 +14,15 @@ logger = logging.getLogger(__name__)
 
 def export_resume_pdf(request):
     """
-    Export active profile as PDF resume.
+    Export active profile as an ATS-friendly PDF resume.
 
-    GET /resume/export/pdf/
+    GET /resume.pdf  (the old /resume/export/pdf/ redirects here)
+
+    Served inline so the link opens in the browser's PDF viewer; the
+    filename is kept for "Save as".
 
     Returns:
-        HttpResponse: PDF file attachment
+        HttpResponse: PDF file
 
     Raises:
         Http404: If no active profile or PDF generation fails
@@ -38,7 +41,7 @@ def export_resume_pdf(request):
         # Create HTTP response with PDF
         response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
         filename = f"{profile.full_name.replace(' ', '_')}_Resume.pdf"
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
         response["X-Robots-Tag"] = "noindex, nofollow"
 
         buffer.close()
@@ -60,7 +63,8 @@ def resume_page(request):
     Displays:
         - Active profile information
         - Work experiences
-        - Skills grouped by category
+        - Skills grouped by category (advanced / type-level last)
+        - Education and languages (when filled in)
         - Certifications
         - Key achievements
 
@@ -79,13 +83,7 @@ def resume_page(request):
     certifications = profile.certifications.all()
     achievements = profile.achievements.all()
 
-    # Group skills by category
-    skills_by_category = {}
-    for skill in skills:
-        category = skill.category or 'Other'
-        if category not in skills_by_category:
-            skills_by_category[category] = []
-        skills_by_category[category].append(skill)
+    skills_by_category = group_skills_by_category(skills)
 
     context = {
         'profile': profile,
@@ -94,6 +92,8 @@ def resume_page(request):
         'skills_by_category': skills_by_category,
         'certifications': certifications,
         'achievements': achievements,
+        'education': profile.education.all(),
+        'languages': profile.languages.all(),
     }
 
     return render(request, 'resume/resume.html', context)

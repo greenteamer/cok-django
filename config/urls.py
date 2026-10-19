@@ -37,7 +37,11 @@ sitemaps = {
 urlpatterns = [
     path("", home, name="home"),
     path("resume/", resume_page, name="resume"),
-    path("resume/export/pdf/", export_resume_pdf, name="export_resume_pdf"),
+    path("resume.pdf", export_resume_pdf, name="export_resume_pdf"),
+    path(
+        "resume/export/pdf/",
+        RedirectView.as_view(pattern_name="export_resume_pdf", permanent=True),
+    ),
     path("projects/", project_list, name="project_list"),
     path("projects/<slug:slug>/", project_detail, name="project_detail"),
     path("blog/", post_list, name="post_list"),

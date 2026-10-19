@@ -9,20 +9,24 @@
             <div>
                 <div class="StatusBadge">
                     <span class="StatusBadge__dot"></span>
-                    Available for new projects
+                    Available for contract work
                 </div>
-                <h1 class="Hero__title">
-                    Mobile apps
-                    <span class="Hero__titleFade">and the tooling <br>behind them.</span>
+                <p class="Hero__name">{{ identity.name }} <span class="Hero__nameMeta">· {{ identity.location }}</span></p>
+                <h1 class="Hero__title Hero__title--home">
+                    {{ identity.headline }}.
+                    <span class="Hero__titleFade">Mobile apps since 2016, <br>web and backend when needed.</span>
                 </h1>
+                <p class="Hero__engagement">{{ identity.engagement }}</p>
                 <p class="Hero__description">
-                    React Native &amp; Expo apps with a native feel.
-                    Type-safe developer tooling like osury for the teams that ship them.
+                    React Native apps with a native feel — mostly bare React Native, Expo when it fits —
+                    for teams that need a remote React Native contractor or a fractional mobile lead.
+                    {{ identity.tooling_line }}
                 </p>
                 <div class="Hero__cta">
-                    <a href="#work" class="Button Button--primary">View Projects</a>
-                    <a href="{% url 'resume' %}" class="Button Button--secondary">Resume</a>
-                    <a href="https://github.com/greenteamer" class="Hero__textLink">GitHub ↗</a>
+                    <a href="#contact" class="Button Button--primary">Let's Talk</a>
+                    <a href="{% url 'export_resume_pdf' %}" class="Button Button--secondary">Resume (PDF)</a>
+                    <a href="#work" class="Hero__textLink">Projects ↓</a>
+                    <a href="{{ identity.github_url }}" class="Hero__textLink">GitHub ↗</a>
                 </div>
                 {% if projects %}
                 <p class="Hero__proof">
@@ -54,10 +58,11 @@
             <div class="ResumeExport__text">
                 <h3 class="ResumeExport__title">Download My Resume</h3>
                 <p class="ResumeExport__description">
-                    Get a comprehensive overview of my experience, skills, and achievements in PDF format.
+                    ATS-friendly PDF: experience, skills and contacts on plain pages.
+                    Prefer the web? <a href="{% url 'resume' %}" class="ResumeExport__link">Read it online →</a>
                 </p>
             </div>
-            <a href="/resume" class="Button Button--primary ResumeExport__button">
+            <a href="{% url 'export_resume_pdf' %}" class="Button Button--primary ResumeExport__button">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -109,6 +114,12 @@
                 </div>
             {% endif %}
         </div>
+        {% if advanced_skills %}
+        <p class="TechGrid__advanced">
+            <span class="TechGrid__advancedLabel">{{ advanced_skill_category }}:</span>
+            {% for skill in advanced_skills %}{{ skill.name }}{% if not forloop.last %} · {% endif %}{% endfor %}
+        </p>
+        {% endif %}
     </div>
 </section>
 
@@ -151,6 +162,8 @@
         </div>
     </div>
 </section>
+
+{% include "_testimonials.html" %}
 
 <!-- Writing Section -->
 <section id="writing">

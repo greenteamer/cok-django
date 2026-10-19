@@ -39,7 +39,20 @@ class Project(models.Model):
         blank=True, help_text="A write-up about the project (article or blog post). Shown as “Case study ↗”."
     )
     
-    tags = models.ManyToManyField(Tag, related_name="projects", blank=True)
+    role = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="My role on the project, e.g. “Lead React Native Developer (via TSS Paratransit)”. "
+        "Shown in the “My role / Impact / Stack” block on the project page.",
+    )
+    impact = models.TextField(
+        blank=True,
+        help_text="What I did and what changed, one bullet per line. Shown under “Impact” on the project page.",
+    )
+
+    tags = models.ManyToManyField(
+        Tag, related_name="projects", blank=True, help_text="Technologies. Shown on cards and as “Stack”."
+    )
     
     is_featured = models.BooleanField(default=False, help_text="Show on the homepage.")
     order = models.IntegerField(default=0, help_text="Order of display (lower numbers first).")
@@ -57,6 +70,12 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return f"/projects/{self.slug}/"
+
+    @property
+    def impact_items(self):
+        """`impact` split into non-empty lines (leading “- ” / “• ” stripped)."""
+        lines = (line.strip().lstrip("-•").strip() for line in self.impact.splitlines())
+        return [line for line in lines if line]
 
     def save(self, *args, **kwargs):
         if not self.slug:

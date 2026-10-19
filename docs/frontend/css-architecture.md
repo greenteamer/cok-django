@@ -56,7 +56,7 @@ static/css/
 ├── layout/                     # Layout components
 │   ├── Container.css          # Max-width container
 │   ├── Navbar.css             # Site navigation + mobile menu
-│   └── Footer.css             # Site footer
+│   └── Footer.css             # Copyright bar under the Contact section
 │
 ├── components/                 # Reusable UI components
 │   ├── Button.css             # Button with variants
@@ -68,10 +68,14 @@ static/css/
 ├── sections/                   # Page sections
 │   ├── Hero.css               # Hero section (title, CTA, proof strip)
 │   ├── HeroWork.css           # Hero fan of real project covers
-│   ├── TechGrid.css           # Technologies grid
+│   ├── TechGrid.css           # Technologies grid + "Advanced / type-level" line
 │   ├── ProjectCard.css        # Project cards
 │   ├── PostCard.css           # Blog post cards
-│   └── Timeline.css           # Experience timeline
+│   ├── Timeline.css           # Experience timeline
+│   ├── ResumeExport.css       # "Download PDF" band on the home page
+│   ├── Contact.css            # Site-wide Contact block (#contact) + availability pill
+│   ├── Testimonials.css       # Quotes grid (hidden until TESTIMONIALS is filled)
+│   └── ProjectImpact.css      # "My role / Impact / Stack" on project pages
 │
 ├── pages/                      # Page-specific styles
 │   ├── BlogDetail.css         # Blog post detail page

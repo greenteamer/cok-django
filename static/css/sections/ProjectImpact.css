@@ -1,0 +1,38 @@
+/**
+ * Project Impact Section
+ *
+ * "My role / Impact / Stack" block on the project detail page
+ * (templates/projects/project_detail.html). Fields: Project.role,
+ * Project.impact (one bullet per line), Project.tags.
+ * Usage: <div class="ProjectImpact">...</div>
+ */
+
+.ProjectImpact {
+  display: grid;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.ProjectImpact__heading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.ProjectImpact__role {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.ProjectImpact__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}

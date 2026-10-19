@@ -2,7 +2,7 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin
 from unfold.contrib.inlines.admin import StackedInline, TabularInline
 
-from .models import Profile, Experience, Skill, Certification, Achievement
+from .models import Profile, Experience, Skill, Certification, Achievement, Education, Language
 
 
 class ExperienceInline(StackedInline):
@@ -48,6 +48,24 @@ class AchievementInline(StackedInline):
     ordering = ['order', 'title']
 
 
+class EducationInline(TabularInline):
+    """Inline display of education on Profile admin page."""
+
+    model = Education
+    extra = 0
+    fields = ['institution', 'degree', 'location', 'start_year', 'end_year', 'order']
+    ordering = ['order', '-end_year']
+
+
+class LanguageInline(TabularInline):
+    """Inline display of spoken languages on Profile admin page."""
+
+    model = Language
+    extra = 0
+    fields = ['name', 'proficiency', 'order']
+    ordering = ['order', 'name']
+
+
 @admin.register(Profile)
 class ProfileAdmin(ModelAdmin):
     """Admin interface for resume profile using Unfold."""
@@ -84,7 +102,14 @@ class ProfileAdmin(ModelAdmin):
         }),
     )
 
-    inlines = [ExperienceInline, SkillInline, CertificationInline, AchievementInline]
+    inlines = [
+        ExperienceInline,
+        SkillInline,
+        EducationInline,
+        LanguageInline,
+        CertificationInline,
+        AchievementInline,
+    ]
 
     actions = ['make_active', 'make_inactive']
 

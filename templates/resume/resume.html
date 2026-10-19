@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ profile.full_name }} - Resume{% endblock %}
-{% block description %}{{ profile.title }}{% endblock %}
-{% block keywords %}resume, {{ profile.full_name }}, {{ profile.title }}{% endblock %}
-{% block og_title %}{{ profile.full_name }} - Resume{% endblock %}
-{% block og_description %}{{ profile.title }}{% endblock %}
-{% block twitter_title %}{{ profile.full_name }} - Resume{% endblock %}
-{% block twitter_description %}{{ profile.title }}{% endblock %}
+{% block title %}{{ identity.name }} — Resume | {{ identity.headline }}{% endblock %}
+{% block description %}{{ identity.meta_description }}{% endblock %}
+{% block keywords %}{{ identity.name }} resume, react native contractor, remote react native engineer, senior react engineer, expo, fractional mobile lead{% endblock %}
+{% block og_title %}{{ identity.name }} — Resume | {{ identity.headline }}{% endblock %}
+{% block og_description %}{{ identity.meta_description }}{% endblock %}
+{% block twitter_title %}{{ identity.name }} — Resume | {{ identity.headline }}{% endblock %}
+{% block twitter_description %}{{ identity.meta_description }}{% endblock %}
 
 {% block content %}
 <!-- Resume Hero Section -->
@@ -20,10 +20,18 @@
                     Resume
                 </div>
                 <h1 class="Hero__title" style="font-size: 3rem; margin-bottom: var(--spacing-sm);">
-                    {{ profile.full_name }}
+                    {{ identity.name }}
                 </h1>
-                <p class="Hero__description" style="font-size: 1.25rem; margin-bottom: var(--spacing-md);">
-                    {{ profile.title }}
+                <p class="Hero__description" style="font-size: 1.25rem; margin-bottom: var(--spacing-xs); color: var(--color-text-primary);">
+                    {{ identity.value_prop }}
+                </p>
+                <p class="Hero__engagement">{{ identity.engagement }}</p>
+                <p class="Hero__description" style="margin-bottom: var(--spacing-sm);">
+                    {{ identity.tooling_line }}
+                </p>
+                <p class="Contact__availability Contact__availability--light">
+                    <span class="StatusBadge__dot" aria-hidden="true"></span>
+                    {{ identity.availability }}
                 </p>
 
                 <!-- Contact Information -->
@@ -33,7 +41,7 @@
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
-                        <a href="mailto:{{ profile.email }}" style="color: inherit; text-decoration: none;">{{ profile.email }}</a>
+                        <!--email_off--><a href="mailto:{{ identity.email }}" style="color: inherit; text-decoration: none;">{{ identity.email }}</a><!--/email_off-->
                     </div>
                     {% if profile.location %}
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -54,20 +62,32 @@
                     </div>
                     {% endif %}
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <a href="https://coreofkeen.com/resume" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">https://coreofkeen.com</a>
+                        <a href="{{ identity.github_url }}" target="_blank" rel="me noopener noreferrer" style="color: inherit; text-decoration: none;">GitHub</a>
+                    </div>
+                    {% if identity.telegram_url %}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <a href="{{ identity.telegram_url }}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Telegram @{{ identity.telegram_handle }}</a>
+                    </div>
+                    {% endif %}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <a href="{{ identity.site_url }}" style="color: inherit; text-decoration: none;">coreofkeen.com</a>
                     </div>
                 </div>
 
                 <!-- PDF Export Button -->
-                <div class="hide-on-print">
-                    <button onclick="window.print()" class="Button Button--primary">
+                <div class="hide-on-print" style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                    <a href="{% url 'export_resume_pdf' %}" class="Button Button--primary">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                         Download PDF Resume
-                    </button>
+                    </a>
+                    <a href="#contact" class="Button Button--secondary">Contact</a>
+                    {% if identity.calendar_url %}
+                    <a href="{{ identity.calendar_url }}" target="_blank" rel="noopener noreferrer" class="Button Button--secondary">Book a call ↗</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -148,6 +168,39 @@
 </section>
 {% endif %}
 
+<!-- Education Section (hidden until filled in admin) -->
+{% if education %}
+<section style="padding: var(--spacing-lg) 0;">
+    <div class="Container">
+        <h2 class="SectionHeader__title">Education</h2>
+        <div style="display: grid; gap: var(--spacing-sm); max-width: 800px;">
+            {% for edu in education %}
+            <div style="padding: var(--spacing-sm); border-left: 3px solid var(--color-accent);">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">{% if edu.degree %}{{ edu.degree }}, {% endif %}{{ edu.institution }}</h3>
+                <div style="color: var(--color-text-secondary); font-size: 0.875rem;">
+                    {{ edu.years }}{% if edu.years and edu.location %} • {% endif %}{{ edu.location }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Languages Section (hidden until filled in admin) -->
+{% if languages %}
+<section style="padding: var(--spacing-lg) 0; background-color: var(--color-bg-secondary);">
+    <div class="Container">
+        <h2 class="SectionHeader__title">Languages</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; max-width: 800px;">
+            {% for lang in languages %}
+            <span class="Tag">{{ lang.name }}{% if lang.proficiency %} — {{ lang.proficiency }}{% endif %}</span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- Key Achievements Section -->
 {% if achievements %}
 <section style="padding: var(--spacing-lg) 0;">
@@ -209,8 +262,8 @@
                 Interested in collaborating? Download my full resume or get in touch.
             </p>
             <div style="display: flex; gap: var(--spacing-sm); justify-content: center; flex-wrap: wrap;">
-                <button onclick="window.print()" class="Button Button--primary">Download PDF</button>
-                <a href="mailto:{{ profile.email }}" class="Button Button--secondary">Contact Me</a>
+                <a href="{% url 'export_resume_pdf' %}" class="Button Button--primary">Download PDF</a>
+                <a href="#contact" class="Button Button--secondary">Contact Me</a>
             </div>
         </div>
     </div>

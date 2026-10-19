@@ -1,0 +1,24 @@
+{% comment %}
+Testimonials (home page). Hidden until config/identity.py TESTIMONIALS has items;
+see that file for the item shape. Slots: 2–3 quotes from former leads.
+{% endcomment %}
+{% if identity.testimonials %}
+<section id="testimonials" class="Testimonials">
+    <div class="Container">
+        <div class="SectionHeader">
+            <h2 class="SectionHeader__title">What leads say</h2>
+        </div>
+        <div class="Testimonials__grid">
+            {% for t in identity.testimonials %}
+            <figure class="Testimonials__card">
+                <blockquote class="Testimonials__quote">“{{ t.quote }}”</blockquote>
+                <figcaption class="Testimonials__author">
+                    {% if t.url %}<a href="{{ t.url }}" target="_blank" rel="noopener noreferrer">{% endif %}<span class="Testimonials__name">{{ t.name }}</span>{% if t.url %}</a>{% endif %}
+                    — {{ t.role }}
+                </figcaption>
+            </figure>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}

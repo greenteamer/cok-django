@@ -28,7 +28,8 @@
 
 /* Brand/Logo */
 .Navbar__brand a {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  white-space: nowrap;
   font-weight: 600;
   color: var(--color-text-primary);
   text-decoration: none;

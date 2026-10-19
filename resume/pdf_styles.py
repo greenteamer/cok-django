@@ -1,38 +1,60 @@
 """
 ReportLab PDF Styles
 
-This module defines all styling constants and ParagraphStyle objects
-for resume PDF generation.
+Paragraph styles and HTML/text helpers for the ATS-friendly resume PDF
+(see resume/pdf_generator.py and docs/modules/resume-pdf-export.md).
+
+ATS constraints that shape these styles:
+- one column, standard PDF fonts (Helvetica), black/dark-gray text only
+- no icons, tables or images; plain bullets ("•")
+- text must survive copy/paste, so everything goes through `pdf_text()`
 """
 
-from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.colors import HexColor
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+from html import escape
 from html.parser import HTMLParser
-from html import unescape
+
+from reportlab.lib.colors import HexColor
+from reportlab.lib.enums import TA_LEFT
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph
+
+
+COLOR_TEXT = HexColor('#111111')
+COLOR_MUTED = HexColor('#444444')
+
+FONT = 'Helvetica'
+FONT_BOLD = 'Helvetica-Bold'
+FONT_ITALIC = 'Helvetica-Oblique'
 
 
 # =============================================================================
-# COLOR PALETTE (based on reference PDF)
+# TEXT SANITIZING
 # =============================================================================
 
-COLOR_PRIMARY_BLUE = HexColor('#2563eb')    # Blue for name/title
-COLOR_TEXT_DARK = HexColor('#1f2937')       # Dark gray for text
-COLOR_TEXT_LIGHT = HexColor('#6b7280')      # Light gray for meta info
-COLOR_ACCENT = HexColor('#3b82f6')          # Accent blue
-COLOR_WHITE = HexColor('#ffffff')           # White
+# Characters outside the standard PDF fonts' WinAnsi encoding render as
+# blank boxes; map the ones the resume content uses, drop the rest (emoji).
+_REPLACEMENTS = {
+    '→': '->',
+    '←': '<-',
+    '↗': '',
+    '◆': '',
+    '✓': '',
+    ' ': ' ',
+}
 
 
-# =============================================================================
-# FONT SIZES
-# =============================================================================
+def pdf_text(text):
+    """Return `text` restricted to characters Helvetica can render."""
+    if not text:
+        return ''
+    for src, dst in _REPLACEMENTS.items():
+        text = text.replace(src, dst)
+    return text.encode('cp1252', errors='ignore').decode('cp1252')
 
-FONT_SIZE_NAME = 24
-FONT_SIZE_TITLE = 11
-FONT_SIZE_HEADING = 14
-FONT_SIZE_SUBHEADING = 12
-FONT_SIZE_BODY = 10
-FONT_SIZE_SMALL = 8
+
+def pdf_markup(text):
+    """Sanitize plain text and escape it for ReportLab paragraph markup."""
+    return escape(pdf_text(text), quote=False)
 
 
 # =============================================================================
@@ -41,173 +63,29 @@ FONT_SIZE_SMALL = 8
 
 def get_styles():
     """
-    Get all paragraph styles for resume PDF.
+    Get all paragraph styles for the resume PDF.
 
     Returns:
-        dict: Dictionary of style_name -> ParagraphStyle
+        dict: style_name -> ParagraphStyle
     """
-    styles = getSampleStyleSheet()
-
-    # Name style (main header)
-    style_name = ParagraphStyle(
-        'ResumeName',
-        parent=styles['Heading1'],
-        fontName='Helvetica-Bold',
-        fontSize=FONT_SIZE_NAME,
-        textColor=COLOR_PRIMARY_BLUE,
-        spaceAfter=6,
-        leading=28,
-        alignment=TA_LEFT,
-    )
-
-    # Professional title style
-    style_professional_title = ParagraphStyle(
-        'ProfessionalTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_TITLE,
-        textColor=COLOR_PRIMARY_BLUE,
-        spaceAfter=12,
-        leading=14,
-        alignment=TA_LEFT,
-    )
-
-    # Contact info style
-    style_contact = ParagraphStyle(
-        'Contact',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_SMALL,
-        textColor=COLOR_TEXT_LIGHT,
-        spaceAfter=8,
-        leading=10,
-        alignment=TA_LEFT,
-    )
-
-    # Section heading style (EXPERIENCE, SKILLS, etc.)
-    style_section_heading = ParagraphStyle(
-        'SectionHeading',
-        parent=styles['Heading2'],
-        fontName='Helvetica-Bold',
-        fontSize=FONT_SIZE_HEADING,
-        textColor=COLOR_TEXT_DARK,
-        spaceAfter=8,
-        spaceBefore=12,
-        leading=16,
-        alignment=TA_LEFT,
-    )
-
-    # Job title style
-    style_job_title = ParagraphStyle(
-        'JobTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=FONT_SIZE_SUBHEADING,
-        textColor=COLOR_TEXT_DARK,
-        spaceAfter=2,
-        leading=14,
-        alignment=TA_LEFT,
-    )
-
-    # Company name style
-    style_company = ParagraphStyle(
-        'Company',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_BODY,
-        textColor=COLOR_TEXT_LIGHT,
-        spaceAfter=2,
-        leading=12,
-        alignment=TA_LEFT,
-    )
-
-    # Date range style
-    style_date = ParagraphStyle(
-        'Date',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_SMALL,
-        textColor=COLOR_TEXT_LIGHT,
-        spaceAfter=4,
-        leading=10,
-        alignment=TA_LEFT,
-    )
-
-    # Body text style
-    style_body = ParagraphStyle(
-        'Body',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_BODY,
-        textColor=COLOR_TEXT_DARK,
-        spaceAfter=6,
-        leading=13,
-        alignment=TA_LEFT,
-    )
-
-    # Bullet list item style
-    style_bullet = ParagraphStyle(
-        'Bullet',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_BODY,
-        textColor=COLOR_TEXT_DARK,
-        leftIndent=12,
-        bulletIndent=0,
-        spaceAfter=4,
-        leading=13,
-        alignment=TA_LEFT,
-    )
-
-    # Achievement title style
-    style_achievement = ParagraphStyle(
-        'Achievement',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=FONT_SIZE_BODY,
-        textColor=COLOR_ACCENT,
-        spaceAfter=2,
-        leading=12,
-        alignment=TA_LEFT,
-    )
-
-    # Achievement description style
-    style_achievement_desc = ParagraphStyle(
-        'AchievementDesc',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_SMALL,
-        textColor=COLOR_TEXT_DARK,
-        spaceAfter=8,
-        leading=10,
-        alignment=TA_LEFT,
-    )
-
-    # Certification/Skill item style
-    style_list_item = ParagraphStyle(
-        'ListItem',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=FONT_SIZE_BODY,
-        textColor=COLOR_TEXT_DARK,
-        spaceAfter=4,
-        leading=12,
-        alignment=TA_LEFT,
-    )
+    def style(name, **kwargs):
+        defaults = dict(fontName=FONT, fontSize=10, leading=13.5, textColor=COLOR_TEXT, alignment=TA_LEFT)
+        defaults.update(kwargs)
+        return ParagraphStyle(name, **defaults)
 
     return {
-        'name': style_name,
-        'professional_title': style_professional_title,
-        'contact': style_contact,
-        'section_heading': style_section_heading,
-        'job_title': style_job_title,
-        'company': style_company,
-        'date': style_date,
-        'body': style_body,
-        'bullet': style_bullet,
-        'achievement': style_achievement,
-        'achievement_desc': style_achievement_desc,
-        'list_item': style_list_item,
+        'name': style('ResumeName', fontName=FONT_BOLD, fontSize=20, leading=24, spaceAfter=2),
+        'headline': style('Headline', fontSize=11.5, leading=15, spaceAfter=4),
+        'contact': style('Contact', fontSize=9, leading=12, textColor=COLOR_MUTED, spaceAfter=2),
+        'section_heading': style(
+            'SectionHeading', fontName=FONT_BOLD, fontSize=11.5, leading=14, spaceBefore=12, spaceAfter=3
+        ),
+        'job_title': style('JobTitle', fontName=FONT_BOLD, fontSize=10.5, leading=13.5, spaceBefore=6),
+        'job_meta': style('JobMeta', fontSize=9, leading=12, textColor=COLOR_MUTED, spaceAfter=2),
+        'company_note': style('CompanyNote', fontName=FONT_ITALIC, fontSize=9, leading=12, textColor=COLOR_MUTED, spaceAfter=2),
+        'body': style('Body', spaceAfter=4),
+        'bullet': style('Bullet', leftIndent=12, bulletIndent=2, spaceAfter=2.5),
+        'skills_line': style('SkillsLine', spaceAfter=2.5),
     }
 
 
@@ -217,114 +95,74 @@ def get_styles():
 
 class HTMLToParagraphs(HTMLParser):
     """
-    Convert simple HTML to ReportLab Paragraph flowables.
+    Convert CKEditor HTML to ReportLab Paragraph flowables.
 
-    Supports: <p>, <ul>, <li>, <strong>, <b>, <em>, <i>, <br>
+    Supports: <p>, <ul>/<ol>, <li>, <strong>/<b>, <em>/<i>, <br>.
+    With `paragraphs_as_bullets=True`, every <p> becomes a bullet too
+    (experience descriptions are written as one paragraph per achievement).
     """
 
-    def __init__(self, style_body, style_bullet):
-        super().__init__()
+    def __init__(self, style_body, style_bullet, paragraphs_as_bullets=False):
+        super().__init__(convert_charrefs=True)
         self.style_body = style_body
         self.style_bullet = style_bullet
+        self.paragraphs_as_bullets = paragraphs_as_bullets
         self.flowables = []
         self.current_text = ""
-        self.in_list = False
-        self.in_list_item = False
-        self.in_paragraph = False
+
+    def _flush(self, bullet):
+        text = " ".join(self.current_text.split())
+        if text and text not in ('<b></b>', '<i></i>'):
+            if bullet:
+                self.flowables.append(Paragraph(text, self.style_bullet, bulletText='•'))
+            else:
+                self.flowables.append(Paragraph(text, self.style_body))
+        self.current_text = ""
 
     def handle_starttag(self, tag, attrs):
-        if tag == 'ul' or tag == 'ol':
-            self.in_list = True
-            # Flush any pending paragraph text
-            if self.current_text.strip():
-                from reportlab.platypus import Paragraph
-                self.flowables.append(Paragraph(self.current_text.strip(), self.style_body))
-                self.current_text = ""
-        elif tag == 'li':
-            self.in_list_item = True
-        elif tag == 'p':
-            self.in_paragraph = True
+        if tag in ('ul', 'ol', 'p', 'li'):
+            self._flush(bullet=self.paragraphs_as_bullets)
         elif tag == 'br':
-            self.current_text += '<br/>'
-        elif tag in ['strong', 'b']:
+            self._flush(bullet=self.paragraphs_as_bullets)
+        elif tag in ('strong', 'b'):
             self.current_text += '<b>'
-        elif tag in ['em', 'i']:
+        elif tag in ('em', 'i'):
             self.current_text += '<i>'
 
     def handle_endtag(self, tag):
-        if tag == 'ul' or tag == 'ol':
-            self.in_list = False
-        elif tag == 'li':
-            if self.current_text.strip():
-                from reportlab.platypus import Paragraph
-                # Create bullet paragraph
-                text = f"• {self.current_text.strip()}"
-                self.flowables.append(Paragraph(text, self.style_bullet))
-                self.current_text = ""
-            self.in_list_item = False
+        if tag == 'li':
+            self._flush(bullet=True)
         elif tag == 'p':
-            if self.current_text.strip():
-                from reportlab.platypus import Paragraph
-                self.flowables.append(Paragraph(self.current_text.strip(), self.style_body))
-                self.current_text = ""
-            self.in_paragraph = False
-        elif tag in ['strong', 'b']:
+            self._flush(bullet=self.paragraphs_as_bullets)
+        elif tag in ('strong', 'b'):
             self.current_text += '</b>'
-        elif tag in ['em', 'i']:
+        elif tag in ('em', 'i'):
             self.current_text += '</i>'
 
     def handle_data(self, data):
-        self.current_text += unescape(data)
+        self.current_text += pdf_markup(data)
 
     def get_flowables(self):
-        # Flush any remaining text
-        if self.current_text.strip():
-            from reportlab.platypus import Paragraph
-            self.flowables.append(Paragraph(self.current_text.strip(), self.style_body))
+        self._flush(bullet=self.paragraphs_as_bullets)
         return self.flowables
 
 
-def html_to_flowables(html_content, style_body, style_bullet):
+def html_to_flowables(html_content, style_body, style_bullet, paragraphs_as_bullets=False):
     """
-    Convert HTML content to list of ReportLab flowables.
+    Convert HTML content to a list of ReportLab flowables.
 
     Args:
         html_content (str): HTML string
         style_body (ParagraphStyle): Style for body paragraphs
         style_bullet (ParagraphStyle): Style for bullet points
+        paragraphs_as_bullets (bool): Render <p> blocks as bullets
 
     Returns:
-        list: List of Paragraph flowables
+        list: Paragraph flowables
     """
     if not html_content:
         return []
 
-    parser = HTMLToParagraphs(style_body, style_bullet)
+    parser = HTMLToParagraphs(style_body, style_bullet, paragraphs_as_bullets)
     parser.feed(html_content)
     return parser.get_flowables()
-
-
-def strip_html_tags(html_content):
-    """
-    Strip all HTML tags from content, leaving plain text.
-
-    Args:
-        html_content (str): HTML string
-
-    Returns:
-        str: Plain text
-    """
-    from html import unescape
-    import re
-
-    if not html_content:
-        return ""
-
-    # Remove HTML tags
-    text = re.sub(r'<[^>]+>', ' ', html_content)
-    # Unescape HTML entities
-    text = unescape(text)
-    # Normalize whitespace
-    text = ' '.join(text.split())
-
-    return text

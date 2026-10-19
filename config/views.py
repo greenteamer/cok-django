@@ -8,7 +8,7 @@ from django.db import connection
 
 from django.shortcuts import render
 from blog.models import Post
-from resume.models import Profile
+from resume.models import ADVANCED_SKILL_CATEGORY, Profile, split_skills
 from projects.models import Project
 
 
@@ -17,7 +17,7 @@ def home(request):
     Home page view.
 
     Displays:
-    - Active profile with skills and experiences
+    - Active profile with skills (mainstream grid + one "advanced" line) and experiences
     - Recent blog posts
     """
     # Get active profile
@@ -35,15 +35,18 @@ def home(request):
     # Get experiences if profile exists
     experiences = []
     skills = []
+    advanced_skills = []
     if profile:
         experiences = profile.experiences.all()
-        skills = profile.skills.all()
+        skills, advanced_skills = split_skills(profile.skills.all())
 
     context = {
         "profile": profile,
         "projects": projects,
         "experiences": experiences,
         "skills": skills,
+        "advanced_skills": advanced_skills,
+        "advanced_skill_category": ADVANCED_SKILL_CATEGORY,
         "recent_posts": recent_posts,
     }
 

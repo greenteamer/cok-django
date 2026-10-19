@@ -20,8 +20,8 @@ The `resume` Django app provides complete resume/CV management functionality inc
 
 **Key Fields**:
 - `full_name`: CharField(max_length=200) - Full name
-- `title`: CharField(max_length=300) - Professional title/headline
-- `email`: EmailField - Contact email address shown on the resume page and in the PDF export. The site-wide contact link in the footer (`templates/base.html`) is separate and hardcoded (`hello@coreofkeen.com`, a Cloudflare Email Routing forward) — change both when the address changes
+- `title`: CharField(max_length=300) - Professional title/headline. Shown in admin only; the public headline and value proposition live in `config/identity.py` (`HEADLINE`, `VALUE_PROP`). Migrations set it to the same headline
+- `email`: EmailField - Contact email stored with the profile. **Not rendered anymore**: the resume page, the PDF and the site-wide Contact block all use `config/identity.py` `EMAIL` (`hello@coreofkeen.com`, a Cloudflare Email Routing forward) — see [`site-identity.md`](./site-identity.md). Keep both in sync for the admin list
 - `linkedin_url`: URLField(blank=True) - LinkedIn profile URL (optional)
 - `location`: CharField(max_length=200, blank=True) - Current location (city, country)
 - `summary`: RichTextUploadingField - Professional summary and key highlights with **WYSIWYG editor** (CKEditor)
@@ -33,7 +33,7 @@ The `resume` Django app provides complete resume/CV management functionality inc
 - `updated_at`: DateTimeField(auto_now=True) - Last update timestamp
 
 **Relationships**:
-- Has many: Experience, Skill, Certification, Achievement (reverse relations)
+- Has many: Experience, Skill, Education, Language, Certification, Achievement (reverse relations)
 
 **Model Methods**:
 - `save()`: Ensures only one profile is active at a time (deactivates all other profiles when this one is activated)
@@ -107,12 +107,68 @@ The `duration` property calculates employment duration from start_date to end_da
 **Model Methods**:
 - `__str__()`: Returns "{name} ({category})" if category exists, otherwise just name
 
+**Ordering convention (recruiter-facing)**:
+- `order` puts the **mainstream stack first** (React Native, Expo, Reanimated, New Architecture
+  migration, TypeScript, React, Next.js, Node.js, GraphQL, …). Recruiters and ATS rank by exact skill names, so mainstream
+  keywords lead.
+- Categories in use: `Mobile`, `Frontend`, `Backend & APIs`, `DevOps & Observability`, and
+  `Advanced / type-level` (constant `ADVANCED_SKILL_CATEGORY` in `resume/models.py`) for niche depth
+  (ReScript, Effect TS, FP-TS, OCaml, Clojure, Finite State Machines, OpenAPI codegen).
+- Helpers in `resume/models.py`:
+  - `split_skills(skills)` → `(mainstream, advanced)`; the home page shows mainstream as the
+    TechGrid and advanced as one line under it.
+  - `group_skills_by_category(skills)` → ordered `{category: [skills]}` with the advanced category
+    last; used by `/resume/` and the PDF. Category order = order of each category's first skill.
+- Only list skills the experience text or the owner backs up. Owner-confirmed scope (2026-10-19):
+  mostly **bare React Native**; New Architecture = migrated the last RN app (Mercury), no deep
+  JSI / Turbo Module / Fabric work, so it is listed as "New Architecture migration"; EAS = some
+  experience, listed after the core mobile skills.
+
 **Constraints**:
 - UniqueConstraint on `(profile, name)` - Prevents duplicate skills per profile
 
 **Meta Options**:
 - `ordering = ['order', 'category', 'name']` - By display order, then category, then alphabetically
 - Indexes on `(profile, order)` and `(profile, category)` for performance
+
+---
+
+### Education
+
+**Purpose**: Degrees, schools or long-form courses ("Education" section). Hidden on `/resume/` and in the PDF while empty.
+
+**Location**: `resume/models.py` (`Education`)
+
+**Key Fields**:
+- `profile`: ForeignKey('Profile', CASCADE, related_name='education')
+- `institution`: CharField(200) - University / school / programme
+- `degree`: CharField(200, blank) - e.g. "BSc, Computer Science"
+- `location`: CharField(200, blank)
+- `start_year`, `end_year`: PositiveIntegerField(null, blank) - empty `end_year` = ongoing
+- `order`: PositiveIntegerField(default=0)
+
+**Model Methods**:
+- `years` (property): "2008 – 2013", "2008 – present", "2013" or ""
+
+**Meta Options**: `ordering = ['order', '-end_year']`
+
+---
+
+### Language
+
+**Purpose**: Spoken languages with proficiency ("Languages" section). Hidden while empty.
+
+**Location**: `resume/models.py` (`Language`)
+
+**Key Fields**:
+- `profile`: ForeignKey('Profile', CASCADE, related_name='languages')
+- `name`: CharField(100) - e.g. "English"
+- `proficiency`: CharField(100, blank) - e.g. "Native", "Professional working (C1)"
+- `order`: PositiveIntegerField(default=0)
+
+**Constraints**: UniqueConstraint on `(profile, name)` (`unique_language_per_profile`)
+
+**Meta Options**: `ordering = ['order', 'name']`
 
 ---
 
@@ -185,7 +241,7 @@ All models use Unfold admin theme for enhanced UI.
 - List display: full_name, title, email, location, is_active, updated_at
 - List filters: is_active, created_at, updated_at
 - Search on full_name, title, email, summary
-- Inline editing for all related models (Experience, Skill, Certification, Achievement)
+- Inline editing for all related models (Experience, Skill, Education, Language, Certification, Achievement)
 - Bulk actions: "Activate selected profile", "Deactivate selected profiles"
 - Active profile indicator in list view
 
@@ -199,6 +255,8 @@ All models use Unfold admin theme for enhanced UI.
 **Inlines**:
 - ExperienceInline: Stacked inline for work experiences
 - SkillInline: Tabular inline for skills
+- EducationInline: Tabular inline for education
+- LanguageInline: Tabular inline for spoken languages
 - CertificationInline: Tabular inline for certifications
 - AchievementInline: Stacked inline for achievements
 
@@ -546,12 +604,10 @@ Future test coverage should include:
 Potential additions:
 
 1. **Multiple Language Support**: Support for multilingual resumes
-2. **PDF Export**: Generate PDF resume from profile data
 3. **Public Resume URL**: Shareable public-facing resume page
 4. **Resume Templates**: Multiple visual templates for resume display
 5. **Skill Proficiency Levels**: Add proficiency rating (e.g., Beginner, Intermediate, Expert)
 6. **Project Portfolio**: Add separate model for projects with screenshots
-7. **Education Section**: Add education history (degrees, institutions)
 8. **References**: Add professional references section
 9. **Resume Analytics**: Track views and downloads
 10. **Import/Export**: Import from LinkedIn, export to JSON/XML
@@ -626,36 +682,61 @@ Potential additions:
 
 ## API Endpoints
 
+### Pages
+
+- `GET /resume/` — resume page. Header: name, value proposition, engagement, tooling line,
+  availability and contacts from `config/identity.py`; then summary, experience, skills (grouped,
+  advanced last), education, languages, achievements, certifications from the database.
+  "Download PDF Resume" links to `/resume.pdf`; "Contact" links to the site-wide `#contact` block.
+
 ### PDF Export Endpoint
 
-**Endpoint:** `GET /resume/export/pdf/`
+**Endpoint:** `GET /resume.pdf` (`/resume/export/pdf/` → 301)
 
-**Purpose:** Generate and download PDF version of active resume profile
-
-**Response:**
-- Content-Type: `application/pdf`
-- Content-Disposition: `attachment; filename="FirstName_LastName_Resume.pdf"`
-
-**Success (200):**
-- Returns PDF file with comprehensive resume layout
-
-**Error Cases:**
-- `404`: No active profile exists
-- `404`: PDF generation failed (check server logs)
-
-**Implementation Details:**
-See [`docs/modules/resume-pdf-export.md`](./resume-pdf-export.md) for complete architecture and technical details.
-
-**Technology:** ReportLab 4.0.9 with two-column layout
+ATS-friendly one-column PDF of the active profile, served inline. 404 when there is no active
+profile or generation fails. Details: [`resume-pdf-export.md`](./resume-pdf-export.md),
+[`../api/http.md`](../api/http.md).
 
 **Related Code:**
 - View: `resume/views.py:export_resume_pdf()`
 - Generator: `resume/pdf_generator.py`
-- Styles: `resume/pdf_styles.py`
+- Styles and HTML conversion: `resume/pdf_styles.py`
 
 ---
 
 ## Migration History
+
+### 0004_owner_answers (data)
+
+**Created**: 2026-10-19
+
+Owner-confirmed facts; active profile only; rows matched by company/position; idempotent.
+- Distillery "Senior React Native Developer": end date Sep 2020 (no overlap with "Company Team
+  Lead", Oct 2020 – Dec 2022) and a real description (performance, FP-TS chart/data modules,
+  releases and CI/CD)
+- Storiqa end date Dec 2018, so 2019 reads GMCS (Jan–Jun) → Distillery (Jul)
+- Mercury Development: "New Architecture" bullet
+- Summary: "7+ years of React Native" → "8+ years" (RN since Aug 2016)
+- Languages: English (C1, professional working), Russian (Native)
+- No Education entries (the owner has none to list; the section stays hidden)
+
+### 0003_recruiter_positioning (data)
+
+**Created**: 2026-10-19
+
+Runs on the **active profile only**; no-op on an empty database; idempotent.
+- `Profile.title` → "Senior React Native & React Engineer | Full- or part-time contract | US–EU time zones"
+- Typos in summary/experience HTML: "peges" → "pages", "standartisation" → "standardisation"
+- Skill renames: NextJS → Next.js, Node.Js → Node.js, Open Telemetry → OpenTelemetry
+- Skill categories/order per the convention above; adds Expo, Tailwind CSS, Finite State Machines,
+  OpenAPI codegen, New Architecture migration, EAS when missing; unknown skills keep their category and go after the list
+- Reverse: no-op
+
+### 0002_education_language
+
+**Created**: 2026-10-19
+
+- Created `Education` and `Language` models (+ `unique_language_per_profile`)
 
 ### 0001_initial
 
@@ -681,4 +762,4 @@ See [`docs/modules/resume-pdf-export.md`](./resume-pdf-export.md) for complete a
 
 ---
 
-**Last Updated**: 2025-12-23
+**Last Updated**: 2026-10-19

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}All Posts | Alex Dev{% endblock %}
+{% block title %}All Posts | {{ identity.name }}{% endblock %}
 
 {% block description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
 {% block keywords %}react native blog, mobile development articles, expo tutorials{% endblock %}
-{% block og_title %}All Posts | Alex Dev{% endblock %}
+{% block og_title %}All Posts | {{ identity.name }}{% endblock %}
 {% block og_description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
-{% block twitter_title %}All Posts | Alex Dev{% endblock %}
+{% block twitter_title %}All Posts | {{ identity.name }}{% endblock %}
 {% block twitter_description %}Browse all blog posts about React Native, mobile development, and web technologies.{% endblock %}
 
 {% block content %}

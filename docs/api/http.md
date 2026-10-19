@@ -14,11 +14,12 @@ This document lists all HTTP endpoints in the application.
 | `/projects/` | `project_list` | `projects.views.project_list` | Projects list |
 | `/projects/<slug>/` | `project_detail` | `projects.views.project_detail` | Project page |
 | `/resume/` | `resume` | `resume.views.resume_page` | Resume page |
-| `/resume/export/pdf/` | `export_resume_pdf` | `resume.views.export_resume_pdf` | Resume as PDF |
+| `/resume.pdf` | `export_resume_pdf` | `resume.views.export_resume_pdf` | ATS-friendly resume PDF (inline) |
 | `/sitemap.xml` | `sitemap` | Django sitemaps | Blog, projects, static pages |
 | `/robots.txt` | `robots_txt` | `config.views.robots_txt` | Disallows `/admin/`, `/ckeditor/` |
 
 `/robots`, `/robots/`, `/robots.txt/`, `/sitemap`, `/sitemap/`, `/sitemap.xml/` permanently redirect to the canonical URLs.
+`/resume/export/pdf/` (old PDF URL) permanently redirects to `/resume.pdf`.
 
 ### Staff / Internal
 
@@ -305,31 +306,31 @@ When multiple API versions exist, document each version separately:
 
 ## Resume Export
 
-### GET /resume/export/pdf/
+### GET /resume.pdf
 
-Export active resume profile as PDF with professional formatting.
+ATS-friendly PDF of the active resume profile. Every "Download PDF" / "Resume (PDF)"
+link on the site points here (`{% url 'export_resume_pdf' %}`).
 
-**URL**: `/resume/export/pdf/`
+**URL**: `/resume.pdf` (old URL `/resume/export/pdf/` → 301 here)
 
 **Method**: GET
 
 **Authentication**: None (public)
 
-**Permissions**: None
-
-**Description**: Generates and downloads a professional PDF resume from the active profile in the database. Uses ReportLab with two-column layout.
-
-**Query Parameters**: None
+**Description**: Generates the PDF on each request from the active profile (database)
+and `config/identity.py` (name, headline, contacts, availability). One column,
+standard fonts, no photo/icons/tables. See
+[`docs/modules/resume-pdf-export.md`](../modules/resume-pdf-export.md).
 
 **Request Example**:
 ```bash
-curl -O http://localhost:8000/resume/export/pdf/
-# Downloads: Aleksandr_Korovkin_Resume.pdf
+curl -o resume.pdf http://localhost:8000/resume.pdf
 ```
 
 **Success Response** (200 OK):
 - **Content-Type**: `application/pdf`
-- **Content-Disposition**: `attachment; filename="<FullName>_Resume.pdf"`
+- **Content-Disposition**: `inline; filename="<Full_Name>_Resume.pdf"` (opens in the browser viewer; "Save as" keeps the filename)
+- **X-Robots-Tag**: `noindex, nofollow`
 - **Body**: Binary PDF file
 
 **Error Responses**:
@@ -346,19 +347,18 @@ Failed to generate PDF resume. Please try again later.
 
 **Notes**:
 - Only the active profile (`is_active=True`) is exported
-- PDF includes: experiences, skills, certifications, achievements, profile photo
-- Layout: Two-column professional resume format (main content + sidebar)
-- Technology: ReportLab 4.0.9 with programmatic PDF generation
-- Generation time: ~500ms for typical resume
-
-**Implementation Details**:
-See [`docs/modules/resume-pdf-export.md`](../modules/resume-pdf-export.md) for architecture.
+- Sections: Summary, Skills, Experience, Education, Languages, Certifications, Key Achievements (empty sections are omitted)
+- Technology: ReportLab 4.0.9, ~500ms per request, no caching
 
 ---
 
 ## Changelog
 
 When endpoints change, document changes here:
+
+### 2026-10-19
+- Resume PDF moved to `GET /resume.pdf` (served inline, ATS-friendly one-column layout)
+- `GET /resume/export/pdf/` now permanently redirects to `/resume.pdf`
 
 ### 2026-02-12
 - Added health check endpoint (`GET /health/`)

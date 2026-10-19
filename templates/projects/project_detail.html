@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}{{ project.title }} | Project | Alex Dev{% endblock %}
+{% block title %}{{ project.title }} | Project | {{ identity.name }}{% endblock %}
 {% block description %}{{ project.description|truncatechars:160 }}{% endblock %}
 {% block keywords %}{{ project.title }}{% for tag in project.tags.all %}, {{ tag.name }}{% endfor %}, portfolio project{% endblock %}
-{% block og_title %}{{ project.title }} | Project | Alex Dev{% endblock %}
+{% block og_title %}{{ project.title }} | Project | {{ identity.name }}{% endblock %}
 {% block og_description %}{{ project.description|truncatechars:160 }}{% endblock %}
-{% block twitter_title %}{{ project.title }} | Project | Alex Dev{% endblock %}
+{% block twitter_title %}{{ project.title }} | Project | {{ identity.name }}{% endblock %}
 {% block twitter_description %}{{ project.description|truncatechars:160 }}{% endblock %}
 
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}{% endblock %}
@@ -25,22 +25,37 @@
     </div>
 </section>
 
-<section class="BlogDetail__featuredImage">
-    <div class="Container">
-        <div class="BlogDetail__imageWrapper">
-            <img src="{{ project.image.url }}" alt="{{ project.title }}" fetchpriority="high">
-        </div>
-    </div>
-</section>
-
 <section class="BlogDetail__contentSection">
     <div class="Container">
         <article class="BlogDetail__article">
-            {% if project.tags.exists %}
-            <div class="BlogDetail__tags" style="margin-bottom: 1rem;">
-                {% for tag in project.tags.all %}
-                    <span class="Tag">{{ tag.name }}</span>
-                {% endfor %}
+            {% if project.role or project.impact_items or project.tags.exists %}
+            <div class="ProjectImpact">
+                {% if project.role %}
+                <div class="ProjectImpact__block">
+                    <h2 class="ProjectImpact__heading">My role</h2>
+                    <p class="ProjectImpact__role">{{ project.role }}</p>
+                </div>
+                {% endif %}
+                {% if project.impact_items %}
+                <div class="ProjectImpact__block">
+                    <h2 class="ProjectImpact__heading">Impact</h2>
+                    <ul class="ProjectImpact__list">
+                        {% for item in project.impact_items %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if project.tags.exists %}
+                <div class="ProjectImpact__block">
+                    <h2 class="ProjectImpact__heading">Stack</h2>
+                    <div class="BlogDetail__tags">
+                        {% for tag in project.tags.all %}
+                            <span class="Tag">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
             {% endif %}
 
@@ -54,9 +69,18 @@
                 {% if project.case_study_url %}
                     <a href="{{ project.case_study_url }}" target="_blank" rel="noopener noreferrer" class="Button Button--secondary">Case study ↗</a>
                 {% endif %}
+                <a href="#contact" class="Button Button--secondary">Hire me for a similar project</a>
                 <a href="{% url 'project_list' %}" class="Button Button--secondary">All Projects</a>
             </div>
         </article>
+    </div>
+</section>
+
+<section class="BlogDetail__featuredImage">
+    <div class="Container">
+        <div class="BlogDetail__imageWrapper">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" fetchpriority="high">
+        </div>
     </div>
 </section>
 {% endblock %}

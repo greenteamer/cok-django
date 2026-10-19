@@ -1,59 +1,15 @@
 /**
  * Footer Component
  *
- * Site footer with CTA, social links, and copyright.
+ * Thin copyright bar under the Contact section (see sections/Contact.css),
+ * sharing its gradient so both read as one block.
  * Usage: <footer class="Footer">...</footer>
  */
 
 .Footer {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: var(--spacing-xl) 0 var(--spacing-md);
+  padding: 0 0 var(--spacing-md);
   color: white;
-}
-
-/* Main footer content area */
-.Footer__content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-lg);
-}
-
-/* CTA section */
-.Footer__cta h2 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: var(--spacing-xs);
-  color: white;
-}
-
-.Footer__cta p {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* Social links */
-.Footer__social {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
-.Footer__social a {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  color: white;
-  transition: all 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.Footer__social a:hover {
-  background-color: white;
-  color: #764ba2;
-  transform: translateY(-2px);
 }
 
 /* Bottom copyright bar */
@@ -64,4 +20,13 @@
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.Footer__bottom a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+}
+
+.Footer__bottom a:hover {
+  color: white;
 }

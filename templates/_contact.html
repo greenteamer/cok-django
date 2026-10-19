@@ -1,0 +1,61 @@
+{% comment %}
+Site-wide Contact block (included from base.html, anchor #contact).
+Values come from config/identity.py; empty contacts are not rendered.
+The email sits inside email_off comments so Cloudflare Email Obfuscation
+leaves it as readable text (recruiters copy it; no-JS clients see it).
+{% endcomment %}
+<section id="contact" class="Contact hide-on-print">
+    <div class="Container">
+        <div class="Contact__content">
+            <div class="Contact__intro">
+                <h2 class="Contact__title">Hiring a React Native contractor?</h2>
+                <p class="Contact__text">
+                    I join product teams as a remote senior React Native / React engineer
+                    or as a fractional mobile lead — bare React Native and Expo apps,
+                    with the web and Node.js side when the product needs it.
+                </p>
+                <p class="Contact__availability">
+                    <span class="StatusBadge__dot" aria-hidden="true"></span>
+                    {{ identity.availability }}
+                </p>
+                <div class="Contact__actions">
+                    <!--email_off--><a href="mailto:{{ identity.email }}" class="Button Button--primary Contact__button">Email {{ identity.email }}</a><!--/email_off-->
+                    {% if identity.calendar_url %}
+                    <a href="{{ identity.calendar_url }}" class="Button Button--secondary Contact__button" target="_blank" rel="noopener noreferrer">Book a 30-min call ↗</a>
+                    {% endif %}
+                    <a href="{% url 'export_resume_pdf' %}" class="Button Button--secondary Contact__button">Resume (PDF)</a>
+                </div>
+            </div>
+            <ul class="Contact__list">
+                <li class="Contact__item">
+                    <span class="Contact__label">Email</span>
+                    <!--email_off--><a href="mailto:{{ identity.email }}">{{ identity.email }}</a><!--/email_off-->
+                </li>
+                {% if identity.telegram_url %}
+                <li class="Contact__item">
+                    <span class="Contact__label">Telegram</span>
+                    <a href="{{ identity.telegram_url }}" target="_blank" rel="noopener noreferrer">@{{ identity.telegram_handle }}</a>
+                </li>
+                {% endif %}
+                {% if identity.calendar_url %}
+                <li class="Contact__item">
+                    <span class="Contact__label">Call</span>
+                    <a href="{{ identity.calendar_url }}" target="_blank" rel="noopener noreferrer">Book a time ↗</a>
+                </li>
+                {% endif %}
+                <li class="Contact__item">
+                    <span class="Contact__label">LinkedIn</span>
+                    <a href="{{ identity.linkedin_url }}" target="_blank" rel="me noopener noreferrer">{{ identity.name }} ↗</a>
+                </li>
+                <li class="Contact__item">
+                    <span class="Contact__label">GitHub</span>
+                    <a href="{{ identity.github_url }}" target="_blank" rel="me noopener noreferrer">greenteamer ↗</a>
+                </li>
+                <li class="Contact__item">
+                    <span class="Contact__label">Location</span>
+                    <span>{{ identity.location }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
